@@ -776,9 +776,7 @@ export const tr: Record<Key, string> = {
   'deep-sleep.lede':
     'Bataryayla çalışan bir düğüm, tepe akımına değil ortalama akımına göre yaşar ya da ölür. Osiloskop, doğrusal zaman ekseninde bir uyanma/uyku çevrimi boyunca akım profilini, ortaya çıkan ortalamayla birlikte gösterir.',
   'deep-sleep.quickPick': 'Hızlı seçim',
-  'deep-sleep.sleepDuration': 'Uyku süresi',
   'deep-sleep.sleepShareOfBudget': 'Toplam tüketimde uyku payı',
-  'deep-sleep.timingBasis': 'Zamanlamayı şuna göre gir',
   'deep-sleep.theConsequenceIsUnintuitive':
     "Sonuç sezgiye aykırıdır. Her saat 3 saniye boyunca 80 mA çeken bir ESP32 ortalama yaklaşık 77 µA çeker, yani 2 Ah'lik bir hücre iki yıldan uzun dayanır. Aynı yonga uyanık bırakılsa onu bir günde bitirirdi. Derin uyku bir iyileştirme değil, tasarımın kendisidir.",
   'deep-sleep.theory1':
@@ -790,14 +788,11 @@ export const tr: Record<Key, string> = {
   'deep-sleep.use':
     'Bataryayla çalışan her ESP32 düğümü: sunucuya rapor veren sensörler, tamod cihazları, uzak izleyiciler. Batarya ömrünü belirleyen tek değer ortalama akımdır ve bu sayfa, uyku akımının neden genellikle uyanma süresinden çok daha önemli olduğunu gösterir. Ayrıca paketi gerçekte tüketen şeyin sürekli bağlı bir bölücü veya kaçaklı bir regülatör olduğunu böyle keşfedersiniz.',
   'deep-sleep.wakeCycles': 'Uyanma çevrimi',
-  'deep-sleep.wakeInterval': 'Uyanma aralığı',
   'deep-sleep.wakesPerDay': 'Günlük uyanma sayısı',
   'deep-sleep.warn1':
     "Uyku akımı bütçenin %{sleepShare} kadarı, yani uyanık evreyi iyileştirmek size neredeyse hiçbir şey kazandırmaz. Bunun yerine bekleme tüketimine yüklenin: bir doğrusal regülatörün boşta akımı, sürekli bağlı bir bölücü ya da açık bırakılmış bir çevre birimi yaygın suçlulardır ve her biri ESP32'nin kendi 10 µA'lik akımını gölgede bırakabilir.",
   'deep-sleep.warn2':
     "Yaklaşık 150 mA'in üzerinde neredeyse kesinlikle verici çalışıyordur. Wi-Fi'ye bağlanmak iletimin kendisinden çok daha fazla enerji harcar, bu yüzden birkaç ölçümü tek uyanışta toplamak, her uyanışı kısaltmaktan genellikle daha çok kazandırır.",
-  'deep-sleep.warn3':
-    'Etkin süre uyanma aralığından uzun, bu yüzden düğüm hiç uyumaz. Uyanışı kısaltın ya da aralığı {activeTime} değerinin üstüne çıkarın.',
   'deep-sleep.whDay': '{whPerDay} Wh/gün',
   'deep-sleep.whichTermDominatesDecides':
     'Hangi terimin baskın olduğu, çabanın nereye harcanacağını belirler. Uyku evresi ortalamanın çoğunu taşımaya başladıktan sonra uyanık süreyi kısaltmak boşa emektir ve hedef bekleme sızıntısı olur: regülatör boşta akımı, yukarı çekme ve bölücü ağları ve açık kalan algılayıcılar.',
