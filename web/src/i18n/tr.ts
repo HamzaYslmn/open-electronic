@@ -1,51 +1,51 @@
 import type { Key } from './en'
 
 /**
- * Turkish. Typed against en.ts, so adding a string there fails the build here
- * until it is translated. Fetched only when Turkish is selected, see LOADERS in
- * index.tsx.
+ * Türkçe çeviriler. en.ts ile tür denetimine tabi olduğundan, İngilizce dosyaya
+ * yeni bir anahtar eklendiğinde Türkçe karşılığı eklenene kadar derleme başarısız olur.
+ * Yalnızca Türkçe seçildiğinde yüklenir; bkz. index.tsx içindeki LOADERS.
  */
 export const tr: Record<Key, string> = {
   'ac-impedance.3Db': '-3 dB',
-  'ac-impedance.blurb': 'Seri ve paralel RLC empedansının frekansla değişimi, genlik ve faz.',
-  'ac-impedance.centreFrequency': 'Merkez frekansı',
-  'ac-impedance.currentFrom1V': "1 V'ta akım",
-  'ac-impedance.decadesShown': 'Gösterilen dekat',
-  'ac-impedance.imaginaryPart': 'sanal kısım',
+  'ac-impedance.blurb': 'Seri ve paralel RLC devrelerinde empedansın frekansa göre genlik ve faz değişimi.',
+  'ac-impedance.centreFrequency': 'Merkez frekans',
+  'ac-impedance.currentFrom1V': "1 V uygulandığında akım",
+  'ac-impedance.decadesShown': 'Gösterilen dekad sayısı',
+  'ac-impedance.imaginaryPart': 'Sanal bileşen',
   'ac-impedance.lede':
-    "Bir R, L ve C'nin birlikte frekansa göre empedansı. Osiloskop zamanı değil FREKANSI logaritmik olarak tarar: her yatay bölme, ayarladığınız frekans etrafında ortalanmış sabit bir dekat kesridir. Genlik ohm, faz derece cinsindendir.",
-  'ac-impedance.phase': 'faz',
+    "Bir R, L ve C'nin birlikte frekansa göre empedansı. Osiloskop zamanı değil FREKANSI logaritmik olarak tarar: her yatay bölme, ayarladığınız frekans etrafında ortalanmış sabit bir dekad kesridir. Genlik ohm, faz derece cinsindendir.",
+  'ac-impedance.phase': 'Faz',
   'ac-impedance.phase2': 'Faz',
   'ac-impedance.qMeasuresHowSharp':
     'Q bunun ne kadar keskin olduğunu ölçer: seri bağlantı için `Q = (1/R)·sqrt(L/C)`. Bant genişliği buradan `f0/Q` olarak çıkar. Yüksek Q, dar ve seçici bir tepe ile büyük bir dolaşan akım demektir; düşük Q ise geniş ve yumuşak bir tepe demektir.',
   'ac-impedance.reactance': 'Reaktans',
   'ac-impedance.reactanceIsFrequencyDependent':
     'Reaktans frekansa bağlıdır: `XL = 2·pi·f·L` frekansla yükselir, `XC = 1/(2·pi·f·C)` ise düşer. Karmaşık empedans olarak yazıldıklarında `+jXL` ve `-jXC` olur, yani toplanmak yerine birbirinden çıkarılır ve belirli bir frekansta tamamen birbirini götürür.',
-  'ac-impedance.realPart': 'gerçek kısım',
+  'ac-impedance.realPart': 'Gerçek bileşen',
   'ac-impedance.thatIsResonanceF0':
-    'İşte bu rezonanstır, `f0 = 1/(2·pi·sqrt(LC))`. Seri bağlantıda birbirini götüren terimlerden geriye yalnızca R kalır, bu yüzden empedans en küçük değerine iner ve akım tepe yapar. Paralel bağlantıda ise birbirini götüren admitanslardır, bu yüzden empedans en büyük değerine çıkar ve devre, kaynaktan neredeyse hiç akım çekmezken içinde büyük bir akım dolaştıran bir tank devresine dönüşür.',
+    'İşte bu rezonanstır, `f0 = 1/(2·pi·sqrt(LC))`. Seri bağlantıda birbirini götüren terimlerden geriye yalnızca R kalır, bu yüzden empedans en düşük değerine iner ve akım en yüksek değerine ulaşır. Paralel bağlantıda ise birbirini götüren admitanslardır, bu yüzden empedans en yüksek değerine ulaşır ve devre, kaynaktan neredeyse hiç akım çekmezken içinde büyük bir akım dolaştıran bir tank devresine dönüşür.',
   'ac-impedance.thePhaseTraceTells':
-    'Faz izi hangi elemanın baskın olduğunu gösterir. Seri rezonansın altında kondansatör baskındır ve akım gerilimin önüne geçer, bu da negatif faz verir. Üstünde ise bobin baskındır ve akım gerilimin gerisinde kalır. Tam f0 noktasında devre saf dirençli görünür; uyumlandırma ve süzgeçlemede işe yaramasının nedeni de budur.',
-  'ac-impedance.title': 'AC Empedans',
+    'Faz izi hangi elemanın baskın olduğunu gösterir. Seri rezonansın altında kondansatör baskındır ve akım gerilimin önüne geçer, bu da negatif faz verir. Üstünde ise bobin baskındır ve akım gerilimin gerisinde kalır. Tam f0 noktasında devre saf dirençli görünür; uyumlandırma ve filtrelemede işe yaramasının nedeni de budur.',
+  'ac-impedance.title': 'AC Empedansı',
   'ac-impedance.use':
-    "Süzgeç ve uyumlandırma ağı tasarımı, bir dekuplaj kondansatörünün öz rezonansının üzerinde neden işlevini yitirdiğini ve kablo ile yük empedansının frekansta neden önemli olduğunu anlamak. Bir devre 1 kHz'de ve 1 MHz'de farklı davrandığında sebebi budur.",
+    "Filtre ve uyumlandırma ağı tasarımı, bir dekuplaj kondansatörünün öz rezonansının üzerinde neden işlevini kaybettiğini ve kablo ile yük empedansının frekansta neden önemli olduğunu anlamak. Bir devre 1 kHz'de ve 1 MHz'de farklı davrandığında sebebi budur.",
   'ac-impedance.xc': 'XC',
   'ac-impedance.xl': 'XL',
   'ac-impedance.zAtFrequency': 'Bu frekansta |Z|',
   'antenna-length.58Wave': '5/8 dalga',
   'antenna-length.at24Ghz':
-    "2,4 GHz'de çeyrek dalga yaklaşık 31 mm'dir; yonga ve kıvrımlı antenlerin orada işe yaramasının, 868 MHz'lik bir düğümün ise gözle görülür biçimde uzun, yaklaşık 86 mm'lik bir çubuğa ihtiyaç duymasının nedeni budur. Uzunluğu %10 hatalı tutmak rezonansı dar bandın epey dışına kaydırır ve kolaylıkla 10 dB'ye, yani menzilde üç kat kayba mal olabilir.",
-  'antenna-length.bandPreset': 'Bant ön ayarı',
-  'antenna-length.beforeShortening': 'kısaltmadan önce',
+    "2,4 GHz'de çeyrek dalga yaklaşık 31 mm'dir; yonga ve kıvrımlı antenlerin orada işe yaramasının, 868 MHz'lik bir düğümün ise belirgin biçimde uzun, yaklaşık 86 mm'lik bir çubuğa ihtiyaç duymasının nedeni budur. Uzunluğu %10 hatalı tutmak rezonansı dar bandın epey dışına kaydırır ve kolaylıkla 10 dB'ye, yani menzilde üç kat kayba mal olabilir.",
+  'antenna-length.bandPreset': 'Bant seçimi',
+  'antenna-length.beforeShortening': 'kısaltma öncesi',
   'antenna-length.blurb':
     '433/868/915 MHz ve 2,4 GHz için çeyrek ve yarım dalga uzunlukları, hız katsayısı dahil.',
   'antenna-length.conductor': 'İletken',
   'antenna-length.dipoleEachLegIs': 'dipol, her kol bir çeyrek',
-  'antenna-length.each4OrMore': 'her biri, 4 veya daha fazla',
+  'antenna-length.each4OrMore': 'her biri; en az 4 adet',
   'antenna-length.fullWave': 'Tam dalga',
-  'antenna-length.groundRadial': 'Toprak radyali',
+  'antenna-length.groundRadial': 'Toprak düzlemi radyali',
   'antenna-length.keepTheElementClear':
-    'Elemanı topraktan, metalden ve elinizden uzak tutun. Yakınlıktan kaynaklanan akort bozulması, tezgahta sınanmış bir bağlantının kart kutuya girdikten sonra çalışmamasının en yaygın nedenidir.',
+    'Elemanı topraktan, metalden ve elinizden uzak tutun. Yakınlıktan kaynaklanan anten ayarının bozulması, tezgahta sınanmış bir bağlantının kart kutuya girdikten sonra çalışmamasının en yaygın nedenidir.',
   'antenna-length.lede':
     'Tel anteni doğru uzunlukta kesin. Fiziksel eleman her zaman serbest uzay değerinden kısadır, çünkü dalga iletkenin içinde ve çevresinde daha yavaş ilerler.',
   'antenna-length.quarterWave': 'Çeyrek dalga',
@@ -55,98 +55,98 @@ export const tr: Record<Key, string> = {
     'Dalga boyu `lambda = c/f` ile bulunur. Çeyrek dalga bir eleman rezonanstadır çünkü açık ucundan yansıyan dalga besleme noktasına aynı fazda geri döner ve kusursuz bir toprak düzlemi üzerinde yaklaşık 37 Ω gerçek empedans gösterir; bu da 50 Ω koaksiyel için makul bir uyumdur.',
   'antenna-length.thePhysicalLengthIs':
     'Fiziksel uzunluk her zaman boşluktaki `lambda/4` değerinden kısadır. Dalga kısmen iletkenin ve çevresinin içinden ilerler, bu yüzden hız çarpanı devreye girer: çıplak tel için yaklaşık 0,95, tipik koaksiyel yalıtkanı için 0,66, alanın yarısı FR-4 içinde kalan bir mikroşerit yol için ise 0,55 civarı.',
-  'antenna-length.theUsualWhip': 'alışılmış çubuk anten',
+  'antenna-length.theUsualWhip': 'standart çubuk anten',
   'antenna-length.title': 'Anten Uzunluğu',
   'antenna-length.use':
-    "Bir LoRa, WiFi veya GPS modülü için tel anten kesmek. Önemlidir, çünkü çeyrek dalga uzunluğu dalga boyuna bağlıdır ve %10 hata 10 dB'ye mal olabilir, bu da menzilde üç kat demektir. Ayrıca toprak düzlemi gereksinimini de işaret eder; küçük bir kart üzerindeki çıplak antenin bu kadar kötü çalışmasının nedeni budur.",
-  'antenna-length.velocityFactor': 'Hız çarpanı',
+    "Bir LoRa, Wi-Fi veya GPS modülü için tel anten kesmek. Önemlidir, çünkü çeyrek dalga uzunluğu dalga boyuna bağlıdır ve %10 hata 10 dB'ye mal olabilir, bu da menzilde üç kat demektir. Ayrıca toprak düzlemi gereksinimini de işaret eder; küçük bir kart üzerindeki çıplak antenin bu kadar kötü çalışmasının nedeni budur.",
+  'antenna-length.velocityFactor': 'Hız faktörü',
   'antenna-length.warn1':
-    'Çeyrek dalga bir anten yalnızca yarım antendir. Diğer yarısı toprak düzlemidir ve o olmadan koaksiyel örgü ışıma yapar; bu da her şeyin akordunu bozar ve başarımı kartı nasıl tuttuğunuza bağlı hale getirir. Ya radyal teller ekleyin, ya düzgün bir toprak dökümü kullanın, ya da toprak düzlemi gerektirmeyen yarım dalga bir dipol takın.',
+    'Çeyrek dalga bir anten yalnızca yarım antendir. Diğer yarısı toprak düzlemidir ve o olmadan koaksiyel örgü ışıma yapar; bu da her şeyin ayarını bozar ve performansı kartı nasıl tuttuğunuza bağlı hale getirir. Ya radyal teller ekleyin, ya düzgün bir toprak dökümü kullanın, ya da toprak düzlemi gerektirmeyen yarım dalga bir dipol takın.',
   'antenna-length.wavelength': 'Dalga boyu',
   'battery.blurb': 'Yük altında deşarj, iç direnç düşümü ve Peukert etkisiyle kapasite azalması.',
   'battery.cellCapacity': 'Hücre kapasitesi',
-  'battery.cellsInParallel': 'Paralel hücre',
-  'battery.chargeDelivered': 'Verilen yük',
-  'battery.chemistry': 'Kimya',
-  'battery.cutoffVoltage': 'Kesim gerilimi',
-  'battery.energyDelivered': 'Verilen enerji',
+  'battery.cellsInParallel': 'Paralel hücre sayısı',
+  'battery.chargeDelivered': 'Sağlanan elektrik yükü',
+  'battery.chemistry': 'Pil kimyası',
+  'battery.cutoffVoltage': 'Kesme gerilimi',
+  'battery.energyDelivered': 'Sağlanan enerji',
   'battery.lede':
     'Bir paketi sabit yüke deşarj edin ve gerilimin düşmesini izleyin. Osiloskop, uç gerilimini açık devre gerilimine karşı zaman içinde çizer: iki iz arasındaki fark, paketin kendi iç direncindeki kayıptır.',
   'battery.lossInPack': 'Pakette kayıp',
-  'battery.maxC': 'en çok {maxCRate} C',
+  'battery.maxC': 'en fazla {maxCRate} C',
   'battery.meanCurrent': 'Ortalama akım',
   'battery.nominalVoltage': 'Anma gerilimi',
-  'battery.ocv': 'OCV',
-  'battery.ofRatedAtThis': 'bu hızda anma değerinin',
-  'battery.pack': 'Paket',
+  'battery.ocv': 'Açık devre gerilimi (OCV)',
+  'battery.ofRatedAtThis': 'bu hızda anma kapasitesinin',
+  'battery.pack': 'Batarya paketi',
   'battery.packEfficiency': 'Paket verimi',
   'battery.packResistance': 'Paket direnci',
   'battery.peukertSLawCaptures':
     "Peukert yasası kapasitenin sabit olmadığını anlatır: `t = H·(C/(I·H))^k`. k birden büyük olduğunda ağır deşarj daha az toplam yük çeker. En kötüsü 1,2 ile 1,3 arasındaki k değeriyle kurşun asittir; lityum 1,05'e yakındır, bu yüzden bir LiPo yük altında değerini çok daha iyi korur.",
-  'battery.peukertUsable': 'Peukert kullanılabilir',
+  'battery.peukertUsable': 'Peukert sonrası kullanılabilir kapasite',
   'battery.power': 'Güç',
   'battery.ratedCapacity': 'Anma kapasitesi',
   'battery.resistiveAndConstantPower':
-    "Dirençli ve sabit güçlü yükler, paket boşalırken farklı davranır. Bir direnç gerilim düştükçe daha az akım çeker, bu yüzden yumuşakça söner. Sabit güçlü bir yük ise gerilim düştükçe *daha fazla* akım çeker ve bu da sondaki çöküşü hızlandırır: bir ESP32'yi besleyen anahtarlamalı regülatörün davranışı tam olarak budur ve paketin son yüzde birkaçının neden bu kadar ani yok olduğunu açıklar.",
+    "Dirençli ve sabit güçlü yükler, paket boşalırken farklı davranır. Bir direnç gerilim düştükçe daha az akım çeker, bu yüzden kademeli olarak zayıflar. Sabit güçlü bir yük ise gerilim düştükçe *daha fazla* akım çeker ve bu da sondaki çöküşü hızlandırır: bir ESP32'yi besleyen anahtarlamalı regülatörün davranışı tam olarak budur ve paketin son birkaç yüzdelik kapasitenin neden bu kadar hızla tükendiğini açıklar.",
   'battery.sP': '{series}S{parallel}P',
   'battery.startVoltage': 'Başlangıç gerilimi',
   'battery.theory1':
     'Uç gerilimi `V = OCV(depth) - I·Rint` ile bulunur. Açık devre eğrisi deşarj derinliğiyle düşer ve iç direnç akımla orantılı bir düşüş daha çıkarır. Bir pilin boştayken 4,2 V, yüklendiği anda 3,7 V okumasının tüm nedeni budur.',
   'battery.title': 'Batarya Simülatörü',
   'battery.use':
-    'Bir cihazın ne kadar süre çalışacağını ve deşarjın son bölümünün neden bu kadar hızlı çöktüğünü öngörmek. Gerilim düşümü değeri, ani yük çeken her devre için önemlidir: veri gönderen bir ESP32, iç direncin hattı düşürmesine yetecek kadar akım çeker; yorgun bir hücrede brownout resetlerinin yaygın nedeni budur.',
-  'battery.vterm': 'Vterm',
+    'Bir cihazın ne kadar süre çalışacağını ve deşarjın son bölümünün neden bu kadar hızlı çöktüğünü öngörmek. Gerilim düşümü değeri, ani yük çeken her devre için önemlidir: veri gönderen bir ESP32, iç direncin besleme gerilimini çökertmesine yetecek kadar akım çeker; yorgun bir hücrede düşük gerilim sıfırlamalarının yaygın nedeni budur.',
+  'battery.vterm': 'Uç gerilimi',
   'battery.warn1':
     "Yük, bu paketin verebileceğinden daha fazla güç istiyor. En büyük güç aktarımı bunu `OCV² / (4·Rint)` ile sınırlar ve bunun ötesinde hiçbir gerilimde çalışma noktası yoktur. Yükü azaltın ya da Rint'i düşürmek için paralel hücre ekleyin.",
   'battery.warn2':
-    '{cRate} C çekiliyor; bu, {label} için {maxCRate} C sürekli değerinin üzerinde. Gerçek hücreler burada aşırı ısınır ve hızla yaşlanır, bu model ise bunu benzetmez: size kullanmamanız gereken bir çalışma süresini seve seve gösterir.',
+    '{cRate} C çekiliyor; bu, {label} için {maxCRate} C sürekli değerinin üzerinde. Gerçek hücreler burada aşırı ısınır ve hızla yaşlanır, bu model ise bunu benzetmez: size kullanmamanız gereken bir çalışma süresini yanıltıcı biçimde gösterir.',
   'battery.warn3':
     'Paket daha ilk örnekte kesim geriliminin altında, bu yüzden kullanılabilir bir çalışma süresi yok. Yük, bu paket boyu için fazla ağır.',
-  'battery.worstSag': 'En kötü düşüm',
+  'battery.worstSag': 'En büyük gerilim çökmesi',
   'bjt-switch.amplifier': 'Yükselteç',
   'bjt-switch.baseCurrentIb': 'Beyz akımı IB',
-  'bjt-switch.baseDrive': 'Beyz sürüşü',
+  'bjt-switch.baseDrive': 'Beyz sürme akımı',
   'bjt-switch.baseResistorRb': 'Beyz direnci RB',
-  'bjt-switch.bleed': '{dividerCurrent} akıtma',
+  'bjt-switch.bleed': 'bölücü akımı {dividerCurrent}',
   'bjt-switch.blurb':
     'Tam doyum için beyz sürüşü, aşırı sürme katsayısı ve ortak emiter kutuplaması.',
   'bjt-switch.bypassReWithA': "RE'yi kondansatörle baypas edin",
-  'bjt-switch.collector': '{pCollector} kolektör',
+  'bjt-switch.collector': 'kolektörde {pCollector}',
   'bjt-switch.collectorCurrent': 'Kolektör akımı',
-  'bjt-switch.collectorRc': 'Kolektör RC',
+  'bjt-switch.collectorRc': 'Kolektör direnci RC',
   'bjt-switch.commonEmitterAmplifier': 'ortak emiterli yükselteç',
   'bjt-switch.currentGainHfe': 'Akım kazancı hFE',
   'bjt-switch.datasheetMinimumNotTypical':
-    'Veri sayfasındaki en küçük değer, tipik değer değil. Doyum en kötü duruma bağlıdır.',
+    'Veri sayfasındaki minimum değerdir; tipik değer değildir. Doyum en kötü duruma bağlıdır.',
   'bjt-switch.dbInverting': '{avDb} dB, eviren',
   'bjt-switch.dividerStiffness': 'Bölücü sağlamlığı',
   'bjt-switch.driveWaveform': 'Sürüş dalga şekli',
-  'bjt-switch.emitterRe': 'Emiter RE',
-  'bjt-switch.emitterRe2': 'Emiter re',
+  'bjt-switch.emitterRe': 'Emiter direnci RE',
+  'bjt-switch.emitterRe2': 'Küçük sinyal emiter direnci re',
   'bjt-switch.fromThereIcHfe':
-    "Oradan `IC = hFE·IB`, `IE = (hFE+1)·IB` ve `VCE = VCC - IC·RC - IE·RE` çıkar. VCE'yi hattın ortasına yakın bir yere koyun ki çıkış iki yöne de salınabilsin.",
+    "Oradan `IC = hFE·IB`, `IE = (hFE+1)·IB` ve `VCE = VCC - IC·RC - IE·RE` çıkar. VCE'yi besleme geriliminin ortasına yakın bir yere koyun ki çıkış iki yöne de salınabilsin.",
   'bjt-switch.ib': 'IB {ib}',
-  'bjt-switch.inputSignal': 'Giriş işareti',
+  'bjt-switch.inputSignal': 'Giriş sinyali',
   'bjt-switch.lede':
-    'RB üzerinden 3V3 GPIO ucundan sürülen NPN alt taraf anahtarı. Osiloskop, sürüş dalga şeklini ve kolektör gerilimini zamana karşı gösterir.',
+    'RB üzerinden 3,3 V GPIO ucundan sürülen NPN alt kol anahtarı. Osiloskop, sürüş dalga şeklini ve kolektör gerilimini zamana karşı gösterir.',
   'bjt-switch.lede2':
-    '3V3 hattında gerilim bölücülü ortak emiterli kat. Osiloskop, beyz gerilimini ve evrilmiş kolektör çıkışını zamana karşı gösterir.',
+    '3,3 V hattında gerilim bölücülü ortak emiterli kat. Osiloskop, beyz gerilimini ve evrilmiş kolektör çıkışını zamana karşı gösterir.',
   'bjt-switch.loadPower': 'Yük gücü',
-  'bjt-switch.loadRail': 'Yük hattı',
+  'bjt-switch.loadRail': 'Yük beslemesi',
   'bjt-switch.maxInputPeak': 'En büyük giriş (tepe)',
   'bjt-switch.midbandGainIsAv':
-    "Orta bant kazancı `Av = -RC / (RE + re)` şeklindedir; burada `re = VT/IE` içsel emiter direncidir, emiter akımına bölünen yaklaşık 26 mV. RE, re'den çok büyük olduğunda bu, dirençlerle belirlenen ve bu yüzden kararlı olan bildik `-RC/RE` ifadesine iner. RE'yi baypaslamak onu işaret frekanslarında kısa devre eder ve geriye `-RC/re` kalır: çok daha fazla kazanç, ama artık kutuplama akımı ve sıcaklıkla birlikte kayan bir kazanç.",
+    "Orta bant kazancı `Av = -RC / (RE + re)` şeklindedir; burada `re = VT/IE` içsel emiter direncidir, emiter akımına bölünen yaklaşık 26 mV. RE, re'den çok büyük olduğunda bu, dirençlerle belirlenen ve bu yüzden kararlı olan bildik `-RC/RE` ifadesine iner. RE'yi baypaslamak onu sinyal frekanslarında kısa devre eder ve geriye `-RC/re` kalır: çok daha fazla kazanç, ama artık kutuplama akımı ve sıcaklıkla birlikte kayan bir kazanç.",
   'bjt-switch.min': 'en az {ibMin}',
   'bjt-switch.noGain': 'kazanç yok',
   'bjt-switch.now': 'şu an {rb}',
-  'bjt-switch.npnLowSideSwitch': 'NPN alt taraf anahtarı',
-  'bjt-switch.operatingMode': 'Çalışma kipi',
+  'bjt-switch.npnLowSideSwitch': 'NPN alt kol anahtarı',
+  'bjt-switch.operatingMode': 'Çalışma modu',
   'bjt-switch.outputSwingIsLimited':
-    'Çıkış salınımını önce hangisi biterse o sınırlar: Q noktasının `IC·RC` kadar üstündeki hat ya da `VCE - VCEsat` kadar altındaki doyum. İz, orta bant kazancını örnek örnek uygular ve orada kırpar, yani boşluğu dürüstçe gösterir; gerçek bir kat ise kesimde yumuşak kırpar ve kuplaj kondansatörü alt uçtan söndürür.',
+    'Çıkış salınımını önce hangisi biterse o sınırlar: Q noktasının `IC·RC` kadar üstündeki hat ya da `VCE - VCEsat` kadar altındaki doyum. İz, orta bant kazancını örnek örnek uygular ve orada kırpar, yani mevcut salınım payını açıkça gösterir; gerçek bir kat ise kesimde yumuşak kırpar ve kuplaj kondansatörü düşük frekanslarda zayıflatır.',
   'bjt-switch.overdriveFactor': 'Aşırı sürüş çarpanı',
-  'bjt-switch.quiescentIc': 'Durgun IC',
-  'bjt-switch.r1RailToBase': 'R1 (hattan beyze)',
-  'bjt-switch.r2BaseToGnd': 'R2 (beyzden şaseye)',
+  'bjt-switch.quiescentIc': 'Boşta kolektör akımı IC',
+  'bjt-switch.r1RailToBase': 'R1 (beslemeden beyze)',
+  'bjt-switch.r2BaseToGnd': 'R2 (beyzden toprağa)',
   'bjt-switch.rbDissipation': 'RB güç kaybı',
   'bjt-switch.rbForOdf': 'ODF {ODF_TARGET} için RB',
   'bjt-switch.rcRoIgnored': 'RC, ro yok sayıldı',
@@ -155,20 +155,20 @@ export const tr: Record<Key, string> = {
   'bjt-switch.stage': 'Kat',
   'bjt-switch.supplyAndBias': 'Besleme ve kutuplama',
   'bjt-switch.supplyVcc': 'Besleme VCC',
-  'bjt-switch.swing': 'salınım {swing}',
-  'bjt-switch.switch2': 'Anahtar',
+  'bjt-switch.swing': 'salınım: {swing}',
+  'bjt-switch.switch2': 'Anahtarlama',
   'bjt-switch.theBaseResistorSets':
     'Her şeyi beyz direnci belirler: VBE 0,7 V alındığında `IB = (Vin - VBE) / RB`. Transistör bundan sonra `IC = hFE·IB` verebilir, ama yük yalnızca `IC(sat) = (Vload - VCEsat) / RL` kadarını ister. Hangisi küçükse o kazanır.',
   'bjt-switch.theDividerIsSolved':
-    'Bölücü Thevenin eşdeğeri olarak çözülür, `VTH = VCC·R2/(R1+R2)` ve `RTH = R1||R2`; böylece beyz çevrimi `IB = (VTH - VBE) / (RTH + (hFE+1)·RE)` verir. Bu, "IB ihmal edilebilir" kestirmesi değil, tam çözümdür; gevşek bir bölücünün burada doğru okumak yerine kaymış bir Q noktası olarak görünmesinin nedeni de budur.',
+    'Bölücü Thevenin eşdeğeri olarak çözülür, `VTH = VCC·R2/(R1+R2)` ve `RTH = R1||R2`; böylece beyz çevrimi `IB = (VTH - VBE) / (RTH + (hFE+1)·RE)` verir. Bu, "IB ihmal edilebilir" varsayımı değil, tam çözümdür; gevşek bir bölücünün burada doğru okumak yerine kaymış bir Q noktası olarak görünmesinin nedeni de budur.',
   'bjt-switch.theOverdriveFactorIs':
-    "Aşırı sürüş çarpanı bu ikisinin oranıdır: `ODF = IB·hFE / IC(load)`. 1'in altında transistör hiç doyuma girmez ve üzerine volt düşüren aktif bölgede kalır. Yaklaşık {ODF_TARGET} ODF için tasarlayın ki en kötü hFE, soğuk silisyum ve daha ağır bir yük bile onu tam iletimde bıraksın.",
+    "Aşırı sürüş çarpanı bu ikisinin oranıdır: `ODF = IB·hFE / IC(load)`. 1'in altında transistör hiç doyuma girmez ve üzerinde yüksek gerilim düşümü oluşan aktif bölgede kalır. Yaklaşık {ODF_TARGET} ODF için tasarlayın ki en kötü hFE, soğuk silisyum ve daha ağır bir yük bile onu tam iletimde bıraksın.",
   'bjt-switch.theTraceIsA':
     'İz, örnek başına cebirsel bir çözümdür. Bu modelde depolama elemanı yoktur, bu yüzden kenarlar anlıktır: gerçek bir transistör yüzlerce nanosaniyelik bir kapanma depolama süresi ekler ve ağır aşırı sürüşün kötüleştirdiği şey tam olarak budur.',
   'bjt-switch.title': 'Anahtar / Yükselteç Olarak BJT',
   'bjt-switch.transistorDissipation': 'Transistör güç kaybı',
   'bjt-switch.use':
-    'Gerekli akımı veremeyen bir mikrodenetleyici ucundan röle, buzzer, motor veya LED dizisi sürmek. Asıl konu aşırı sürme katsayısıdır: doyuma sertçe sürülmeyen bir transistör beklenenden çok daha fazla güç harcar ve ısınır; hobi devrelerinde anahtarlama transistörünün bozulmasının olağan nedeni budur.',
+    'Gerekli akımı veremeyen bir mikrodenetleyici ucundan röle, sesli uyarıcı, motor veya LED dizisi sürmek. Asıl konu aşırı sürme katsayısıdır: doyuma yeterince güçlü sürülmeyen bir transistör beklenenden çok daha fazla güç harcar ve ısınır; hobi devrelerinde anahtarlama transistörünün bozulmasının yaygın nedeni budur.',
   'bjt-switch.vb': 'Vb',
   'bjt-switch.vbVeVc': 'VB / VE / VC',
   'bjt-switch.vce': 'Vce',
@@ -189,34 +189,34 @@ export const tr: Record<Key, string> = {
   'bjt-switch.warn6':
     '{amplitude} tepe giriş, bu Q noktasının kırpmadan yükseltebileceği {maxInput} sınırını aşıyor; iz üzerindeki düz tepe de bu.',
   'boost.atThisLoadWith': 'bu yükte, seri kolda {ron} ile',
-  'boost.blurb': 'Yükseltme görev çevrimi, anahtar gerilim stresi ve bobin boyutlandırma.',
+  'boost.blurb': 'Yükseltici dönüştürücüde görev oranı, gerilim zorlanması ve bobin boyutlandırması.',
   'boost.boostConverterPowerStage': 'Yükseltici dönüştürücü güç katı',
   'boost.coutEsr': 'Cout ESR',
   'boost.datasheetSaturationCurrentNot': 'Veri sayfasındaki doyum akımı, RMS değeri değil.',
   'boost.dcmBelowOfLoad': '{ioutBoundary} yükün altında DCM',
   'boost.diodeDropVd': 'Diyot düşümü Vd',
-  'boost.diodeReverseStress': 'Diyot ters zorlanması',
-  'boost.dutyD': 'Görev çevrimi D',
+  'boost.diodeReverseStress': 'Diyot ters gerilim zorlanması',
+  'boost.dutyD': 'Görev oranı D',
   'boost.fromCFromEsr': "{vRippleCap} C'den, {vRippleEsr} ESR'den",
   'boost.highestVoutReachable': 'Ulaşılabilir en yüksek Vout',
   'boost.ideal1VinVout': 'ideal 1 - Vin/Vout = {dutyIdeal}',
-  'boost.iDiode': 'I diyot',
+  'boost.iDiode': 'Diyot akımı',
   'boost.inductorIsat': 'Bobin Isat',
   'boost.inductorL': 'Bobin L',
   'boost.inputCurrentIin': 'Giriş akımı Iin',
-  'boost.iSwitch': 'I anahtar',
+  'boost.iSwitch': 'Anahtar akımı',
   'boost.lede':
     'Yükseltici dönüştürücüde kararlı hâl bobin akımı. Yatay eksen zamandır, birkaç anahtarlama periyodu genişliğinde. Mavi iz bobini, yeşil iz anahtarın toprağa çektiği akımı, sarı iz ise diyotun çıkış kondansatörüne verdiği akımı gösterir: bu ikisi arasındaki fark, giriş akımının çıkış akımından neden yüksek olduğunu açıklar.',
-  'boost.lNeededForCcm': 'CCM için gereken L',
-  'boost.loadIout': 'Yük Iout',
-  'boost.noSteadyState': 'kararlı durum yok',
+  'boost.lNeededForCcm': 'CCM için gerekli L',
+  'boost.loadIout': 'Çıkış yük akımı Iout',
+  'boost.noSteadyState': 'kararlı çalışma noktası yok',
   'boost.off': 'kapalı {toff}',
-  'boost.ofIinAimFor': "Iin'in {rippleRatio} kadarı, hedef {RIPPLE_TARGET}",
+  'boost.ofIinAimFor': "Iin'in {rippleRatio} kadarı; hedef {RIPPLE_TARGET}",
   'boost.onceTheValleyCurrent':
-    'Vadi akımı negatife düşecek olduğunda diyot çoktan kesime girmiştir ve dönüştürücü kesintili iletimdedir. Görev çevrimi o zaman `Iout = Vin²·D²/(2·L·fsw·(Vout - Vin))` bağıntısından, yani `D = sqrt(2·L·fsw·Iout·(Vout - Vin))/Vin` olarak çıkar. Sınır `Iout = Vin·D(1-D)/(2·fsw·L)` noktasındadır.',
+    'Minimum bobin akımı sıfırın altına inmeye çalıştığında diyot zaten kesimdedir ve dönüştürücü kesintili iletim moduna geçer. Görev oranı bu durumda `Iout = Vin²·D²/(2·L·fsw·(Vout - Vin))` bağıntısından, yani `D = sqrt(2·L·fsw·Iout·(Vout - Vin))/Vin` olarak bulunur. Sınır `Iout = Vin·D(1-D)/(2·fsw·L)` noktasındadır.',
   'boost.outConductionLoss': '{pout} çıkış, {ploss} iletim kaybı',
-  'boost.outputCout': 'Çıkış Cout',
-  'boost.rateItFor': '{vDiodeStress} için seçin',
+  'boost.outputCout': 'Çıkış kondansatörü Cout',
+  'boost.rateItFor': 'en az {vDiodeStress} için seçin',
   'boost.realParts': 'Gerçek bileşenler',
   'boost.rippleIsJustThe':
     'Dalgalanma yalnızca rampadır: bobin üzerinde `ton = D/fsw` boyunca `Vin` varken tepeden tepeye `dIL = Vin·D/(fsw·L)` olur ve bu `Iin` üzerine biner. Bobin için önemli olan tepe değeridir, `Iin + dIL/2`, çünkü çekirdeği doyuran odur. Çıkış dalgalanması, diyot kapalıyken kondansatörün verdiği yükten gelen `Iout·D/(fsw·Cout)` ile akım basamağından gelen `Ipeak·ESR` toplamıdır; gerçek bir tasarımda genellikle ikincisi baskındır.',
@@ -225,32 +225,32 @@ export const tr: Record<Key, string> = {
   'boost.switchingFsw': 'Anahtarlama fsw',
   'boost.switchingPeriodsShown': 'Gösterilen anahtarlama çevrimi',
   'boost.switchRdsOn': 'Anahtar Rds(on)',
-  'boost.switchRmsDiodeAvg': 'anahtar {iswRms} rms, diyot {iout} ort.',
+  'boost.switchRmsDiodeAvg': 'anahtar: {iswRms} RMS, diyot: {iout} ortalama',
   'boost.switchVoltageStress': 'Anahtar gerilim zorlanması',
   'boost.theDropsAreFolded':
-    "Düşümler sonradan eklenmez, hesabın içine katılır. Diyot düşümü Vd, anahtar düşümü Iin·Rds(on) ve sargı düşümü Iin·DCR ile volt-saniye dengesi, Iin = Iout/(1-D) yerine konduğunda `x = 1-D` cinsinden ikinci dereceden bir denklem verir: `x²(Vout+Vd) - x(Vin + Iout·Ron) + Iout(DCR+Ron) = 0`. Büyük kök gerçek çalışma noktasıdır. Diskriminant negatife düştüğünde hiçbir çözüm yoktur: bu, anahtar düşümü olmadığında Erickson'ın `M_max = 0.5·sqrt(R/R_L)` ifadesine inen `Vout_max = (Vin + Iout·Ron)²/(4·Iout·(DCR+Ron)) - Vd` tavanıdır. Bir yükseltici sonsuz kazanç veremez ve gerçek parçalar onu D 1'e varmadan çok önce durdurur.",
+    "Düşümler sonradan eklenmez, hesabın içine katılır. Diyot düşümü Vd, anahtar düşümü Iin·Rds(on) ve sargı düşümü Iin·DCR ile volt-saniye dengesi, Iin = Iout/(1-D) yerine konduğunda `x = 1-D` cinsinden ikinci dereceden bir denklem verir: `x²(Vout+Vd) - x(Vin + Iout·Ron) + Iout(DCR+Ron) = 0`. Büyük kök gerçek çalışma noktasıdır. Diskriminant negatife düştüğünde hiçbir çözüm yoktur: bu, anahtar düşümü olmadığında Erickson'ın `M_max = 0.5·sqrt(R/R_L)` ifadesine inen `Vout_max = (Vin + Iout·Ron)²/(4·Iout·(DCR+Ron)) - Vd` üst sınırıdır. Bir yükseltici sonsuz kazanç veremez ve gerçek parçalar onu D 1'e varmadan çok önce durdurur.",
   'boost.theLoadAvgInductor': '{iout} yük, ortalama bobin akımı',
   'boost.theory1':
     'Kararlı durumda bobinin her çevrimde sıfırlanması gerekir, yani içeri konan volt-saniye geri çıkmalıdır: `Vin·D·T = (Vout - Vin)·(1-D)·T`, bu da `D = 1 - Vin/Vout` şeklinde düzenlenir. Çıkış kondansatörünün yük üzerinde buna eşlik eden bir kısıtı vardır: diyot çevrimin yalnızca `(1-D)` kadarında iletir, bu yüzden ortalama bobin akımı `Iin = Iout/(1-D)` olur. Giren güç çıkan güce eşittir, yani gerilimi yükseltmek giriş akımını aynı oranda yükseltir. O akım bobinden, anahtardan ve diyottan geçer; bir yükselticinin parçalarını çıkış değerinin ima ettiğinden çok daha fazla zorlamasının nedeni budur.',
   'boost.theTraceIsNot':
-    "İz integralle bulunmaz. Bir anahtarlama çevrimi içinde bobin akımı tam olarak iki doğrudur, bu yüzden osiloskobun istediği örnek aralığında kapalı biçimli köşe noktalarından hesaplanır. fsw'yi ya da L'yi dekatlar boyunca sürüklemek ekrandaki ayrıntıyı değiştirir ama hiçbir şey birikemez ya da ıraksayamaz.",
+    "İz integralle bulunmaz. Bir anahtarlama çevrimi içinde bobin akımı tam olarak iki doğrusal parçadan oluşur, bu yüzden osiloskobun istediği örnek aralığında kapalı formdaki köşe noktalarından hesaplanır. fsw'yi ya da L'yi dekadlar boyunca sürüklemek ekrandaki ayrıntıyı değiştirir ama hiçbir şey birikemez ya da ıraksayamaz.",
   'boost.title': 'Boost (Yükseltici) Dönüştürücü',
   'boost.use':
     "İhtiyaç duyulan gerilimin altındaki bir bataryadan bir şey çalıştırmak: 3,7 V'luk lityumdan 5 V'a, ya da iki AA pilden 3,3 V'a çıkmak gibi. Bu sayfanın görünür kıldığı incelik giriş akımıdır; her zaman çıkış akımından yüksektir, bu yüzden neredeyse boşalmış bir hücreden yapılan yükseltme, yeni başlayanların beklediğinden çok daha fazla akım çeker.",
-  'boost.valleyIsat': 'vadi {ivalley}, Isat {isat}',
-  'boost.voutVdSoRate': 'Vout + Vd, yani anahtarı {vSwitchStress} için seçin',
+  'boost.valleyIsat': 'minimum {ivalley}, Isat {isat}',
+  'boost.voutVdSoRate': 'Vout + Vd; anahtarı en az {vSwitchStress} için seçin',
   'boost.warn1':
     '{vout} çıkışı {vin} girişinin üzerinde değil, bu yüzden yükselticiye iş kalmıyor. Anahtar kapalıyken bobin ve diyot kayıplı bir telden ibarettir ve çıkış, Vin eksi bir diyot düşümünde kalır. Girişin altında bir düşürücü kat kullanın, giriş çıkışı kesiyorsa düşürücü-yükseltici kullanın.',
   'boost.warn2':
-    "{ron} seri direnç bu katı {iout} yükte {voutMax} ile sınırlıyor, bu yüzden {vout} hiçbir görev çevriminde ulaşılabilir değil. Tepeden sonra daha fazla görev çevrimi daha az çıkış demektir: bobin yükten o kadar uzun süre kopuk kalır ki fazladan I²R kaybı depolanan fazladan enerjiyi yener. Yükü azaltın, daha düşük DCR'li bir bobin ya da daha iyi bir anahtar kullanın.",
+    "{ron} seri direnç bu katı {iout} yükte {voutMax} ile sınırlıyor, bu yüzden {vout} hiçbir görev oranında ulaşılabilir değil. Tepeden sonra daha fazla görev oranı daha az çıkış demektir: bobin yükten o kadar uzun süre kopuk kalır ki fazladan I²R kaybı depolanan fazladan enerjiyi yener. Yükü azaltın, daha düşük DCR'li bir bobin ya da daha iyi bir anahtar kullanın.",
   'boost.warn3':
-    "D = {duty}, bu modelin güvenilir olduğu {MAX_PRACTICAL_DUTY} sınırının ötesinde. Diyot çevrim başına yalnızca {toff} iletir, bu yüzden tepe akımları ve I²R kayıpları hızla tırmanır, sağ yarı düzlem sıfırı çevrimin dengelenmesinin zor olduğu bölgeye iner ve çoğu denetleyici görev çevrimini zaten burada sınırlar. Vin'i yükseltin ya da iki katlı veya trafo kuplajlı bir topoloji kullanın.",
+    "D = {duty}, bu modelin güvenilir olduğu {MAX_PRACTICAL_DUTY} sınırının ötesinde. Diyot çevrim başına yalnızca {toff} iletir, bu yüzden tepe akımları ve I²R kayıpları hızla tırmanır, sağ yarı düzlem sıfırı çevrimin dengelenmesinin zor olduğu bölgeye iner ve çoğu denetleyici görev oranını zaten burada sınırlar. Vin'i yükseltin ya da iki katlı veya trafo kuplajlı bir topoloji kullanın.",
   'boost.warn4':
-    "{ipeak} tepe akımı {isat} doyum değerinin üzerinde. Doyuma giren bir çekirdek endüktansını yitirir, bu yüzden akım rampası neredeyse dikleşir ve anahtar, bu doğrusal modelin öngörmediği bir sıçrama görür. Yukarıdaki her sayı iyimserdir. Daha büyük bir bobin kullanın, fsw'yi yükseltin ya da daha yüksek Isat'li bir parça seçin.",
+    "{ipeak} tepe akımı {isat} doyum değerinin üzerinde. Doyuma giren bir çekirdek endüktansını kaybeder, bu yüzden akım rampası neredeyse dikleşir ve anahtar, bu doğrusal modelin öngörmediği bir sıçrama görür. Yukarıdaki her sayı iyimserdir. Daha büyük bir bobin kullanın, fsw'yi yükseltin ya da daha yüksek Isat'li bir parça seçin.",
   'boost.warn5':
-    "Bobin her çevrimde boşalıyor, yani bu kesintili iletimdir ve D = 1 - Vin/Vout artık geçerli değildir. Yukarıdaki görev çevrimi bunun yerine DCM çözümüdür. Çıkış dalgalanması da tepe akımı da CCM formüllerinin söylediğinden kötüdür ve çevrim kazancının biçimi değişir. {ioutBoundary} yükün ya da {lBoundary} endüktansın üzerinde CCM'ye geri döner.",
+    "Bobin her çevrimde boşalıyor, yani bu kesintili iletimdir ve D = 1 - Vin/Vout artık geçerli değildir. Yukarıdaki görev oranı bunun yerine DCM çözümüdür. Çıkış dalgalanması da tepe akımı da CCM formüllerinin söylediğinden kötüdür ve çevrim kazancının biçimi değişir. {ioutBoundary} yükün ya da {lBoundary} endüktansın üzerinde CCM'ye geri döner.",
   'boost.warn6':
-    "Dalgalanma, ortalama giriş akımının {rippleRatio} kadarı. Alışılmış hedef %30 - 40'tır: ötesinde tepe akımı, çekirdek kaybı ve çıkış dalgalanması hiçbir kazanç sağlamadan büyür. L'yi ya da fsw'yi yükseltin.",
+    "Dalgalanma, ortalama giriş akımının {rippleRatio} kadarı. Yaygın hedef %30 - 40'tır: ötesinde tepe akımı, çekirdek kaybı ve çıkış dalgalanması hiçbir kazanç sağlamadan büyür. L'yi ya da fsw'yi yükseltin.",
   'boost.youHave': 'elinizdeki {l}',
   'buck-boost.4Switch': '4 anahtarlı',
   'buck-boost.blurb': 'Tüm giriş aralığında evirici ve dört anahtarlı topolojiler.',
@@ -260,16 +260,16 @@ export const tr: Record<Key, string> = {
   'buck-boost.coutRippleCurrent': 'Cout dalgalanma akımı',
   'buck-boost.currentHitsZero': 'akım sıfıra iner',
   'buck-boost.designTarget': 'tasarım hedefi',
-  'buck-boost.forceBothLegs': 'İki bacağı da zorlayın',
-  'buck-boost.inductorAverage': 'Bobin ortalaması',
-  'buck-boost.inductorPeak': 'Bobin tepesi',
+  'buck-boost.forceBothLegs': 'Her iki kolu da etkinleştir',
+  'buck-boost.inductorAverage': 'Ortalama bobin akımı',
+  'buck-boost.inductorPeak': 'Tepe bobin akımı',
   'buck-boost.irect': 'Irect',
   'buck-boost.isat': 'Isat {isat}',
   'buck-boost.isw': 'Isw',
-  'buck-boost.lAtDcmBoundary': 'DCM sınırındaki L',
+  'buck-boost.lAtDcmBoundary': 'DCM sınırındaki endüktans',
   'buck-boost.lede':
     "Giriş çıkışın üstünde de altında da olsa çalışan bir dönüştürücü; bu tam olarak LiPo üzerindeki ESP32 problemidir: hücre 4,2 V'tan 3,0 V'a inerken hat 3,3 V'u tutmalıdır. Osiloskop birkaç anahtarlama periyodu boyunca bobin, anahtar ve doğrultucu akımını gösterir.",
-  'buck-boost.lFor40Ripple': '%40 dalgalanma için L',
+  'buck-boost.lFor40Ripple': '%40 dalgalanma için gerekli L',
   'buck-boost.loss': 'kayıp {total}',
   'buck-boost.ofAverage': 'ortalamanın %{rippleRatio} kadarı',
   'buck-boost.outputRippleHasTwo':
@@ -277,84 +277,84 @@ export const tr: Record<Key, string> = {
   'buck-boost.rectifierStress': 'Doğrultucu zorlanması',
   'buck-boost.rippleIsDilVl':
     "Dalgalanma `dIL = vL(on)·D/(fsw·L)` ile bulunur. Ortalama akımın %30 - 40'ını hedefleyin: azı hantal bir bobin demektir, fazlası tepeyi doyuma iter ve RMS ısınmasını artırır. Dalgalanma ortalamanın iki katını aştığında akım sıfıra iner ve dönüştürücü kesintili iletime düşer.",
-  'buck-boost.rms': 'RMS',
+  'buck-boost.rms': 'RMS akım',
   'buck-boost.switchStress': 'Anahtar zorlanması',
   'buck-boost.theFourSwitchStage':
-    "Dört anahtarlı kat, tek bir bobinin çevresine bir düşürücü bacak ile bir yükseltici bacak yerleştirir. Çıkışı pozitif tutar ve daha da önemlisi, Vin Vout'un rahatça üzerindeyken sade bir düşürücü, altındayken sade bir yükseltici gibi çalışır; her iki bacağı yalnızca aradaki dar bantta kullanır. Evrilen kattan çok daha verimli olmasının nedeni budur: tek bacaklı kiplerin her ikisinde de yalnızca bir çift anahtar kıyar.",
+    "Dört anahtarlı kat, tek bir bobinin çevresine bir düşürücü bacak ile bir yükseltici bacak yerleştirir. Çıkışı pozitif tutar ve daha da önemlisi, Vin Vout'un rahatça üzerindeyken yalnızca düşürücü, altındayken yalnızca yükseltici gibi çalışır; her iki bacağı yalnızca aradaki dar bantta kullanır. Evrilen kattan çok daha verimli olmasının nedeni budur: tek bacaklı modların her ikisinde de yalnızca bir çift anahtar anahtarlama yapar.",
   'buck-boost.theory1':
-    'Evrilen düşürücü-yükseltici `Vout = -Vin·D/(1-D)` verir, yani görev çevrimi `D = |Vout|/(|Vout| + Vin)` olur. Serbestçe yükseltir ya da düşürür, ama çıkış negatiftir ve hem anahtar hem doğrultucu `Vin + |Vout|` gerilimine dayanmalıdır.',
+    'Evrilen düşürücü-yükseltici `Vout = -Vin·D/(1-D)` verir, yani görev oranı `D = |Vout|/(|Vout| + Vin)` olur. Serbestçe yükseltir ya da düşürür, ama çıkış negatiftir ve hem anahtar hem doğrultucu `Vin + |Vout|` gerilimine dayanmalıdır.',
   'buck-boost.title': 'Buck-Boost Dönüştürücü',
   'buck-boost.use':
     "Klasik tek lityum hücre problemi: hücre 4,2 V'tan 3,0 V'a inerken hat 3,3 V'u tutmak zorundadır, bu yüzden dönüştürücü deşarj boyunca hem düşürmeli hem yükseltmelidir. Ayrıca marşta düşen ve yük atmada sıçrayan 12 V ile araç elektroniğinde kullanılır.",
   'buck-boost.vout': '|Vout|',
   'buck-boost.warn1':
-    'Kayıplar bu çıkışı bu yükte ulaşılamaz kılıyor: gereken görev çevrimi katın tutabileceğini aşıyor. Yük akımını azaltın, girişi yükseltin ya da dirençsel kayıpları kesin (daha düşük DCR ve Rds(on)).',
+    'Kayıplar bu çıkışı bu yükte ulaşılamaz kılıyor: gereken görev oranı katın tutabileceğini aşıyor. Yük akımını azaltın, girişi yükseltin ya da dirençsel kayıpları kesin (daha düşük DCR ve Rds(on)).',
   'buck-boost.warn2':
-    "{ilPeak} tepe bobin akımı {isat} doyum değerinin ötesinde. Doyuma giren bir bobin endüktansını yitirir, bu yüzden akım tek bir anahtarlama çevrimi içinde kaçar. Daha büyük bir çekirdek seçin ya da L'yi yükseltin.",
+    "{ilPeak} tepe bobin akımı {isat} doyum değerinin ötesinde. Doyuma giren bir bobin endüktansını kaybeder, bu yüzden akım tek bir anahtarlama çevriminde hızla yükselir. Daha büyük bir çekirdek seçin ya da L'yi yükseltin.",
   'buck-boost.warn3':
-    "Görev çevrimi, gerçek bir denetleyicinin tutabileceği aralığın dışında. 0 ya da 1'e yakın yerlerde iletim süresi en küçük darbe genişliğine yaklaşır ve çıkış çöker ya da darbe atlar.",
+    "Görev oranı, gerçek bir denetleyicinin tutabileceği aralığın dışında. 0 ya da 1'e yakın yerlerde iletim süresi en küçük darbe genişliğine yaklaşır ve çıkış çöker ya da darbe atlar.",
   'buck-boost.warn4':
-    'Kesintili iletimde çalışıyor: bobin akımı her çevrimde sıfıra iniyor. Dönüşüm oranı o zaman yalnızca görev çevrimine değil yüke de bağlıdır, bu yüzden yük değiştikçe çıkış kayar ve denetim çevrimi zorlaşır.',
-  'buck.blurb': 'Görev çevrimi, bobin dalgalanması, çıkış dalgalanması ve CCM/DCM sınırı.',
+    'Kesintili iletimde çalışıyor: bobin akımı her çevrimde sıfıra iniyor. Dönüşüm oranı o zaman yalnızca görev oranına değil yüke de bağlıdır, bu yüzden yük değiştikçe çıkış kayar ve denetim çevrimi zorlaşır.',
+  'buck.blurb': 'Görev oranı, bobin ve çıkış dalgalanması ile CCM/DCM sınırı.',
   'buck.boundaryAt': '(sınır {boundary})',
   'buck.buckConverterWithA': '{rectifier} kullanan düşürücü dönüştürücü',
-  'buck.catchDiode': 'yakalama diyodu',
+  'buck.catchDiode': 'Serbest dolaşım diyodu',
   'buck.copperResistanceOfThe': 'Sargının bakır direnci, bobin veri sayfasından.',
-  'buck.dutyCycleD': 'Görev çevrimi D',
+  'buck.dutyCycleD': 'Görev oranı D',
   'buck.efficiencyIsAFirst':
-    "Verim bir benzetim değil, birinci derece bir bütçedir: sargıda `Irms²·DCR`, iletim süresine göre ağırlıklandırılmış her FET'te `Irms²·Rds(on)` ya da yakalama diyodu için `Vf·Iout·(1-D)`, artı sert anahtarlama kaybı `0.5·Vin·I·(tr+tf)·fsw` ve denetleyicinin durgun tüketimi. Kapı yükü, çekirdek kaybı, ölü zaman ve serim parazitikleri modellenmez, bu yüzden gerçek kartın birkaç puan aşağıda kalmasını bekleyin.",
+    "Verim bir benzetim değil, birinci derece bir bütçedir: sargıda `Irms²·DCR`, iletim süresine göre ağırlıklandırılmış her FET'te `Irms²·Rds(on)` ya da yakalama diyodu için `Vf·Iout·(1-D)`, artı sert anahtarlama kaybı `0.5·Vin·I·(tr+tf)·fsw` ve denetleyicinin boşta tüketimi. Kapı yükü, çekirdek kaybı, ölü zaman ve serim parazitikleri modellenmez, bu yüzden gerçek kartın birkaç puan aşağıda kalmasını bekleyin.",
   'buck.icap': 'Icap',
   'buck.idealVoutVin': '(ideal Vout/Vin %{dutyIdeal})',
   'buck.inductorRippleIl': 'Bobin dalgalanması ΔIL',
   'buck.inOut': '({pin} giriş, {pout} çıkış)',
   'buck.iout': 'Iout',
-  'buck.keepIsatAboveThis': "(Isat'ı bunun üstünde tutun)",
+  'buck.keepIsatAboveThis': "Isat değerini bunun üzerinde tutun",
   'buck.lede':
     'Bir anahtarlama periyodu boyunca bobin akımı. Yatay eksen çıkış dalga şekli değil, anahtarlama çevrimi içindeki zamandır, bu yüzden tam bir iz birkaç mikrosaniye genişliğindedir.',
   'buck.lossCatchDiode': 'Kayıp: yakalama diyodu',
-  'buck.lossHighSideFet': 'Kayıp: üst taraf FET',
+  'buck.lossHighSideFet': 'Kayıp: üst kol FET',
   'buck.lossInductorDcr': 'Kayıp: bobin DCR',
-  'buck.lossLowSideFet': 'Kayıp: alt taraf FET',
+  'buck.lossLowSideFet': 'Kayıp: alt kol FET',
   'buck.lossSwitching': 'Kayıp: anahtarlama',
   'buck.lost': '({total} kayıp)',
-  'buck.lowSideDevice': 'Alt taraf elemanı',
-  'buck.ofLoad': '(yükün %{rippleRatio} kadarı)',
+  'buck.lowSideDevice': 'Alt kol elemanı',
+  'buck.ofLoad': '(yük akımının %{rippleRatio} kadarı)',
   'buck.ofVout': "(Vout'un %{voutRatio} kadarı)",
-  'buck.outputRippleVout': 'Çıkış dalgalanması ΔVout',
+  'buck.outputRippleVout': 'Çıkış gerilimi dalgalanması ΔVout',
   'buck.parasitics': 'Parazitik etkiler',
   'buck.period': '(periyot {fsw})',
-  'buck.rippleSplitCEsr': 'Dalgalanma payı C / ESR',
+  'buck.rippleSplitCEsr': 'Dalgalanma dağılımı: C / ESR',
   'buck.scalesWithFsw': '(fsw ile ölçeklenir)',
   'buck.schottky': 'Schottky',
   'buck.synchronous': 'Senkron',
   'buck.synchronousFet': 'senkron FET',
   'buck.theory1':
-    'Volt-saniye dengesi, bobinin iletim süresinde kazandığı akımı kesim süresinde yitirmesi gerektiğini söyler, yani `Von·D = Voff·(1-D)` ve `D = Voff / (Von + Voff)`. Kayıpsız durumda bu, bildik `D = Vout / Vin` ifadesidir. Bu sayfa anahtar, diyot ve sargı düşümlerini Von ile Voff içinde tutar; bildirilen görev çevriminin ideal orandan biraz yüksek olmasının nedeni budur.',
+    'Volt-saniye dengesi, bobinin iletim süresinde kazandığı akımını kesim süresinde kaybetmesi gerektiğini söyler, yani `Von·D = Voff·(1-D)` ve `D = Voff / (Von + Voff)`. Kayıpsız durumda bu, bildik `D = Vout / Vin` ifadesidir. Bu sayfa anahtar, diyot ve sargı düşümlerini Von ile Voff içinde tutar; bildirilen görev oranının ideal orandan biraz yüksek olmasının nedeni budur.',
   'buck.theRampGivesThe':
     'Rampa dalgalanmayı doğrudan verir: `ΔIL = Voff·(1-D) / (fsw·L)`, yani ideal durumda `Vout·(1-D)/(fsw·L)`. Kondansatör bu akımın üçgen kısmını yutar ve yarım üçgenlik yükün integrali `ΔVout = ΔIL / (8·fsw·C)` verir. Gerçek ESR bunun üzerine `ΔIL·ESR` ekler; bir elektrolitikte genellikle ikisinden büyüğü budur.',
   'buck.theTraceIsThe':
-    'İz, `di/dt = v/L` denkleminin örnek başına hesaplanan kapalı biçimli parçalı doğrusal çözümüdür, bu yüzden sürgülerin ulaşabildiği her anahtarlama frekansında tam ve dönemsel kalır.',
+    'İz, `di/dt = v/L` denkleminin örnek başına hesaplanan kapalı formdaki parçalı doğrusal çözümüdür, bu yüzden sürgülerin ulaşabildiği her anahtarlama frekansında tam ve dönemsel kalır.',
   'buck.theValleyCurrentIs':
-    'Vadi akımı `Iout - ΔIL/2` olduğundan, `Iout = ΔIL/2` noktasında akım tam sıfıra dokunur. Bu sınırın altında dönüştürücü kesintili hale gelir ve görev çevrimi `D = sqrt(2·L·fsw·Iout·Voff / (Von·(Von+Voff)))` ifadesine çöker.',
+    'Minimum bobin akımı `Iout - ΔIL/2` olduğundan, `Iout = ΔIL/2` noktasında akım tam sıfıra değer. Bu sınırın altında dönüştürücü kesintili iletime geçer ve görev oranı `D = sqrt(2·L·fsw·Iout·Voff / (Von·(Von+Voff)))` olarak bulunur.',
   'buck.title': 'Buck (Düşürücü) Dönüştürücü',
   'buck.use':
     "Yüksek bir hattı verimli şekilde düşürmek: 12 V'tan 5 V'a, 5 V'tan 3,3 V'a, bataryadan lojiğe. Hemen her ESP32 kartı 3,3 V hattını USB'den böyle üretir. Bobin dalgalanması ve CCM/DCM sınırı, dönüştürücünün sessiz ve uslu mu yoksa gürültülü ve yüke bağımlı mı olduğuna karar verir.",
-  'buck.valleyCurrent': 'Vadi akımı',
+  'buck.valleyCurrent': 'Minimum bobin akımı',
   'buck.warn1':
-    'Düşüm sınırı: Vin, Vout artı anahtar ve sargı düşümlerinin altında ya da onlara eşit. Üst taraf anahtarı %100 görev çevriminde kalır, modellenecek anahtarlama kalmaz ve çıkış yalnızca girişi izler.',
+    'Düşüm sınırı: Vin, Vout artı anahtar ve sargı düşümlerinin altında ya da onlara eşit. Üst taraf anahtarı %100 görev oranında kalır, modellenecek anahtarlama kalmaz ve çıkış yalnızca girişi izler.',
   'buck.warn2':
-    "Kesintili iletim: yük {boundary} değerinin altında, bu yüzden bobin akımı her çevrimde sıfıra iniyor. Görev çevrimi artık Vout/Vin oranını izlemez, çevrim kazancı değişir ve diyotlu bir sürüm akım kesildiğinde anahtar düğümünde çınlar. Sınırı aşağı itmek için L'yi ya da fsw'yi yükseltin.",
+    "Kesintili iletim: yük {boundary} değerinin altında, bu yüzden bobin akımı her çevrimde sıfıra iniyor. Görev oranı artık Vout/Vin oranını izlemez, çevrim kazancı değişir ve diyotlu bir sürüm akım kesildiğinde anahtar düğümünde çınlar. Sınırı aşağı itmek için L'yi ya da fsw'yi yükseltin.",
   'buck.warn3':
-    "Dalgalanma, yük akımının %{rippleRatio} kadarı. Alışılmış tasarım hedefi %20 - 40'tır: fazlası bobin boşluğunu harcar ve tepeyi doyuma doğru iter.",
+    "Dalgalanma, yük akımının %{rippleRatio} kadarı. Yaygın tasarım hedefi %20 - 40'tır: fazlası bobinin akım payını tüketir ve tepe akımını doyum sınırına yaklaştırır.",
   'capacitor.1090Transition': '%10-90 geçişi',
   'capacitor.2197Tau': '(2,197·tau)',
   'capacitor.at': '{supply} değerinde',
   'capacitor.atT0V': '(t = 0 anında, V/R)',
-  'capacitor.bank': 'Banka',
-  'capacitor.bankCapacitance': 'Banka kapasitansı',
-  'capacitor.bankTopology': 'Banka topolojisi',
+  'capacitor.bank': 'Kondansatör grubu',
+  'capacitor.bankCapacitance': 'Grup kapasitansı',
+  'capacitor.bankTopology': 'Grup bağlantısı',
   'capacitor.blurb': 'Seri/paralel, depolanan enerji, şarj ve deşarj eğrileri.',
-  'capacitor.capacitorsIn': 'Kondansatör bankası şeması',
+  'capacitor.capacitorsIn': 'Kondansatör grubu bağlantı şeması',
   'capacitor.charge': 'Şarj',
   'capacitor.chargingACapacitorThrough':
     'Bir kondansatörü direnç üzerinden şarj etmek, R ne kadar büyük ya da küçük olursa olsun o dirençte her zaman `0.5·C·V²` harcar; bu da tam olarak depolanan kadardır. Doğrusal şarjın %50 verimde tavan yapmasının ve anahtarlamalıların var olmasının nedeni budur.',
@@ -366,18 +366,18 @@ export const tr: Record<Key, string> = {
   'capacitor.energyAtTarget': 'Hedefteki enerji',
   'capacitor.equalsTheStoredEnergy': '(R ne olursa olsun depolanan enerjiye eşittir)',
   'capacitor.esp32InputHighThreshold':
-    "ESP32'nin giriş-yüksek eşiği 3V3 hattında yaklaşık 2,48 V'tur.",
-  'capacitor.fullRailOnEvery': '(her eleman üzerinde tam hat gerilimi)',
+    "ESP32'nin giriş-yüksek eşiği 3,3 V hattında yaklaşık 2,48 V'tur.",
+  'capacitor.fullRailOnEvery': '(her elemanda tam besleme gerilimi)',
   'capacitor.highestMemberVoltage': 'En yüksek eleman gerilimi',
-  'capacitor.in': '({mode} bağlı {values})',
+  'capacitor.in': '({mode} bağlı: {values})',
   'capacitor.inASeriesString':
-    'Seri bir dizide gerilim kapasitansla ters orantılı bölünür, `Vi = V·Ctotal/Ci`, yani en küçük kondansatör en çok volta maruz kalır. Kondansatörler daha yüksek çalışma gerilimi için üst üste bindirildiğinde alışılmış arıza biçimi budur.',
+    'Seri bir dizide gerilim kapasitansla ters orantılı bölünür, `Vi = V·Ctotal/Ci`, yani en küçük kondansatör en çok volta maruz kalır. Kondansatörler daha yüksek çalışma gerilimi için üst üste bindirildiğinde yaygın arıza biçimi budur.',
   'capacitor.lede':
     'Bir kondansatör grubunu birleştirin, depolanan enerjisini okuyun ve bir dirençten şarj veya deşarj olmasını izleyin. Osiloskop ekseni, anahtarın kapanmasından itibaren geçen zamandır.',
-  'capacitor.lossInRPer': "Şarj başına R'deki kayıp",
-  'capacitor.neverTargetIsPast': '(hiçbir zaman, hedef asimptotun ötesinde)',
+  'capacitor.lossInRPer': "Her şarjda dirençteki kayıp",
+  'capacitor.neverTargetIsPast': '(ulaşılamaz; hedef asimptotun ötesinde)',
   'capacitor.ofFull': '(tamın %{e} kadarı)',
-  'capacitor.settled5Tau': 'Oturdu (5 tau)',
+  'capacitor.settled5Tau': 'Kararlı duruma ulaştı (5τ)',
   'capacitor.startingVoltage': 'Başlangıç gerilimi',
   'capacitor.storedCharge': 'Depolanan yük',
   'capacitor.storedEnergy': 'Depolanan enerji',
@@ -385,16 +385,16 @@ export const tr: Record<Key, string> = {
     'Depolanan enerji `E = 0.5·C·V²`, depolanan yük ise `Q = C·V` ile bulunur. Enerji gerilimin karesiyle değişir, bu yüzden hattın yarısı enerjinin dörtte birini tutar.',
   'capacitor.targetVoltage': 'Hedef gerilim',
   'capacitor.theory1':
-    'Paralel kondansatörler plaka alanı ekler, yani `C = C1 + C2 + ...`. Seride her kondansatör aynı yükü taşır ve gerilimler toplanır, yani `1/C = 1/C1 + 1/C2 + ...` olur ve toplam, en küçük elemandan da küçüktür.',
+    'Paralel kondansatörler plaka alanı ekler, yani `C = C1 + C2 +...`. Seride her kondansatör aynı yükü taşır ve gerilimler toplanır, yani `1/C = 1/C1 + 1/C2 +...` olur ve toplam, en küçük elemandan da küçüktür.',
   'capacitor.theScopeSamplesThose':
-    "Osiloskop integral almak yerine bu kapalı biçimleri doğrudan örnekler, bu yüzden iz her yakınlaştırmada tamdır ve dt tau'yu aştığında kararsızlaşamaz.",
+    "Osiloskop integral almak yerine bu kapalı formleri doğrudan örnekler, bu yüzden iz her yakınlaştırmada tamdır ve dt tau'yu aştığında kararsızlaşamaz.",
   'capacitor.thirdCapacitor': 'Üçüncü kondansatör',
   'capacitor.timeToFallTo': 'Hedefe düşme süresi',
   'capacitor.timeToReachTarget': 'Hedefe ulaşma süresi',
   'capacitor.title': 'Kondansatör Hesaplayıcı',
   'capacitor.use':
-    'Dekuplaj ve toplu kondansatörleri, zamanlama ağlarını, radyo iletimi gibi ani yükler için enerji depolamasını boyutlandırmak ve güç kesildikten sonra besleme hattının ne kadar dayandığını bulmak. Enerji değeri, bir kondansatörün ESP32 kartını WiFi iletim tepesi boyunca taşıyıp taşıyamayacağını söyleyen şeydir.',
-  'capacitor.vAcrossR': 'R üzerindeki V',
+    'Dekuplaj ve toplu kondansatörleri, zamanlama ağlarını, radyo iletimi gibi ani yükler için enerji depolamasını boyutlandırmak ve güç kesildikten sonra besleme hattının ne kadar dayandığını bulmak. Enerji değeri, bir kondansatörün ESP32 kartını Wi-Fi iletim tepesi boyunca taşıyıp taşıyamayacağını söyleyen şeydir.',
+  'capacitor.vAcrossR': 'Direnç üzerindeki gerilim',
   'capacitor.warn1':
     "Ani akım {peakCurrent}, bir ESP32 GPIO'sunun dayandığı {GPIO_MAX_MA} mA sınırının üzerinde. Boş bir kondansatör t = 0 anında kısa devredir, bu yüzden onu daha büyük bir dirençten ya da bir transistörden sürün.",
   'capacitor.warn2':
@@ -402,8 +402,8 @@ export const tr: Record<Key, string> = {
   'capacitor.warn3':
     'Dizi dengesiz. Seri kondansatörler gerilimi değil yükü paylaşır, bu yüzden en küçük eleman eşit {values} yerine uygulanan {supply} geriliminin {maxMemberVoltage} kadarını üstlenir. Bunu kendi gerilim değeriyle karşılaştırın ya da her kondansatöre paralel dengeleme dirençleri ekleyin.',
   'cat.acPowerQuality': 'AC ve Güç Kalitesi',
-  'cat.embeddedEsp32': 'Gömülü / ESP32',
-  'cat.energyThermal': 'Enerji ve Isı',
+  'cat.embeddedEsp32': 'Gömülü Sistemler / ESP32',
+  'cat.energyThermal': 'Enerji ve Termal Tasarım',
   'cat.filtersSignals': 'Filtreler ve Sinyaller',
   'cat.fundamentals': 'Temeller',
   'cat.pcbWiring': 'PCB ve Kablolama',
@@ -411,45 +411,45 @@ export const tr: Record<Key, string> = {
   'cat.semiconductors': 'Yarı İletkenler',
   'cat.sensorsMeasurement': 'Sensörler ve Ölçüm',
   'coil.3v3ByDefaultMost':
-    "Varsayılan olarak 3V3. Çoğu röle bobini 5 V ya da 12 V'luk parçalardır.",
+    "Varsayılan olarak 3,3 V. Çoğu röle bobini 5 V ya da 12 V'luk parçalardır.",
   'coil.aFlybackDiodeAcross':
-    'Bobine paralel bir geri tepme diyodu, akımın dolaşabileceği bir çevrim sağlar. Anahtar düğümü böylece `Vsupply + Vf` değerinde, yani hat geriliminin bir volttan az üzerinde tutulur. Akım diyot düşümüne karşı serbestçe söner, `i(t) = (I + Vf/R)·e^(-t·R/L) - Vf/R`, ve `t = (L/R)·ln(1 + I·R/Vf)` anında sıfıra ulaşır. İşin püf noktası şu: sade diyotlu bir rölenin yavaş bırakmasının nedeni bu kırpıcıdır. Schottky daha alçak kırpar; zener ya da diyotla seri bir direnç, daha yüksek anahtar gerilimi karşılığında daha hızlı bırakır.',
+    'Bobine paralel bir geri tepme diyodu, akımın dolaşabileceği bir çevrim sağlar. Anahtar düğümü böylece `Vsupply + Vf` değerinde, yani hat geriliminin bir volttan az üzerinde tutulur. Akım diyot düşümüne karşı serbestçe söner, `i(t) = (I + Vf/R)·e^(-t·R/L) - Vf/R`, ve `t = (L/R)·ln(1 + I·R/Vf)` anında sıfıra ulaşır. İşin püf noktası şu: yalnızca diyot kullanılan bir rölenin yavaş bırakmasının nedeni bu sınırlayıcıdır. Schottky daha alçak kırpar; zener ya da diyotla seri bir direnç, daha yüksek anahtar gerilimi karşılığında daha hızlı bırakır.',
   'coil.at': '{frequency} değerinde',
   'coil.atTheDriveFrequency':
     'Sürüş frekansında sargı ayrıca `XL = 2·pi·f·L` gösterir, yani bobin empedansı `|Z| = sqrt(R² + XL²)` olur. Bobini bir kez anahtarlamak yerine PWM ile sürdüğünüzde akımı sınırlayan budur.',
   'coil.blurb': 'Akım rampası, depolanan enerji ve bobin anahtarlandığında oluşan ters gerilim.',
   'coil.bothPhasesOfThe':
-    "İzin her iki evresi de tam sıfırıncı derece tutma ayrıklaştırmasıyla ilerler, `i[n] = I∞ + (i[n-1] - I∞)·e^(-dt/tau)`; böylece örnekler, ileri Euler'in dt tau'yu geçtiğinde yaptığı gibi çınlamak ya da ıraksamak yerine her adım boyunda analitik eğrinin üzerinde durur.",
-  'coil.clampDissipation': 'Kırpıcı güç kaybı',
+    "İzin her iki evresi de sıfırıncı dereceden tutma (ZOH) ayrıklaştırmasıyla ilerler, `i[n] = I∞ + (i[n-1] - I∞)·e^(-dt/tau)`; böylece örnekler, ileri Euler'in dt tau'yu geçtiğinde yaptığı gibi çınlamak ya da ıraksamak yerine her adım boyunda analitik eğrinin üzerinde durur.",
+  'coil.clampDissipation': 'Sınırlayıcı güç kaybı',
   'coil.clampedTo': 'Kırpıldığı değer',
   'coil.coil': 'Bobin',
   'coil.coilImpedanceZ': 'Bobin empedansı |Z|',
   'coil.currentSwing': 'Akım salınımı',
   'coil.fallsToZeroEach': '(her çevrimde sıfıra iner)',
-  'coil.flybackClamp': 'Geri tepme kırpıcısı',
-  'coil.freewheelToZero': 'sıfıra serbest sönüm',
+  'coil.flybackClamp': 'Geri tepme sınırlayıcısı',
+  'coil.freewheelToZero': 'akım sıfıra kadar serbestçe söner',
   'coil.howFastTheSwitch': "Anahtarın ne kadar hızlı açıldığı. di/dt'yi tek başına bu belirler.",
   'coil.iCoil': 'I bobin',
   'coil.iNoDiode': 'I diyotsuz',
-  'coil.kickUnclamped': 'Kırpılmamış geri tepme',
+  'coil.kickUnclamped': 'Sınırlanmamış geri tepme gerilimi',
   'coil.lede':
     'Alçak taraf transistörüyle anahtarlanan bir röle veya solenoid bobini. Osiloskop, anahtarlama çevrimi boyunca bobin akımını zamana karşı çizer. Rampanın çekirdeği doldurmasını, sonra anahtar açıldığında bobinin transistöre ne yaptığını izleyin.',
   'coil.lowSideSwitchedCoil': 'Alt taraftan anahtarlanan bobin',
   'coil.neverReachesZero': '(hiç sıfıra inmez)',
-  'coil.noFreewheelPath': 'serbest sönüm yolu yok',
-  'coil.nothingFitted': 'hiçbir şey takılı değil',
+  'coil.noFreewheelPath': 'serbest dolaşım yolu yok',
+  'coil.nothingFitted': 'koruma elemanı yok',
   'coil.ofIsat': "Isat'ın %{satPercent} kadarı",
   'coil.pastTheRatingOf':
     ', bu da anahtarın {vBreakdown} dayanma geriliminin ötesinde. Transistör çığ kırılmasına girer ve enerjiyi ısı olarak alır, genellikle bir kez.',
   'coil.peak': 'tepe {iPeak}',
   'coil.releaseTime': 'Bırakma süresi',
   'coil.saturationHeadroom': 'Doyum payı',
-  'coil.steadyCurrent': 'Kararlı akım',
+  'coil.steadyCurrent': 'Kararlı durum akımı',
   'coil.storedEnergyAtPeak': 'Tepede depolanan enerji',
   'coil.supplyVf': 'besleme + Vf ({vf})',
-  'coil.switchAndClamp': 'Anahtar ve kırpıcı',
+  'coil.switchAndClamp': 'Anahtar ve sınırlayıcı',
   'coil.switchSees': 'anahtar {vSwitchOpen} görür',
-  'coil.switchTurnOff': 'anahtar kapanması',
+  'coil.switchTurnOff': 'anahtarın açılması',
   'coil.switchVceoRating': 'Anahtar Vceo değeri',
   'coil.thatCurrentIsEnergy':
     "O akım çekirdekteki enerjidir, `E = 0.5·L·I²`. Anahtarı açın, enerjinin gidecek yeri kalmaz ve bobin akımı sürdürecek gerilimi ne ise onu üretir: `Vkick = L·di/dt`. 100 mH üzerinden geçen 44 mA'i bir mikrosaniyede kesin, bu 4 kV'un üzerindedir. Bozulan bobin değil, anahtardır.",
@@ -459,12 +459,12 @@ export const tr: Record<Key, string> = {
     "Anahtarı kapatmak beslemeyi seri bir RL üzerine koyar. Akım sıçrayamaz, bu yüzden rampa yapar: `tau = L/R` zaman sabitiyle `i(t) = (V/R)·(1 - e^(-t·R/L))`. Bir tau sonra yolun %63,2'sini, beş tau sonra %99,3'ünü almıştır; tıpkı bir kondansatörün şarjı gibi, akım ve gerilim yer değiştirmiş olarak.",
   'coil.timeConstantLR': 'Zaman sabiti L/R',
   'coil.title': 'Bobin / Endüktans Simülatörü',
-  'coil.turnOffTime': 'Kapanma süresi',
+  'coil.turnOffTime': 'Akımı kesme süresi',
   'coil.use':
     'Röleler, solenoidler, motorlar ve anahtarlamalı dönüştürücüler. Kritik çıktı ters gerilimdir: bir bobinden geçen akımı kesmek, anahtarlamayı yapan transistörü yok eden bir gerilim tepesi üretir. Bu sayfa o tepenin ne kadar büyük olduğunu ve bir geri tepme diyodunun onu neye sınırladığını gösterir; o diyotun neden isteğe bağlı olmadığı da budur.',
   'coil.vVsatR': '(V - Vsat) / R',
   'coil.warn1':
-    'Kırpıcı takılı değil. {l} üzerinden geçen {iPeak} akımını {turnOff} içinde kesmek kolektörü {vSwitchOpen} değerine sürer{small} Gerçek kartlar bunu zaten kırpar: bu sayıyı sonlu tutan tek şey sargı kapasitansıdır.',
+    'Sınırlayıcı takılı değil. {l} üzerinden geçen {iPeak} akımını {turnOff} içinde kesmek kolektörü {vSwitchOpen} değerine sürer{small} Gerçek kartlar bunu zaten kırpar: bu sayıyı sonlu tutan tek şey sargı kapasitansıdır.',
   'coil.warn2':
     'Kırpılmış olsa bile anahtar {vSwitchClamped} geriliminde kalıyor; bu, {vBreakdown} değerinin üzerinde. Sorun diyot değil, besleme.',
   'coil.warn3':
@@ -492,16 +492,16 @@ export const tr: Record<Key, string> = {
   'common.circuit': 'Devre',
   'common.components': 'Bileşenler',
   'common.conduction': 'İletim',
-  'common.conductionMode': 'İletim kipi',
+  'common.conductionMode': 'İletim modu',
   'common.continuous': 'sürekli',
   'common.cRate': 'C oranı',
   'common.crossSection': 'Kesit',
   'common.current': 'Akım',
   'common.currentDensity': 'Akım yoğunluğu',
-  'common.cutoffFc': 'Kesim fc',
-  'common.cyclesShown': 'Gösterilen çevrim',
+  'common.cutoffFc': 'Kesim frekansı fc',
+  'common.cyclesShown': 'Gösterilen çevrim sayısı',
   'common.dcm': 'DCM',
-  'common.dcOffset': 'DC ofset',
+  'common.dcOffset': 'DC ofseti',
   'common.deepPassband': '(geçirme bandının derininde)',
   'common.deepStopband': '(durdurma bandının derininde)',
   'common.diameter': 'Çap',
@@ -512,17 +512,17 @@ export const tr: Record<Key, string> = {
   'common.dividerOutput': 'Bölücü çıkışı',
   'common.drive': 'Sürme',
   'common.duty': 'Görev oranı',
-  'common.dutyCycle': 'Görev çevrimi',
-  'common.dutyRegister': 'Görev çevrimi yazmacı',
+  'common.dutyCycle': 'Görev oranı',
+  'common.dutyRegister': 'Görev oranı yazmacı',
   'common.efficiency': 'Verim',
   'common.fetRdsOn': 'FET Rds(on)',
   'common.fFc': 'f / fc',
-  'common.filter': 'Süzgeç',
-  'common.filterTopology': 'Süzgeç topolojisi',
+  'common.filter': 'Filtre',
+  'common.filterTopology': 'Filtre topolojisi',
   'common.frequency': 'Frekans',
   'common.gainAt': '{frequency} frekansında kazanç',
   'common.gainBandwidth': 'Kazanç bant genişliği',
-  'common.gateDriveVgs': 'Kapı sürme VGS',
+  'common.gateDriveVgs': 'Kapı sürme gerilimi VGS',
   'common.gauge': 'Kalınlık',
   'common.halfWave': 'Yarım dalga',
   'common.highPass': 'Yüksek geçiren',
@@ -545,7 +545,7 @@ export const tr: Record<Key, string> = {
   'common.lowPass': 'Alçak geçiren',
   'common.mean': 'ortalama',
   'common.method': 'Yöntem',
-  'common.mode': 'Kip',
+  'common.mode': 'Mod',
   'common.nearCorner': '(köşeye yakın)',
   'common.never': 'hiçbir zaman',
   'common.none': 'yok',
@@ -565,17 +565,17 @@ export const tr: Record<Key, string> = {
   'common.peakCurrent': 'Tepe akım',
   'common.peakInductorCurrent': 'Tepe bobin akımı',
   'common.perAdcCount': 'ADC adımı başına',
-  'common.period': 'Çevrim',
-  'common.periodsShown': 'Gösterilen çevrim',
+  'common.period': 'Periyot',
+  'common.periodsShown': 'Gösterilen periyot sayısı',
   'common.phaseShift': 'Faz kayması',
   'common.powerStage': 'Güç katı',
-  'common.pullUp': 'Pull-up',
+  'common.pullUp': 'Yukarı çekme',
   'common.pulseWidth': 'Darbe genişliği',
   'common.pwm2': 'PWM',
-  'common.qFactor': 'Q çarpanı',
+  'common.qFactor': 'Q faktörü',
   'common.r1Top': 'R1 (üst)',
   'common.r2Bottom': 'R2 (alt)',
-  'common.rails': 'Hatlar',
+  'common.rails': 'Besleme hatları',
   'common.reactanceXl': 'Reaktans XL',
   'common.resistance': 'Direnç',
   'common.resistor': 'Direnç',
@@ -595,7 +595,7 @@ export const tr: Record<Key, string> = {
   'common.sleepCurrent': 'Uyku akımı',
   'common.sleepTime': 'Uyku süresi',
   'common.source': 'Kaynak',
-  'common.sourceLoadZ': 'Kaynak yükü |Z|',
+  'common.sourceLoadZ': 'Kaynak/yük empedansı |Z|',
   'common.square': 'Kare',
   'common.stepResponse': '(basamak yanıtı)',
   'common.supply': 'Besleme',
@@ -612,7 +612,7 @@ export const tr: Record<Key, string> = {
   'common.totalLoss': 'Toplam kayıp',
   'common.triangle': 'Üçgen',
   'common.usableResolution': 'Kullanılabilir çözünürlük',
-  'common.useE24': '{value} kullanın (E24)',
+  'common.useE24': 'E24 değeri: {value}',
   'common.vc': 'Vc',
   'common.vih': 'VIH',
   'common.vin': 'Vin',
@@ -622,18 +622,18 @@ export const tr: Record<Key, string> = {
   'crystal-caps.absoluteError': 'Mutlak hata',
   'crystal-caps.blurb':
     'Kristal veri sayfasından yük kondansatörü seçimi ve bunun yol açtığı frekans kayması.',
-  'crystal-caps.board': 'Kart',
-  'crystal-caps.c1C2Ideal': 'İdeal C1 = C2',
-  'crystal-caps.clockDrift': 'Saat kayması',
+  'crystal-caps.board': 'Kart üzerindeki kaçaklar',
+  'crystal-caps.c1C2Ideal': 'İdeal değer: C1 = C2',
+  'crystal-caps.clockDrift': 'Saat sapması',
   'crystal-caps.crystal': 'Kristal',
   'crystal-caps.forA32768':
     "32,768 kHz'lik bir zaman tutma kristali için 20 ppm, günde yaklaşık 1,7 saniyeye, yılda ise on dakikaya karşılık gelir. Bu önemliyse ya kondansatörleri ince ayarlayın ya da sıcaklık dengelemeli bir modül kullanın. Zaten bir saat kristalinin sıcaklık katsayısı yaklaşık -0,035 ppm/°C² olan parabolik bir eğri izlediğinden, sıcaklık kayması genellikle yük hatasını gölgede bırakır.",
   'crystal-caps.frequencyError': 'Frekans hatası',
   'crystal-caps.lede':
     'Bir kristal, ancak belirli bir kapasitansı gördüğünde üzerinde yazan frekansı tutturacak şekilde kesilir. Yük kondansatörlerini yanlış seçerseniz yine salınır, sadece yanlış frekansta; kayan bir saatin genelde kristal arızası değil kondansatör sorunu olmasının nedeni budur.',
-  'crystal-caps.loadActuallySeen': 'Gerçekte görülen yük',
+  'crystal-caps.loadActuallySeen': 'Kristalin gördüğü gerçek yük',
   'crystal-caps.motionalCm': 'Hareketli Cm',
-  'crystal-caps.nearestStandard': 'En yakın standart',
+  'crystal-caps.nearestStandard': 'En yakın standart değer',
   'crystal-caps.sDay': '{secondsPerDay} sn/gün',
   'crystal-caps.shuntC0': 'Şönt C0',
   'crystal-caps.spec': 'belirtilen {clSpec}',
@@ -653,22 +653,22 @@ export const tr: Record<Key, string> = {
     'Kaçak kapasitans tek başına belirtilen yükü zaten aşıyor, bu yüzden hiçbir dış kondansatör bunu aşağı çekemez: kristal her zaman yavaş çalışacaktır. Yolları kısaltın, altlarındaki toprak dökümünü kaldırın ya da daha yüksek CL için belirtilmiş bir kristal seçin.',
   'crystal-caps.warn2':
     '{errorPpm} ppm, günde {secondsPerDay} saniyelik bir kaymadır. Bir gerçek zaman saati için bu oldukça fazladır. İdeal değere daha yakın kondansatörler seçin ya da birinde ince ayar yapın.',
-  'current-divider.025WAxial': 'Eksenel için 0,25 W, 0805 için 0,125 W.',
+  'current-divider.025WAxial': 'Eksenel için 0,25 W; 0805 için 0,125 W.',
   'current-divider.acrossRs': '(Rs üzerinde {voltage})',
   'current-divider.blurb': 'Paralel kollardan geçen akımlar.',
   'current-divider.branchCount': 'Kol sayısı',
   'current-divider.branches': 'Kollar',
   'current-divider.currentSource': 'Akım kaynağı',
   'current-divider.dissipationIsPxIx':
-    'Güç kaybı `Px = Ix²·Rx` olur ve kol güçlerinin toplamı `V·Itotal` eder. Hat kipinde kaynak `Rs + Req` görür, yani `Itotal = Vs / (Rs + Req)` olur ve kalan gerilimi Rs üstlenir.',
+    'Güç kaybı `Px = Ix²·Rx` olur ve kol güçlerinin toplamı `V·Itotal` eder. Hat modunda kaynak `Rs + Req` görür, yani `Itotal = Vs / (Rs + Req)` olur ve kalan gerilimi Rs üstlenir.',
   'current-divider.equivalentR': 'Eşdeğer R',
   'current-divider.lede':
     'Paralel kollar aynı düğüm gerilimini paylaşır, bu yüzden akım dirence göre değil iletkenliğe göre bölünür. Çubuk, her kolun toplamdaki payını gösterir.',
-  'current-divider.nodeVoltage': 'Düğüm gerilimi',
-  'current-divider.overOneGpio': '(tek bir GPIO üzerinden)',
+  'current-divider.nodeVoltage': 'Ortak düğüm gerilimi',
+  'current-divider.overOneGpio': '(tek GPIO üzerinden)',
   'current-divider.parallelBranchNetwork': 'Paralel kollu devre',
-  'current-divider.railRs': 'Hat + Rs',
-  'current-divider.rCurrent': 'R{i} akımı',
+  'current-divider.railRs': 'Besleme + Rs',
+  'current-divider.rCurrent': 'R{i} kol akımı',
   'current-divider.resistorRating': 'Direnç gücü',
   'current-divider.supplyVs': 'Besleme Vs',
   'current-divider.theNodeSitsAt':
@@ -685,65 +685,65 @@ export const tr: Record<Key, string> = {
   'current-divider.warn2':
     '{hot}, {rating} değerinin üzerinde. Daha büyük bir parça seçin ya da kol direncini yükseltin.',
   'current-divider.warn3':
-    'İdeal bir akım kaynağı her yüke {total} verir, bu yüzden düğüm {voltage} değerinde kalır. Gerçek bir 3V3 besleme bu gerilime ulaşamaz: devrenin gerçekte ne yaptığını görmek için hat artı Rs kipine geçin.',
+    'İdeal bir akım kaynağı her yüke {total} verir, bu yüzden düğüm {voltage} değerinde kalır. Gerçek bir 3,3 V besleme bu gerilime ulaşamaz: devrenin gerçekte ne yaptığını görmek için besleme + Rs moduna geçin.',
   'current-sense.acrossTheInternal0': 'içteki 0,1 Ω üzerinde',
   'current-sense.adcRangeUsed': 'Kullanılan ADC aralığı',
   'current-sense.amplifierGain': 'Yükselteç kazancı',
   'current-sense.atThisShunt': 'bu şöntte',
   'current-sense.blurb':
-    'Yük payı gerilimine karşı şönt boyutlandırma, ayrıca ACS712 ve INA219 çözünürlüğü.',
-  'current-sense.burden': 'yük payı',
-  'current-sense.burden2': 'Yük payı',
+    'Şönt boyutlandırması, ölçüm kaynaklı gerilim düşümü ve ACS712/INA219 çözünürlüğü.',
+  'current-sense.burden': 'Gerilim kaybı',
+  'current-sense.burden2': 'Ölçüm kaynaklı gerilim kaybı',
   'current-sense.currentResolution': 'Akım çözünürlüğü',
-  'current-sense.digitalI2c': 'sayısal, I2C',
+  'current-sense.digitalI2c': 'dijital, I2C',
   'current-sense.dissipationIsIR':
     "Güç kaybı `I²·R` olur ve akımın karesiyle yükselir, yani 1 A için rahatça seçilmiş bir şönt 10 A'de ısıtıcıya döner. Daha kötüsü, ısı direnci değiştirir, bu yüzden yük arttıkça ölçüm kayar: hassas şöntlerin düşük sıcaklık katsayılı alaşımlar ve dört telli bağlantı kullanmasının nedeni budur.",
   'current-sense.hallEffectPartsLike':
-    'ACS712 gibi Hall etkili parçalar manyetik alanı ölçerek yük payını tamamen ortadan kaldırır ve tam yalıtım sağlar. Bedeli ise ofset kayması, gürültü ve beslemenin yarısında duran bir sıfır noktasıdır; bu yüzden amperler için iyi, miliamperler için kötüdürler.',
+    'ACS712 gibi Hall etkili sensörler, akım yoluna seri direnç eklemeden manyetik alanı ölçer; böylece ölçüm kaynaklı gerilim düşümünü ortadan kaldırır ve galvanik yalıtım sağlar. Bunun bedeli ofset kayması, daha yüksek gürültü ve beslemenin yarısına ayarlanmış sıfır akım çıkışıdır. Bu nedenle amper düzeyindeki akımlar için uygundur, miliamper düzeyinde ise zayıf kalır.',
   'current-sense.lede':
-    "Akımı ölçmek, beslemeden fazla pay çalmadan onu ADC'nin okuyabileceği bir gerilime çevirmek demektir. Şönt, yük payı gerilimi, güç kaybı ve çözünürlük arasında bir uzlaşmadır.",
+    "Akım ölçümünde amaç, yük beslemesini gereğinden fazla düşürmeden akımı ADC'nin okuyabileceği bir gerilime dönüştürmektir. Şönt değeri; gerilim kaybı, güç tüketimi ve ölçüm çözünürlüğü arasında bir denge kurar.",
   'current-sense.ofTheSupply': 'beslemenin',
-  'current-sense.outputToAdc': "ADC'ye çıkış",
-  'current-sense.perLsbOnThe': "şönt ADC'sinde LSB başına",
-  'current-sense.sensor': 'Algılayıcı',
-  'current-sense.sensorRange': 'Algılayıcı aralığı',
-  'current-sense.shuntFrontEnd': 'Şönt ön katı',
+  'current-sense.outputToAdc': "ADC giriş gerilimi",
+  'current-sense.perLsbOnThe': "şönt ADC’sinde LSB başına",
+  'current-sense.sensor': 'Sensör',
+  'current-sense.sensorRange': 'Sensör aralığı',
+  'current-sense.shuntFrontEnd': 'Şönt ölçüm katı',
   'current-sense.shuntPower': 'Şönt gücü',
   'current-sense.shuntResistance': 'Şönt direnci',
   'current-sense.shuntVoltage': 'Şönt gerilimi',
   'current-sense.supplyBeingMeasured': 'Ölçülen besleme',
   'current-sense.theory1':
-    "Bir şönt, Ohm yasasıyla akımı gerilime çevirir: `Vshunt = I·R`. Bu gerilim yüke ulaşan beslemeden düşülür, yük payı budur. Hattın yüzde bir ikisinin altında tutulmalıdır; örneğin 5 V'luk bir beslemede yük payının 50 mV'un epeyce altında kalması istenir.",
+    "Şönt direnç, Ohm yasasıyla akımı gerilime dönüştürür: `Vshunt = I·R`. Bu gerilim doğrudan yükün beslemesinden düşer. Gerilim kaybını genellikle besleme geriliminin %1-2'sinin altında tutmak gerekir; örneğin 5 V'luk bir hatta 50 mV'un belirgin biçimde altında kalması tercih edilir.",
   'current-sense.theResolutionYouActually':
-    'Gerçekte elde ettiğiniz çözünürlük, girişe indirgenmiş bir ADC adımıdır: `Vlsb / (R·gain)`. Sizi yük payı ile çözünürlük arasındaki kıskaçtan kurtaran şey kazançtır: küçük bir şönt yük payını düşük tutar, yükselteç de işareti geri kazanır. Özel bir akım algılama yükseltecinin yaptığı tam olarak budur; ayrıca şöntün toprak yerine besleme potansiyelinde durduğu üst taraf algılamadaki ortak kip sorununu da çözer.',
+    'Gerçek akım çözünürlüğü, girişe indirgenmiş bir ADC adımıdır: `Vlsb / (R·gain)`. Kazanç, gerilim kaybı ile çözünürlük arasındaki dengeyi iyileştirir: küçük bir şönt besleme kaybını azaltır, yükselteç de küçük ölçüm sinyalini ADC aralığına taşır. Özel akım algılama yükselteçleri ayrıca şöntün besleme tarafında bulunduğu yüksek taraf ölçümündeki ortak mod sorununu çözer.',
   'current-sense.title': 'Akım Ölçümü',
   'current-sense.use':
-    'Batarya izleme, motor akım sınırlama, güç ölçümü ve aşırı akım koruması. Tasarım; yük payı gerilimi, şönt güç kaybı ve çözünürlük arasında üç yönlü bir uzlaşmadır ve bu sayfa, küçük şöntlü özel bir akım ölçüm yükseltecinin doğrudan okunan büyük bir şöntü neden yendiğini gösterir.',
+    'Batarya izleme, motor akım sınırlama, güç ölçümü ve aşırı akım koruması. Tasarım; şönt üzerindeki gerilim kaybı, güç tüketimi ve ölçüm çözünürlüğü arasında üçlü bir denge gerektirir. Bu sayfa, küçük bir şönt ile özel akım algılama yükseltecinin doğrudan ADC’ye bağlanan büyük bir şöntten neden daha iyi sonuç verdiğini gösterir.',
   'current-sense.warn1':
-    '{vOut}, {FULL_SCALE} ADC tam ölçeğinin ötesinde; bu yüzden okuma en üst değere çakılır ve aralığın tepesini tamamen yitirirsiniz. Kazancı ya da şöntü küçültün.',
+    '{vOut}, {FULL_SCALE} ADC tam ölçeğinin ötesinde; bu yüzden okuma en üst değere çakılır ve aralığın tepesini tamamen kaybedersiniz. Kazancı ya da şöntü küçültün.',
   'current-sense.warn2':
     'ADC aralığının yalnızca %{rangeUsed} kadarı kullanılıyor, yani çeviricinin çözünürlüğünün çoğu boşa gidiyor. Tam ölçek akımı aralığın tepesine yaklaşana kadar kazancı yükseltin.',
   'current-sense.warn3':
     'Şönt üzerindeki {pShunt} kayda değer bir ısıdır ve direncin kendi sıcaklık katsayısı bu durumda okumayı kaydırır. Daha düşük değerli bir şönt kullanıp kazancı artırın ya da düzgün bir 4 telli algılama direnci tercih edin.',
   'current-sense.warn4':
-    "ACS712, orta hat sıfır noktalı 5 V'luk bir parçadır, yani durgun çıkışı yaklaşık 2,5 V'tur ve bu bir ESP32 pininin dayanabileceğinin epey üzerindedir. Bir gerilim bölücüye ya da 3,3 V uyumlu bir alternatife ihtiyaç duyar. Gürültü tabanı da onu birkaç yüz miliamperin altında zayıf kılar.",
+    "ACS712, besleme orta noktası sıfır noktalı 5 V'luk bir parçadır, yani boştaki çıkışı yaklaşık 2,5 V'tur ve bu bir ESP32 pininin dayanabileceğinin epey üzerindedir. Bir gerilim bölücüye ya da 3,3 V uyumlu bir alternatife ihtiyaç duyar. Gürültü tabanı da onu birkaç yüz miliamperin altında zayıf kılar.",
   'current-sense.zeroCurrentOutput': 'Sıfır akım çıkışı',
-  'debounce.blurb': 'Ölçülen sıçrama süresinden RC ve Schmitt tetikleyici debounce boyutlandırma.',
-  'debounce.bounceDuration': 'Sekme süresi',
+  'debounce.blurb': 'Ölçülen kontak sekmesine göre RC ve Schmitt tetikleyici boyutlandırması.',
+  'debounce.bounceDuration': 'Kontak sekme süresi',
   'debounce.bounceIs': 'sekme {bounceMs}',
   'debounce.contactCurrent': 'Kontak akımı',
   'debounce.fallToVil': "VIL'ye düşme",
-  'debounce.filtered': 'süzülmüş',
-  'debounce.glitchesRejectedUpTo': 'Şuna kadar gürültü elenir',
+  'debounce.filtered': 'filtrelenmiş',
+  'debounce.glitchesRejectedUpTo': 'Bastırılan en uzun parazit',
   'debounce.lede':
-    'Mekanik bir kontak bir kez kapanmaz, birkaç milisaniye boyunca seker. Osiloskop, ham kontağı, RC ile süzülmüş düğümü ve girişin lojik yüksek eşiğini birlikte gösterir: süzgeç, geri dönmeden tüm sekme boyunca dayanmalıdır.',
+    'Mekanik bir kontak bir kez kapanmaz, birkaç milisaniye boyunca seker. Osiloskop, ham kontağı, RC ile filtrelenmiş düğümü ve girişin lojik yüksek eşiğini birlikte gösterir: filtre, geri dönmeden tüm sekme boyunca dayanmalıdır.',
   'debounce.logicSupply': 'Mantık beslemesi',
-  'debounce.maximumPressRate': 'En yüksek basış hızı',
+  'debounce.maximumPressRate': 'En yüksek basma hızı',
   'debounce.noteTheAsymmetryOn':
-    "İzdeki asimetriye dikkat edin: anahtarı kapatmak kondansatörü doğrudan toprağa kısa devre eder, bu yüzden düşüş neredeyse anlıktır; açmak ise C'yi R üzerinden şarj etmek zorundadır. Gerçekte yalnızca yükselen kenar süzülür; basışta sorunsuz görünen bir debounce devresinin bırakışta hâlâ sekebilmesinin nedeni budur.",
+    "İzdeki asimetriye dikkat edin: anahtarı kapatmak kondansatörü doğrudan toprağa kısa devre eder, bu yüzden düşüş neredeyse anlıktır; açmak ise C'yi R üzerinden şarj etmek zorundadır. Gerçekte yalnızca yükselen kenar filtrelenir; basışta sorunsuz görünen bir debounce devresinin bırakışta hâlâ sekebilmesinin nedeni budur.",
   'debounce.ofVcc': "Vcc'nin %{VIH_FRAC} kadarı",
   'debounce.ofVcc2': "Vcc'nin %{VIL_FRAC} kadarı",
-  'debounce.pressesPerSecond': 'Saniyedeki basış',
+  'debounce.pressesPerSecond': 'Saniyedeki basma sayısı',
   'debounce.raw': 'ham',
   'debounce.riseToVih': "VIH'ye yükselme",
   'debounce.switchAndInput': 'Anahtar ve giriş',
@@ -752,22 +752,22 @@ export const tr: Record<Key, string> = {
   'debounce.theory1':
     'Kontaklar yaylı oldukları için seker. Hareketli kontak sabit olana çarpar ve geri teper; tipik bir dokunmatik anahtarda kabaca 1-10 ms boyunca birkaç kez kapanıp açılır, daha büyük kollarda ve rölelerde bu süre daha uzundur.',
   'debounce.theRcFilterTurns':
-    'RC süzgeci her kısa açılmayı, tam hattan hatta bir geçiş yerine küçük bir üstel salınıma çevirir. Düğüm ancak VIH eşiğini geçtiğinde yüksek sayılır; ESP32 için bu, beslemenin yaklaşık %{VIH_FRAC} kadarıdır ve bu da `t = -R·C·ln(1 - VIH/Vcc)`, yani 1,386 zaman sabiti sürer.',
-  'debounce.title': 'Buton Debounce RC',
+    'RC filtresi, her kısa süreli açılmayı tam bir lojik geçiş yerine küçük bir üstel dalgalanmaya dönüştürür. Düğüm ancak VIH eşiğini geçtiğinde yüksek kabul edilir; ESP32 için bu eşik beslemenin yaklaşık %{VIH_FRAC} kadarıdır. Geçiş süresi `t = -R·C·ln(1 - VIH/Vcc)`, yani yaklaşık 1,386 zaman sabitidir.',
+  'debounce.title': 'Buton Sekme Giderme (RC)',
   'debounce.use':
-    'Bir mikrodenetleyici tarafından okunan her mekanik buton, anahtar veya röle kontağı. Kontaklar her basışta milisaniyelerce zıplar, bu yüzden naif bir okuma tek basışı birkaç kez sayar. Bu sayfa, süzgeci sıçramayı aşacak kadar yavaş ama gerçek basışları kaçırmayacak kadar hızlı olacak şekilde boyutlandırır.',
+    'Mikrodenetleyiciyle okunan her mekanik buton, anahtar ve röle kontağı için kullanılır. Kontaklar tek basışta birkaç milisaniye boyunca art arda açılıp kapanabilir; doğrudan okuma bu nedenle tek basışı birden fazla olay olarak algılar. Filtre, sekmeyi bastıracak kadar yavaş ancak gerçek basışları kaçırmayacak kadar hızlı seçilmelidir.',
   'debounce.warn1':
-    "Süzgeç {tRise} içinde oturuyor; bu, {bounceMs}'lik sekmeden daha hızlı, yani gürültü hâlâ pine ulaşıyor. Yükselme süresi sekme süresini rahatça aşana kadar R'yi ya da C'yi büyütün.",
+    "Filtre {tRise} içinde oturuyor; bu, {bounceMs}'lik sekmeden daha hızlı, yani gürültü hâlâ pine ulaşıyor. Yükselme süresi sekme süresini rahatça aşana kadar R'yi ya da C'yi büyütün.",
   'debounce.warn2':
-    '{maxRate} hızında süzgeç, saniyede {pressRate} basışı izleyemez. Gerçek basışlar birleşecek ya da tümüyle kaçırılacaktır.',
+    '{maxRate} hızında filtre, saniyede {pressRate} basışı izleyemez. Gerçek basışlar birleşecek ya da tümüyle kaçırılacaktır.',
   'debounce.warn3':
-    "Kontaktan yalnızca {contactCurrent} geçiyor. Yaklaşık 100 µA'in altında kuru anahtarlama, kontak yüzeylerinde oksit birikmesine izin verir ve sonunda anahtarın büsbütün çalışmamasına yol açar. Anahtar mekanikse R'yi küçültün.",
+    "Kontaktan yalnızca {contactCurrent} geçiyor. Yaklaşık 100 µA'in altında kuru anahtarlama, kontak yüzeylerinde oksit birikmesine izin verir ve sonunda anahtarın tamamen çalışmamasına yol açar. Anahtar mekanikse R'yi küçültün.",
   'debounce.wetsTheContact': 'kontağı ıslatır',
   'debounce.youWantHz': 'istenen {pressRate} Hz',
-  'deep-sleep.asleep': 'Uykuda',
+  'deep-sleep.asleep': 'Uyku',
   'deep-sleep.awake': 'Uyanık',
   'deep-sleep.blurb':
-    'Görev çevrimli uyanma profilinden ortalama akım ve aylarca süren çalışma ömrü.',
+    'Periyodik uyanma profiline göre ortalama akım ve uzun süreli batarya ömrü.',
   'deep-sleep.chargePerWake': 'Uyanış başına yük',
   'deep-sleep.consumption': 'Tüketim',
   'deep-sleep.cyclePeriod': 'Çevrim süresi',
@@ -775,29 +775,29 @@ export const tr: Record<Key, string> = {
   'deep-sleep.energyPerWake': 'Uyanış başına enerji',
   'deep-sleep.lede':
     'Bataryayla çalışan bir düğüm, tepe akımına değil ortalama akımına göre yaşar ya da ölür. Osiloskop, doğrusal zaman ekseninde bir uyanma/uyku çevrimi boyunca akım profilini, ortaya çıkan ortalamayla birlikte gösterir.',
-  'deep-sleep.sleepShareOfBudget': 'Bütçedeki uyku payı',
+  'deep-sleep.sleepShareOfBudget': 'Toplam tüketimde uyku payı',
   'deep-sleep.theConsequenceIsUnintuitive':
     "Sonuç sezgiye aykırıdır. Her saat 3 saniye boyunca 80 mA çeken bir ESP32 ortalama yaklaşık 77 µA çeker, yani 2 Ah'lik bir hücre iki yıldan uzun dayanır. Aynı yonga uyanık bırakılsa onu bir günde bitirirdi. Derin uyku bir iyileştirme değil, tasarımın kendisidir.",
   'deep-sleep.theory1':
     'Ortalama akım, bir çevrim boyunca zamanla ağırlıklı ortalamadır: `Iavg = (Ion·ton + Isleep·tsleep) / (ton + tsleep)`. Çalışma süresi, kullanılabilir kapasitenin buna bölümüdür. Başka hiçbir şey önemli değildir: tepe akım yalnızca beslemenin bunu sağlayıp sağlayamayacağını etkiler, paketin ne kadar dayanacağını değil.',
   'deep-sleep.theUsableFractionIs':
-    'Kullanılabilir oran burada gerçek iş görür. Anma kapasitesi, oda sıcaklığında düşük bir kesime kadar yavaş bir deşarj varsayar ve sahada bunların hiçbiri geçerli değildir. %80 üzerinden planlamak olağandır, soğukta ise daha da azı.',
-  'deep-sleep.title': 'Derin Uyku Batarya Ömrü',
+    'Kullanılabilir oran burada gerçek iş görür. Anma kapasitesi, oda sıcaklığında düşük bir kesime kadar yavaş bir deşarj varsayar ve sahada bunların hiçbiri geçerli değildir. genellikle kullanılabilir kapasitenin %80’i üzerinden planlama yapılır, soğukta ise daha da azı.',
+  'deep-sleep.title': 'Derin Uykuda Batarya Ömrü',
   'deep-sleep.usableFraction': 'Kullanılabilir oran',
   'deep-sleep.use':
-    'Bataryayla çalışan her ESP32 düğümü: sunucuya rapor veren sensörler, takip cihazları, uzak izleyiciler. Batarya ömrünü belirleyen tek değer ortalama akımdır ve bu sayfa, uyku akımının neden genellikle uyanma süresinden çok daha önemli olduğunu gösterir. Ayrıca paketi gerçekte tüketen şeyin sürekli bağlı bir bölücü veya kaçaklı bir regülatör olduğunu böyle keşfedersiniz.',
-  'deep-sleep.wakeCycles': 'Uyanış çevrimi',
+    'Bataryayla çalışan her ESP32 düğümü: sunucuya rapor veren sensörler, tamod cihazları, uzak izleyiciler. Batarya ömrünü belirleyen tek değer ortalama akımdır ve bu sayfa, uyku akımının neden genellikle uyanma süresinden çok daha önemli olduğunu gösterir. Ayrıca paketi gerçekte tüketen şeyin sürekli bağlı bir bölücü veya kaçaklı bir regülatör olduğunu böyle keşfedersiniz.',
+  'deep-sleep.wakeCycles': 'Uyanma çevrimi',
   'deep-sleep.warn1':
-    "Uyku akımı bütçenin %{sleepShare} kadarı, yani uyanık evreyi iyileştirmek size neredeyse hiçbir şey kazandırmaz. Bunun yerine bekleme tüketimine yüklenin: bir doğrusal regülatörün durgun akımı, sürekli bağlı bir bölücü ya da açık bırakılmış bir çevre birimi alışılmış suçlulardır ve her biri ESP32'nin kendi 10 µA'lik akımını gölgede bırakabilir.",
+    "Uyku akımı bütçenin %{sleepShare} kadarı, yani uyanık evreyi iyileştirmek size neredeyse hiçbir şey kazandırmaz. Bunun yerine bekleme tüketimine yüklenin: bir doğrusal regülatörün boşta akımı, sürekli bağlı bir bölücü ya da açık bırakılmış bir çevre birimi yaygın suçlulardır ve her biri ESP32'nin kendi 10 µA'lik akımını gölgede bırakabilir.",
   'deep-sleep.warn2':
-    "Yaklaşık 150 mA'in üzerinde neredeyse kesinlikle verici çalışıyordur. WiFi'ye bağlanmak iletimin kendisinden çok daha fazla enerji harcar, bu yüzden birkaç ölçümü tek uyanışta toplamak, her uyanışı kısaltmaktan genellikle daha çok kazandırır.",
+    "Yaklaşık 150 mA'in üzerinde neredeyse kesinlikle verici çalışıyordur. Wi-Fi'ye bağlanmak iletimin kendisinden çok daha fazla enerji harcar, bu yüzden birkaç ölçümü tek uyanışta toplamak, her uyanışı kısaltmaktan genellikle daha çok kazandırır.",
   'deep-sleep.whDay': '{whPerDay} Wh/gün',
   'deep-sleep.whichTermDominatesDecides':
-    'Hangi terimin baskın olduğu, çabanın nereye harcanacağını belirler. Uyku evresi ortalamanın çoğunu taşımaya başladıktan sonra uyanık süreyi kısaltmak boşa emektir ve hedef bekleme sızıntısı olur: regülatör durgun akımı, pull-up ve bölücü ağları ve açık kalan algılayıcılar.',
+    'Hangi terimin baskın olduğu, çabanın nereye harcanacağını belirler. Uyku evresi ortalamanın çoğunu taşımaya başladıktan sonra uyanık süreyi kısaltmak boşa emektir ve hedef bekleme sızıntısı olur: regülatör boşta akımı, yukarı çekme ve bölücü ağları ve açık kalan algılayıcılar.',
   'deep-sleep.years': '{runtimeDays} yıl',
   'e-series.101HalfStep': '(10^(1/{steps}), yarım adım {halfStep})',
   'e-series.against': '{error}, tek parçanın {singleError} değerine karşı',
-  'e-series.bestOfTheThree': 'Üçünün en iyisi',
+  'e-series.bestOfTheThree': 'Üç seçenek içindeki en iyi sonuç',
   'e-series.blurb':
     'Herhangi bir hedef için en yakın E12/E24/E96 değeri ve iki dirençli kombinasyonlar.',
   'e-series.e48AndE96Are':
@@ -805,15 +805,15 @@ export const tr: Record<Key, string> = {
   'e-series.eSeries': 'E serisi',
   'e-series.lede':
     'Hesap makineleri size 26,36 kΩ gibi sayılar verir ama piyasada böyle bir değer bulunmaz. Bu sayfa en yakın tercih edilen değeri ve daha da yaklaştıran iki dirençli çiftleri seçer.',
-  'e-series.mantissas': '{series} mantisleri: `{mantissas}`',
+  'e-series.mantissas': '{series} temel değerleri: `{mantissas}`',
   'e-series.nearestStandardValue': 'En yakın standart değer',
-  'e-series.neighbours': 'Komşular',
-  'e-series.noPairBeatsThe': 'hiçbir çift tek parçayı geçemiyor',
+  'e-series.neighbours': 'Komşu değerler',
+  'e-series.noPairBeatsThe': 'hiçbir ikili tek parçadan daha iyi değil',
   'e-series.pair': 'çift',
   'e-series.pairsAreSearchedOver':
     'Çiftler, 1 Ω ile 10 MΩ arasındaki tablonun tamamında aranır. Hem `a + b` hem de `a·b / (a + b)`, b arttıkça tekdüze biçimde artar; bu yüzden her a için en iyi eş, tam değere en yakın tablo girdisidir ve bu da aramayı tüm çiftleri denemek yerine her aday için ikili aramaya dönüştürür. Parçalar birbirinin {maxRatio} katı içinde tutulur: bu sınırın ötesinde küçük parça, sonucu büyük parçanın kendi toleransından daha az düzeltir, yani çift kullanmak bir kurgudan ibaret kalır.',
   'e-series.preferredSeries': 'Tercih edilen seri',
-  'e-series.singlePart': 'tek parça',
+  'e-series.singlePart': 'tek direnç',
   'e-series.stepRatio': 'Adım oranı',
   'e-series.targetCovered': '(hedef kapsam içinde)',
   'e-series.targetOutside': '(hedef kapsam dışında)',
@@ -823,8 +823,8 @@ export const tr: Record<Key, string> = {
     "Tolerans sınıfları bu boşlukları kapatmak içindir. En kötü hedef, bir `[a, b]` boşluğunun tam ortasında durur ve her iki komşusuna da `(b - a) / (b + a)` kadar hatayla uzaktır: E6'da bu tam olarak %20'dir, yani %20 toleranslı bir parça onu her zaman kapsar. Her ince sınıf küçük bir aralığı açık bırakır; E24'te en kötü durum %5'lik bir parçaya karşı %7,1'dir, yani bazı hedefler hangi parçayı alırsanız alın iki parçanın arasında kalır. Tolerans bandı göstergesinin denetlediği şey tam olarak budur.",
   'e-series.title': 'Standart Direnç Değerleri',
   'e-series.toleranceBandAt': '{tolerance} toleransındaki bant',
-  'e-series.twoInParallel': 'Paralel iki adet',
-  'e-series.twoInSeries': 'Seri iki adet',
+  'e-series.twoInParallel': 'Paralel bağlı iki direnç',
+  'e-series.twoInSeries': 'Seri bağlı iki direnç',
   'e-series.typeTheRawNumber': 'Bölücünüzün ya da akım sınırınızın istediği ham sayıyı yazın.',
   'e-series.use':
     'Formülünüzün ürettiği direnç değerini satın alamazsınız. Bu sayfa hesaplanan değeri satın alınabilir bir değere çevirir, kabul ettiğiniz hatayı gösterir ve tek bir standart değer yeterince yakın olmadığında iki dirençli kombinasyonlar bulur; bu da hassas bölücüler ve kazanç ayarlayan ağlar için önem taşır.',
@@ -844,9 +844,9 @@ export const tr: Record<Key, string> = {
   'esp32-adc.blurb':
     'Zayıflatma aralıkları, batarya ölçümü için bölücü tasarımı, etkin çözünürlük.',
   'esp32-adc.converter': 'Dönüştürücü',
-  'esp32-adc.countAtFull': 'Doluda adım sayısı',
-  'esp32-adc.dividerDrain': 'Bölücü tüketimi',
-  'esp32-adc.drainPerDay': 'Günlük tüketim',
+  'esp32-adc.countAtFull': 'Tam doluyken ADC değeri',
+  'esp32-adc.dividerDrain': 'Bölücünün akım tüketimi',
+  'esp32-adc.drainPerDay': 'Günlük kapasite tüketimi',
   'esp32-adc.emptyVoltage': 'Boşken gerilim',
   'esp32-adc.evenDoneCorrectlyThis':
     "Doğru yapılsa bile bu ADC hassas değildir. Belirgin bir ofset ve kazanç hatası vardır, parçadan parçaya değişir ve sıcaklıkla kayar. esp_adc_cal ile gelen fabrika kalibrasyonunu kullanın, çok sayıda örneğin ortalamasını alın ve yaklaşık %1'den iyi bir sonuç beklemeyin.",
@@ -854,13 +854,13 @@ export const tr: Record<Key, string> = {
   'esp32-adc.fullVoltage': 'Doluyken gerilim',
   'esp32-adc.lede':
     "Paketi tüketmeden ADC'nin kullanılabilir penceresine oturan bir batarya ölçüm bölücüsü tasarlayın. ESP32 ADC'si nominal aralığının yalnızca bir bölümünde doğrusaldır ve girişi makul ölçüde düşük empedanslı bir kaynak ister.",
-  'esp32-adc.perCount': 'adım başına',
-  'esp32-adc.resolutionAtBattery': 'Pildeki çözünürlük',
+  'esp32-adc.perCount': 'ADC adımı başına',
+  'esp32-adc.resolutionAtBattery': 'Batarya tarafındaki çözünürlük',
   'esp32-adc.sourceImpedance': 'Kaynak empedansı',
   'esp32-adc.theory1':
     "ESP32 ADC'si 12 bittir, yani tam ölçek 4096 adıma bölünür. Önündeki zayıflatıcı, tam ölçeğin ne anlama geldiğini belirler: 0 dB yaklaşık 1,1 V, 11 dB ise yaklaşık 3,9 V verir. Her aralığın yalnızca bir bölümü doğrusaldır; kullanılabilir pencerenin anma değerinden daha dar olmasının nedeni de budur.",
   'esp32-adc.theTensionIsDrain':
-    "Buradaki gerilim, tüketim ile empedans arasındaki çekişmedir. Bölücü sürekli bağlı olduğundan, 4,2 V üzerindeki 100 kΩ artı 100 kΩ sürekli 21 µA harcar; bu, derin uykudaki bir ESP32'den bile fazladır. Megaohmlara çıkmak bunu düzeltir ama girişi bir örnekleme kondansatörünü doldurmak zorunda olan ADC'yi bozar. Alışılmış çözümler, bölücüyü yalnızca ölçüm sırasında devreye alan bir MOSFET ya da alt bacağa paralel bağlanan bir kondansatördür.",
+    "Buradaki gerilim, tüketim ile empedans arasındaki çekişmedir. Bölücü sürekli bağlı olduğundan, 4,2 V üzerindeki 100 kΩ artı 100 kΩ sürekli 21 µA harcar; bu, derin uykudaki bir ESP32'den bile fazladır. Megaohmlara çıkmak bunu düzeltir ama girişi bir örnekleme kondansatörünü doldurmak zorunda olan ADC'yi bozar. Yaygın çözümler, bölücüyü yalnızca ölçüm sırasında devreye alan bir MOSFET ya da alt bacağa paralel bağlanan bir kondansatördür.",
   'esp32-adc.title': 'ESP32 ADC / VBAT Ölçümü',
   'esp32-adc.usableToV': 'kullanılabilir {usableLow} - {usableHigh} V',
   'esp32-adc.use':
@@ -881,11 +881,11 @@ export const tr: Record<Key, string> = {
     'Kare, üçgen ve bozulmuş dalga şekilleri oluşturmak için harmonik ekleyin. THD göstergesi.',
   'harmonics.byParsevalTheRms':
     'Parseval teoremine göre etkin değer `sqrt(sum Vn² / 2)` olur ve yalnızca genliklere bağlıdır, faza hiç bağlı değildir. Tepe değer ise faza bağlıdır, dolayısıyla tepe çarpanı da bağlıdır: bir testere dalgasında faz anahtarını çevirin, etkin değer kıpırdamaz.',
-  'harmonics.crestFactor': 'Tepe çarpanı',
+  'harmonics.crestFactor': 'Tepe faktörü',
   'harmonics.dc': '(DC {dc})',
   'harmonics.distortionIsTheEnergy':
-    "Bozulma, temel bileşen olmayan enerjidir: `THD = sqrt(V2² + V3² + ... ) / V1`. İdeal bir kare dalga %48,3, üçgen dalga ise %12,1'dir. On terim bu değere ancak kısmen yaklaşır. THD-R bunun yerine toplam etkin değere böler, bu yüzden hiçbir zaman %100'ü aşamaz; bir ölçü aletinin gösterdiği değer de budur.",
-  'harmonics.forceEveryPhaseTo': 'Tüm fazları 0 yap',
+    "Bozulma, temel bileşen olmayan enerjidir: `THD = sqrt(V2² + V3² +... ) / V1`. İdeal bir kare dalga %48,3, üçgen dalga ise %12,1'dir. On terim bu değere ancak kısmen yaklaşır. THD-R bunun yerine toplam etkin değere böler, bu yüzden hiçbir zaman %100'ü aşamaz; bir ölçü aletinin gösterdiği değer de budur.",
+  'harmonics.forceEveryPhaseTo': 'Tüm fazları 0° yap',
   'harmonics.fourierSeriesPreset': 'Fourier serisi ön ayarı',
   'harmonics.frequencyF0': 'Frekans f0',
   'harmonics.fundamental': 'Temel bileşen',
@@ -895,14 +895,14 @@ export const tr: Record<Key, string> = {
   'harmonics.lede':
     'Her biri tek bir temel bileşenin tam katı olan en fazla on sinüs dalgası ekleyin ve toplamın şekillenmesini izleyin. Yatay eksen zamandır.',
   'harmonics.noFundamentalToCompare': '(karşılaştırılacak temel bileşen yok)',
-  'harmonics.occupiedBandwidth': 'Kapladığı bant genişliği',
+  'harmonics.occupiedBandwidth': 'Kaplanan bant genişliği',
   'harmonics.ofHarmonics2To': '(2 - 10. harmoniklerden {distortion})',
   'harmonics.peak': '(tepe {peakAc})',
-  'harmonics.peakToPeak': 'Tepeden tepeye',
+  'harmonics.peakToPeak': 'Tepeden tepeye değer',
   'harmonics.railHeadroom': '(hat payı {headroom})',
-  'harmonics.rmsAcOnly': 'RMS, yalnızca AC',
-  'harmonics.rmsWithDc': 'RMS, DC dahil',
-  'harmonics.saw': 'Testere',
+  'harmonics.rmsAcOnly': 'RMS (yalnızca AC)',
+  'harmonics.rmsWithDc': 'RMS (DC dâhil)',
+  'harmonics.saw': 'Testere dişi',
   'harmonics.sine1414Triangle': '(sinüs 1,414, üçgen 1,732)',
   'harmonics.sum': 'Toplam',
   'harmonics.swing': 'Salınım',
@@ -917,33 +917,33 @@ export const tr: Record<Key, string> = {
     "Bir basamakta kesmek, hiç kaybolmayan bir çınlama bırakır. Aşım, sıçramanın %8,95'ine, yani düz tepenin 1,179 katına yakınsar; harmoniklerden kurulan bir kare dalganın ideal 1,0 yerine 1,18'e yakın bir tepe çarpanı vermesinin nedeni de budur. Terim eklemek dalgalanmayı daraltır, küçültmez.",
   'harmonics.undefined': 'tanımsız',
   'harmonics.use':
-    "Kare dalganın bir ses zincirini neden bozduğunu, şebekedeki sinüs olmayan yük akımının neden soruna yol açtığını ve THD'nin gerçekte neyi ölçtüğünü anlamak. PWM ile doğrudan ilgilidir: bir PWM sinyalinin süzülmesi gerekmesinin tek nedeni, temel bileşenin üzerinde duran harmonik içeriktir.",
+    "Kare dalganın bir ses zincirini neden bozduğunu, şebekedeki sinüs olmayan yük akımının neden soruna yol açtığını ve THD'nin gerçekte neyi ölçtüğünü anlamak. PWM ile doğrudan ilgilidir: bir PWM sinyalinin filtrelenmesi gerekmesinin tek nedeni, temel bileşenin temel bileşene eklenen harmoniklerdir.",
   'harmonics.warn1':
-    'Toplam {swing} kadar salınıyor. Tek beslemeli bir DAC ya da süzülmüş bir PWM ucu bunu üretemez; gerçek çıkış düz tepe yapar ve bu modelin içermediği bir bozulma ekler. Genlikleri kısın ya da DC ofsetini kaydırın.',
+    'Toplam {swing} kadar salınıyor. Tek beslemeli bir DAC ya da filtrelenmiş bir PWM ucu bunu üretemez; gerçek çıkış düz tepe yapar ve bu modelin içermediği bir bozulma ekler. Genlikleri kısın ya da DC ofsetini kaydırın.',
   'heat-pump.aCopOf3':
     'COP değerinin 3 olması, bir kWh ısının tarifenin üçte birine mal olduğu anlamına gelir; yani dirençli bir ısıtıcıya kıyasla tasarruf `1 - 1/COP` olur. Makinenin kendini amorti edip etmeyeceğine karar veren sayı budur ve tam da talebin tepe yaptığı en soğuk günlerde çöker; sezonluk değerin manşet değerden daha önemli olmasının nedeni de budur.',
   'heat-pump.blurb':
     'Gerçek COP değerine karşı Carnot tavanı ve dirençli ısıtmayla maliyet karşılaştırması.',
   'heat-pump.carnotCeiling': 'Carnot tavanı',
   'heat-pump.costPerKwhHeat': 'kWh ısı başına maliyet',
-  'heat-pump.designOutdoor': 'Tasarım dış sıcaklığı',
-  'heat-pump.electricalInput': 'Elektriksel giriş',
-  'heat-pump.flowHotSide': 'Gidiş (sıcak taraf)',
-  'heat-pump.heatDelivered': 'Verilen ısı',
+  'heat-pump.designOutdoor': 'Tasarım dış hava sıcaklığı',
+  'heat-pump.electricalInput': 'Elektrik girişi',
+  'heat-pump.flowHotSide': 'Gidiş suyu (sıcak taraf)',
+  'heat-pump.heatDelivered': 'Sağlanan ısı',
   'heat-pump.lede':
     'Bir ısı pompası ısı üretmez, onu taşır; bu yüzden her kilovat elektrik başına birkaç kilovat ısı verebilir. Üst sınır, yalnızca sıcaklık farkının belirlediği Carnot sınırıdır.',
-  'heat-pump.liftedFromOutside': 'Dışarıdan çekilen',
+  'heat-pump.liftedFromOutside': 'Dış ortamdan alınan ısı',
   'heat-pump.machine': 'Makine',
   'heat-pump.ofCarnot': "Carnot'un %{eta} kadarı",
   'heat-pump.outdoorColdSide': 'Dış ortam (soğuk taraf)',
   'heat-pump.realCop': 'Gerçek COP',
   'heat-pump.realMachinesReachA':
     'Gerçek makineler Carnot değerinin ancak bir kısmına ulaşır; bu oran ikinci yasa verimidir ve evsel birimlerde tipik olarak 0,4 ile 0,6 arasındadır. Buna göre `COP = eta · Th/(Th - Tc)` olur ve verilen ısı `Qh = COP · W` ile bulunur.',
-  'heat-pump.resistiveEquivalent': 'Dirençli eşdeğeri',
+  'heat-pump.resistiveEquivalent': 'Dirençli ısıtma eşdeğeri',
   'heat-pump.resistiveSeason': 'Dirençli sezon',
   'heat-pump.runningCost': 'İşletme maliyeti',
-  'heat-pump.runtimeToCoverSeason': 'Sezonu karşılayan çalışma süresi',
-  'heat-pump.savingAtThisPoint': 'Bu noktadaki tasarruf',
+  'heat-pump.runtimeToCoverSeason': 'Sezon talebini karşılayan çalışma süresi',
+  'heat-pump.savingAtThisPoint': 'Bu çalışma noktasındaki tasarruf',
   'heat-pump.seasonalCop': 'Sezonluk COP',
   'heat-pump.seasonalCost': 'Sezonluk maliyet',
   'heat-pump.seasonalElectricity': 'Sezonluk elektrik',
@@ -951,9 +951,9 @@ export const tr: Record<Key, string> = {
   'heat-pump.seasonHeatDemand': 'Sezonluk ısı talebi',
   'heat-pump.secondLawEfficiency': 'İkinci yasa verimi',
   'heat-pump.tariffPerKwh': 'kWh başına tarife',
-  'heat-pump.temperatureLift': 'Sıcaklık yükseltmesi',
+  'heat-pump.temperatureLift': 'Sıcaklık farkı',
   'heat-pump.temperatures': 'Sıcaklıklar',
-  'heat-pump.theFreePart': 'bedava kısım',
+  'heat-pump.theFreePart': 'dış ortamdan alınan bölüm',
   'heat-pump.theory1':
     'Isıtmada Carnot tavanı `COP = Th / (Th - Tc)` ile bulunur; iki sıcaklık da kelvin cinsindendir. Yalnızca fark önemlidir; yerden ısıtma borularını 35 °C ile besleyen bir ısı pompasının, radyatörleri 65 °C ile besleyeni ezip geçmesinin nedeni budur: yükseltme daha küçüktür, dolayısıyla tavan daha yüksektir.',
   'heat-pump.theTariffItself': 'tarifenin kendisi',
@@ -966,53 +966,53 @@ export const tr: Record<Key, string> = {
   'heat-pump.warn2':
     "Yaklaşık 55 K'nin üzerindeki bir yükseltme, çoğu evsel soğutucu akışkanın başarabildiği sınırın dışındadır. Gerçek makineler bu noktada devre dışı kalır ya da dirençli bir ısıtıcıya geçer; bu yüzden bu COP değerini iyimser kabul edin.",
   'i2c-pullup.blurb':
-    'Veri yolu kapasitansı ve hızından pull-up aralığı, yükselme süresi kontrolüyle.',
+    'Veri yolu kapasitansı ve hızına göre yukarı çekme direnci aralığı ve yükselme süresi denetimi.',
   'i2c-pullup.busCapacitance': 'Veri yolu kapasitansı',
-  'i2c-pullup.fromThe3Ma': '3 mA çekme sınırından',
-  'i2c-pullup.fromTheRiseTime': 'yükselme süresi sınırından',
-  'i2c-pullup.idealR': 'ideal R',
+  'i2c-pullup.fromThe3Ma': '3 mA akım çekme sınırına göre',
+  'i2c-pullup.fromTheRiseTime': 'yükselme süresi sınırına göre',
+  'i2c-pullup.idealR': 'Önerilen R',
   'i2c-pullup.lede':
-    'I2C açık drenajlıdır: aygıtlar hattı yalnızca aşağı çeker, bu yüzden onu yukarı çekmek bir dirence düşer ve veri yolu kapasitansı buna direnir. Osiloskop, bir aygıt hattı bıraktıktan sonraki yükselen kenarı, ideal boyutlu bir pull-up direncinin vereceği kenarla karşılaştırmalı olarak gösterir.',
+    'I2C açık drenajlıdır: aygıtlar hattı yalnızca aşağı çeker, bu yüzden onu yukarı çekmek bir direnç üstlenir ve veri yolu kapasitansı buna direnir. Osiloskop, bir aygıt hattı bıraktıktan sonraki yükselen kenarı, ideal boyutlu bir yukarı çekme direncinin vereceği kenarla karşılaştırmalı olarak gösterir.',
   'i2c-pullup.limit': 'sınır {maxRise}',
   'i2c-pullup.limit2': 'sınır {maxCapacitance}',
-  'i2c-pullup.maximumR': 'En büyük R',
-  'i2c-pullup.minimumR': 'En küçük R',
+  'i2c-pullup.maximumR': 'En büyük direnç',
+  'i2c-pullup.minimumR': 'En küçük direnç',
   'i2c-pullup.powerPerLine': 'Hat başına güç',
   'i2c-pullup.recommended': 'Önerilen',
-  'i2c-pullup.riseVsBitPeriod': 'Yükselme / bit süresi',
+  'i2c-pullup.riseVsBitPeriod': 'Yükselme süresi / bit süresi',
   'i2c-pullup.sda': 'SDA',
-  'i2c-pullup.sinkCurrent': 'Çekilen akım',
+  'i2c-pullup.sinkCurrent': 'Hat alçakken çekilen akım',
   'i2c-pullup.speed': 'Hız',
-  'i2c-pullup.staticWhenLow': 'durağan, alçakken',
+  'i2c-pullup.staticWhenLow': 'hat alçakken sürekli',
   'i2c-pullup.theCeilingComesFrom':
     "Üst sınır kenardan gelir: `Rmax = tr / (0.8473·Cb)`. 0,8473 değeri `ln(0.7/0.3)`'tür ve belirtimin ölçüm yaptığı %30 ile %70 noktalarından türer.",
   'i2c-pullup.theFloorComesFrom':
     "Alt sınır, alçak seviyeden gelir: bir aygıt, hattı {I2C_VOL} V'un altında tutmaya yetecek akımı çekebilmelidir ve belirtim yalnızca 3 mA garanti eder. Yani `Rmin = (Vcc - 0.4) / 3mA` olur, 3,3 V'ta yaklaşık 970 Ω.",
   'i2c-pullup.theory1':
-    'Açık drenaj, bir aygıtın hattı yalnızca aşağı çekebilmesi demektir. Hat bırakıldığında veri yolu kapasitansı pull-up üzerinden dolmak zorunda kalır; bu yüzden yükselen kenar bir RC eğrisi izlerken düşen kenar neredeyse anındadır. Pull-up boyutlandırmasına dair her şey bu asimetriden kaynaklanır.',
+    'Açık drenaj, bir aygıtın hattı yalnızca aşağı çekebilmesi demektir. Hat bırakıldığında veri yolu kapasitansı yukarı çekme üzerinden dolmak zorunda kalır; bu yüzden yükselen kenar bir RC eğrisi izlerken düşen kenar neredeyse anındadır. Yukarı çekme boyutlandırmasına dair her şey bu asimetriden kaynaklanır.',
   'i2c-pullup.theWindowSpansDecades':
-    "Bu pencere dekatlar boyunca uzandığından akla yatkın seçim aritmetik değil geometrik ortalamadır. 4,7 kΩ geleneksel varsayılan değerdir ve kısa bir 100 kHz veri yolu için gayet uygundur, ama 400 kHz'de gerçek bir kablo boyuyla çoğu zaman fazla zayıf kalır; tezgahta çalışıp uzun bir kabloyla arızalanan I2C veri yollarının alışılmış nedeni budur.",
-  'i2c-pullup.title': 'I2C Pull-Up Direnci',
+    "Bu pencere dekadlar boyunca uzandığından akla yatkın seçim aritmetik değil geometrik ortalamadır. 4,7 kΩ geleneksel varsayılan değerdir ve kısa bir 100 kHz veri yolu için gayet uygundur, ama 400 kHz'de gerçek bir kablo boyuyla çoğu zaman fazla zayıf kalır; tezgahta çalışıp uzun bir kabloyla arızalanan I2C veri yollarının yaygın nedeni budur.",
+  'i2c-pullup.title': 'I2C Yukarı Çekme Direnci',
   'i2c-pullup.use':
-    "Bir ESP32 projesindeki her I2C sensörü, ekranı ve EEPROM'u. I2C açık drenajlıdır, bu yüzden hat bir pull-up olmadan yükselemez ve direnç değeri bir formaliteden çok gerçek bir kısıttır: çok büyükse kenarlar saat için fazla yavaş kalır, çok küçükse aygıtlar hattı aşağı çekemez. Bir I2C hattının kısa bir jumper ile çalışıp bir metrelik şerit kabloyla arızalanmasının alışılmış nedeni budur.",
+    "Bir ESP32 projesindeki her I2C sensörü, ekranı ve EEPROM'u. I2C açık drenajlıdır, bu yüzden hat bir yukarı çekme olmadan yükselemez ve direnç değeri bir yalnızca bir ayrıntı değil, gerçek bir kısıttır: çok büyükse kenarlar saat için fazla yavaş kalır, çok küçükse aygıtlar hattı aşağı çekemez. Bir I2C hattının kısa bir jumper ile çalışıp bir metrelik şerit kabloda çalışmamasının yaygın nedeni budur.",
   'i2c-pullup.warn1':
     'Burada iki sınırı da sağlayan bir direnç değeri yok: yükselme süresini tutturmak için gereken değer, bir aygıtın alçağa çekebileceği değerin zaten altında. Veri yolunu kısaltın, aygıt sayısını azaltın ya da daha yavaş bir hıza geçin. Etkin bir veri yolu tamponuna ihtiyaç duyacağınız nokta tam olarak burasıdır.',
   'i2c-pullup.warn2':
     '{rPullup}, {rMin} ile {rMax} arasındaki pencerenin dışında. Çok küçükse aygıtlar geçerli bir alçak seviye tutamaz, çok büyükse kenar saat için fazla yavaş kalır.',
   'i2c-pullup.warn3':
     'Veri yolu kapasitansı, belirtimin bu hızda izin verdiği {maxCapacitance} değerinin ötesinde. Her aygıt yaklaşık 10 pF katar, kablolama da santimetre başına yaklaşık 1 pF ekler; yani uzun şerit kablolar bu değeri hızla artırır.',
-  'i2c-pullup.whileHeldLow': 'alçak tutulurken',
-  'led-resistor.14W1206': '1/4 W (1206, eksenel)',
-  'led-resistor.absoluteMaxIf': 'Mutlak en büyük If',
+  'i2c-pullup.whileHeldLow': 'hat alçak tutulurken',
+  'led-resistor.14W1206': '1/4 W (1206 veya eksenel)',
+  'led-resistor.absoluteMaxIf': 'Mutlak maksimum If',
   'led-resistor.blurb': 'Direnç seçimi, güç kaybı ve GPIO akımı veremediğinde uyarı.',
-  'led-resistor.currentShiftPerOf': "Vf'nin {spread} kayması başına akım değişimi",
+  'led-resistor.currentShiftPerOf': "Vf'deki {spread} değişim başına akım farkı",
   'led-resistor.custom': 'Özel',
-  'led-resistor.datasheetLimit20Ma': 'Veri sayfası sınırı, çoğu 5 mm parça için 20 mA.',
+  'led-resistor.datasheetLimit20Ma': 'Çoğu 5 mm LED için veri sayfası sınırı 20 mA’dır.',
   'led-resistor.dissipationSplitsBetweenThe':
     "Güç kaybı iki parça arasında paylaşılır: dirençte `P_R = I²R = (Vs - Vf)²/R`, yongada ise `P_LED = Vf·I`. LED'e ulaşan pay yalnızca `Vf / Vs` kadardır; 12 V'luk bir hatta bağlı 2 V'luk kırmızı bir LED'in gücünün altıda beşini dirençte ısı olarak harcamasının nedeni de budur.",
-  'led-resistor.drivenStraightFromA': "Doğrudan bir GPIO'dan sürülüyor",
+  'led-resistor.drivenStraightFromA': "Doğrudan GPIO ile sürülüyor",
   'led-resistor.e24IsTheIec':
-    "E24, IEC 60063'ün tercih edilen serisidir; %5'lik parçalar için dekat başına 24 değer içerir ve nominal olarak iki basamağa yuvarlanmış `10^(n/24)`'tür. En yakın değer ohm cinsinden değil logaritmik uzaklığa göre seçilir, çünkü tolerans bir orandır: yüzde olarak 62 Ω, 65 Ω'a 68 Ω kadar uzaktır.",
+    "E24, IEC 60063'ün tercih edilen serisidir; %5'lik parçalar için dekad başına 24 değer içerir ve nominal olarak iki basamağa yuvarlanmış `10^(n/24)`'tür. En yakın değer ohm cinsinden değil logaritmik uzaklığa göre seçilir, çünkü tolerans bir orandır: yüzde olarak 62 Ω, 65 Ω'a 68 Ω kadar uzaktır.",
   'led-resistor.exactE24Hit': 'tam E24 tutturması',
   'led-resistor.forwardVoltageVf': 'İleri gerilim Vf',
   'led-resistor.headroomIsTheWhole':
@@ -1026,14 +1026,14 @@ export const tr: Record<Key, string> = {
   'led-resistor.ledWithSeriesResistor': 'Seri dirençli LED',
   'led-resistor.nearestE24': 'En yakın E24',
   'led-resistor.nextStepUp': 'bir üst adım {rUp}',
-  'led-resistor.noValueWorks': 'hiçbir değer uymuyor',
-  'led-resistor.ofItReachesThe': 'bunun {efficiency} kadarı yongaya ulaşır',
-  'led-resistor.onTarget': '(hedeften {currentError})',
+  'led-resistor.noValueWorks': 'uygun direnç değeri yok',
+  'led-resistor.ofItReachesThe': 'gücün {efficiency} kadarı LED çipine ulaşır',
+  'led-resistor.onTarget': '(hedeften sapma: {currentError})',
   'led-resistor.packageRating': 'Kılıf değeri',
-  'led-resistor.railVs': 'Hat Vs',
-  'led-resistor.resistorHeadroom': 'Direnç payı',
+  'led-resistor.railVs': 'Besleme Vs',
+  'led-resistor.resistorHeadroom': 'Direnç üzerindeki gerilim payı',
   'led-resistor.resistorPower': 'Direnç gücü',
-  'led-resistor.supplyDraw': 'Besleme çekişi',
+  'led-resistor.supplyDraw': 'Beslemeden çekilen akım',
   'led-resistor.targetCurrentIf': 'Hedef akım If',
   'led-resistor.theory1':
     'Tek bir çevrim olduğundan Kirchhoff `Vs = Vf + I·R` verir ve direnç Ohm yasasından çıkar: `R = (Vs - Vf) / If`. LED, standart parçalı doğrusal diyot yaklaşımıyla sabit bir ileri düşüm olarak modellenir. Dizin üzerinde I-V eğrisi öyle diktir ki Vf neredeyse hiç kıpırdamaz; dolayısıyla akımı belirleyen diyot değil dirençtir.',
@@ -1047,71 +1047,71 @@ export const tr: Record<Key, string> = {
   'led-resistor.warn1':
     "{vf} değerindeki Vf, {supply} hattıyla aynı ya da üzerinde olduğundan LED hiçbir zaman yanmaz ve hiçbir direnç değeri işe yaramaz. Daha düşük Vf'li bir parça kullanın ya da hattı bir yük pompası veya yükseltici dönüştürücüyle yükseltin.",
   'led-resistor.warn2':
-    'Direnç üzerinde yalnızca {headroom} pay var. Parçadan parçaya olağan {spread} Vf dağılımı akımı {current} kadar kaydırır, yani direncin kontrolü neredeyse kalmaz. Hattı yükseltin ya da sabit akımlı bir sürücü kullanın.',
+    'Direnç üzerinde yalnızca {headroom} pay var. Parçadan parçaya tipik {spread} Vf değişimi akımı {current} kadar kaydırır, yani direncin kontrolü neredeyse kalmaz. Hattı yükseltin ya da sabit akımlı bir sürücü kullanın.',
   'led-resistor.warn3':
     "{current}, bir ESP32 pininin vermesi ya da çekmesi gereken {GPIO_MAX_MA} mA sınırının ötesinde. LED'i bir transistör üzerinden sürün ya da direnci büyütün. Gerçek pin akımı da bundan düşük çıkar, çünkü çıkış katı yük altında kendi gerilimini düşürür ve bu ideal kaynak modeli bunu hesaba katmaz.",
   'led-resistor.warn4':
     '{current}, bu LED için belirlenen {maxCurrent} mutlak en büyük değerin üzerinde. Orada sürekli çalıştırmak ömrü kısaltır ya da LED yongasını yakar.',
   'led-resistor.warn5':
     '{ratingLabel} bir dirençte {rPower}. Daha büyük bir kılıf seçin ya da düşümü seri bağlı iki dirence bölün.',
-  'ledc-pwm.actualDuty': 'Gerçek görev çevrimi',
+  'ledc-pwm.actualDuty': 'Gerçek görev oranı',
   'ledc-pwm.asked': 'istenen %{duty}',
   'ledc-pwm.asRequested': 'istendiği gibi',
   'ledc-pwm.blurb':
-    'Frekans ile çözünürlük arasındaki ödünleşim ve gerçek görev çevrimi adım büyüklüğü.',
-  'ledc-pwm.clampedFrom': '{requestedBits} değerinden kısıtlandı',
-  'ledc-pwm.dutySteps': 'Görev çevrimi adımları',
+    'Frekans ile çözünürlük arasındaki ödünleşim ve gerçek görev oranı adımları.',
+  'ledc-pwm.clampedFrom': '{requestedBits} bitten sınırlandı',
+  'ledc-pwm.dutySteps': 'Görev oranı adımları',
   'ledc-pwm.forLedsPickFrequency':
-    "LED'lerde görünür titremeyi önlemek için frekansı yaklaşık 200 Hz'in üzerinde seçin; ışık kameraya çekilecekse bunun epeyce üstüne çıkın. Motorlarda 20 kHz üzeri anahtarlama uğultusunu duyulmaz kılar, ama o frekansta elinizde kalan çözünürlüğü kontrol edin.",
+    "LED'lerde görünür titremeyi önlemek için frekansı yaklaşık 200 Hz'in üzerinde seçin; ışık kameraya çekilecekse bunun oldukça üstüne çıkın. Motorlarda 20 kHz üzeri anahtarlama uğultusunu duyulmaz kılar, ama o frekansta elinizde kalan çözünürlüğü kontrol edin.",
   'ledc-pwm.lede':
-    "ESP32 üzerinde LEDC zamanlayıcısı, 80 MHz'lik saati periyot başına 2^bit adıma böler; bu yüzden frekans ile görev çevrimi çözünürlüğü doğrudan birbirinin ödünüdür. Frekansı yükseltin, çözünürlük çöker. Osiloskop pinin dalga şeklini ve ortalamasını gösterir.",
+    "ESP32 üzerinde LEDC zamanlayıcısı, 80 MHz'lik saati periyot başına 2^bit adıma böler; bu yüzden frekans ile görev oranı çözünürlüğü doğrudan birbirinin ödünüdür. Frekansı yükseltin, çözünürlük çöker. Osiloskop pinin dalga şeklini ve ortalamasını gösterir.",
   'ledc-pwm.maxFreqAtThis': 'Bu çözünürlükte en yüksek frekans',
-  'ledc-pwm.pin': 'pin',
-  'ledc-pwm.quantisationError': 'Niceleme hatası',
-  'ledc-pwm.requestedBits': 'İstenen bit',
+  'ledc-pwm.pin': 'GPIO pini',
+  'ledc-pwm.quantisationError': 'Kuantalama hatası',
+  'ledc-pwm.requestedBits': 'İstenen çözünürlük',
   'ledc-pwm.stepSize': 'Adım boyu',
   'ledc-pwm.thatIsAHard':
-    "Bu sıkı bir ödünleşimdir. Arduino'nun varsayılanı olan 13 bit, {maxFrequency} değerinde tavan yapar. Bir düşürücü dönüştürücü için 100 kHz istemek geriye yalnızca 9 bit bırakır. 1 MHz istemekse 6 bit bırakır; bu da 64 adım eder ve analog hiçbir iş için işe yaramaz.",
+    "Bu sıkı bir ödünleşimdir. Arduino'nun varsayılanı olan 13 bit, {maxFrequency} değerinde üst sınırına ulaşır. Bir düşürücü dönüştürücü için 100 kHz istemek geriye yalnızca 9 bit bırakır. 1 MHz istemekse 6 bit bırakır; bu da 64 adım eder ve analog hiçbir iş için işe yaramaz.",
   'ledc-pwm.theDutyRegisterIs':
-    "Görev çevrimi yazmacı bir tam sayıdır, bu yüzden ulaşılabilir görev çevrimi `1/2^bits` adımlarına nicelenir. Analog bir gerilime süzüldüğünde bu adım `Vcc/2^bits` olur; bir PWM DAC'ının gerçek çözünürlüğü de budur: 3,3 V ve 10 bitte yaklaşık 3,2 mV eder ve ne kadar süzerseniz süzün daha incesini geri kazanamazsınız.",
+    "Görev oranı yazmacı tam sayıdır; bu nedenle erişilebilen görev oranları `1/2^bits` aralıklarla kuantalanır. PWM analog gerilime filtrelendiğinde her adım `Vcc/2^bits` olur. Bu değer PWM DAC'ın gerçek çözünürlüğüdür: 3,3 V ve 10 bitte yaklaşık 3,2 mV. Daha güçlü filtreleme bu kuantalama adımını küçültmez.",
   'ledc-pwm.theory1':
     "LEDC zamanlayıcısı, 80 MHz'lik bir kaynaktan her PWM periyodunda bir kez `2^bits` değerine kadar sayar; yani belirli bir çözünürlükte ulaşabileceği en yüksek hız `f_max = 80 MHz / 2^bits` olur. Bunu yeniden düzenlersek, belirli bir frekanstaki en iyi çözünürlük `floor(log2(80e6 / f))` olur.",
   'ledc-pwm.timer': 'Zamanlayıcı',
   'ledc-pwm.title': 'ESP32 LEDC PWM',
   'ledc-pwm.use':
-    "LED karartma, motor ve servo sürme ve ESP32'den analog gerilim üretme. Frekans ile çözünürlük arasındaki ödünleşim, insanların fark etmeden çarptığı bir donanım sınırıdır: yüksek frekans istemek görev çevrimi çözünürlüğünüzü sessizce düşürür, bu da bir LED'i düşük parlaklıkta karartırken görünür bantlanma olarak ortaya çıkar.",
+    "LED karartma, motor ve servo sürme ve ESP32'den analog gerilim üretme. Frekans ile çözünürlük arasındaki ödünleşim, insanların fark etmeden çarptığı bir donanım sınırıdır: yüksek frekans istemek görev oranı çözünürlüğünüzü sessizce düşürür, bu da bir LED'i düşük parlaklıkta karartırken görünür bantlanma olarak ortaya çıkar.",
   'ledc-pwm.warn1':
     '{frequency}, hiçbir çözünürlükte ulaşılabilir değil: 1 bit bile saatin çıkış frekansının en az iki katı olmasını gerektirir, LEDC kaynağı ise {APB_CLOCK}.',
   'ledc-pwm.warn2':
     "{frequency} frekansında {requestedBits} bit olanaksız. Zamanlayıcı sessizce {bits} bit kullanır; bu da istediğiniz {requestedBits2} yerine {stepCount} adım demektir. ledcSetup'ı desteklenmeyen bir çiftle çağırmak hata vermez, yalnızca beklediğinizden azını verir; kısılmış LED'lerdeki bantlanmanın yaygın bir nedeni de budur.",
   'ledc-pwm.warn3':
-    '8 bitin altında adımlar LED üzerinde gözle görülür. Yumuşak karartma için frekansı 10 bit ya da üzerini verecek kadar düşük tutun ve algılanan parlaklığın kabaca görev çevriminin karesi olduğunu unutmayın; alt uç en ince adımları gerektirir.',
-  'level-shifter.07XLow': 'alçak hattın 0,7 katı',
+    '8 bitin altında adımlar LED üzerinde gözle görülür. Yumuşak karartma için frekansı 10 bit ya da üzerini verecek kadar düşük tutun ve algılanan parlaklığın kabaca görev oranının karesi olduğunu unutmayın; alt uç en ince adımları gerektirir.',
+  'level-shifter.07XLow': 'düşük gerilim tarafı geriliminin 0,7 katı',
   'level-shifter.aResistorDividerIs':
-    "Direnç bölücü, 3,3 V'luk bir girişe giden tek yönlü işaretler için uygundur, başka hiçbir şey için değil. Tek yönlüdür, sürücüyü sürekli yükler ve kendi RC'sini iki direncin paralel bileşimi belirler; yani düşük akımlı yapmak onu yavaşlatır.",
+    "Direnç bölücü yalnızca yüksek gerilimden 3,3 V'luk girişe giden tek yönlü sinyaller için uygundur. Sürücüyü sürekli yükler ve kenar hızını iki direncin paralel eşdeğeri ile hat kapasitansının oluşturduğu RC belirler; dolayısıyla akımı azaltmak için dirençleri büyütmek devreyi yavaşlatır.",
   'level-shifter.bitRate': 'Bit hızı',
   'level-shifter.blurb':
-    'BSS138 çift yönlü dönüştürücü ve bölücüyle seviye kaydırma, hız sınırlarıyla.',
+    'BSS138 ile çift yönlü, direnç bölücüyle tek yönlü seviye dönüştürme ve hız sınırları.',
   'level-shifter.bss138Fet': 'BSS138 FET',
-  'level-shifter.edge': 'kenar',
+  'level-shifter.edge': 'yükselen kenar',
   'level-shifter.gateDriveMattersWith':
     "Kapı sürüşü önemlidir. 1,3 V eşikle, 3,3 V'luk bir alt hat 2 V aşırı sürüş verir ve iyi çalışır. 1,8 V'luk bir hat yalnızca 0,5 V bırakır; bu sınırdadır ve sıcaklıkla kayar.",
-  'level-shifter.highSide': 'Üst taraf',
+  'level-shifter.highSide': 'Yüksek gerilim tarafı',
   'level-shifter.lede':
-    '3,3 V ve 5 V parçaları konuşturmak. Osiloskop, alt taraf alıcısındaki yükselen kenarı lojik yüksek eşiğiyle birlikte gösterir: eğri çizgiyi hızla geçmiyorsa, DC seviyeleri ne kadar doğru görünürse görünsün bağlantı güvenilmezdir.',
-  'level-shifter.lowSide': 'Alt taraf',
+    '3,3 V ve 5 V devreler arasında güvenli lojik iletişim kurun. Osiloskop, düşük gerilim tarafındaki yükselen kenarı lojik yüksek eşiğiyle birlikte gösterir. Eğri eşiği yeterince hızlı geçmiyorsa, DC seviyeleri doğru görünse bile bağlantı güvenilir değildir.',
+  'level-shifter.lowSide': 'Düşük gerilim tarafı',
   'level-shifter.marginOverVth': 'Vth üzerindeki pay',
   'level-shifter.maxBitRate': 'En yüksek bit hızı',
   'level-shifter.needsAtLeast': 'En az şu kadar gerekir',
-  'level-shifter.perLineWhenLow': 'hat başına, alçakken',
-  'level-shifter.pullUpCurrent': 'Pull-up akımı',
-  'level-shifter.pullUps': 'Pull-up dirençleri',
+  'level-shifter.perLineWhenLow': 'hat alçakken, hat başına',
+  'level-shifter.pullUpCurrent': 'Yukarı çekme akımı',
+  'level-shifter.pullUps': 'Yukarı çekme dirençleri',
   'level-shifter.r1Series': 'R1 (seri)',
   'level-shifter.r2ToGround': 'R2 (toprağa)',
   'level-shifter.theConsequenceIsThat':
-    "Bunun sonucu, devrenin açık drenajlı olmasıdır: yalnızca aşağı çekebilir ve iki tarafta da pull-up gerekir. Dolayısıyla hızı tümüyle pull-up ile veri yolu kapasitansının RC'si belirler, tıpkı I2C'de olduğu gibi. Bu kartlar tipik 10 kΩ pull-up ile birkaç yüz kHz civarında tavan yapar.",
+    "Bu yapı açık drenajlıdır: hatları yalnızca aşağı çekebilir ve her iki tarafta da yukarı çekme direnci gerekir. Hızı, yukarı çekme direnci ile veri yolu kapasitansının oluşturduğu RC belirler; I2C'de de aynı durum geçerlidir. Tipik 10 kΩ dirençli hazır kartlar genellikle birkaç yüz kHz civarında sınıra ulaşır.",
   'level-shifter.theory1':
-    "BSS138 devresi aldatıcı biçimde zekidir. FET'in kapısı alt taraf hattında durur ve kaynağı alt tarafa bakar. Alt tarafı aşağı çekin, VGS tüm alt hat gerilimi olur; FET iletime geçer ve üst tarafı da birlikte aşağı sürükler. Üst tarafı alçağa sürün, önce gövde diyodu iletir ve kaynağı aşağı çeker, bu da FET'i düzgün biçimde iletime sokar. Tek bir FET'i çift yönlü kılan şey budur.",
+    "BSS138 devresi tek MOSFET ile çift yönlü seviye dönüştürür. Kapı düşük gerilim beslemesine, kaynak düşük gerilim tarafına bağlanır. Düşük taraf hat alçağa çekildiğinde VGS oluşur ve MOSFET yüksek tarafı da aşağı çeker. Yüksek taraf alçağa çekildiğinde önce gövde diyodu iletir; kaynak gerilimi düşünce MOSFET açılır ve iki tarafı birleştirir. Çift yönlü çalışma bu kendiliğinden açılma mekanizmasından doğar.",
   'level-shifter.title': 'Lojik Seviye Dönüştürücü',
   'level-shifter.use':
     "3,3 V'luk bir ESP32'yi 5 V çevre birimlerine bağlamak: eski sensörler, karakter LCD'ler, WS2812 şeritler ve Arduino döneminin çoğu shield'i. Önemlidir, çünkü 3,3 V'luk bir uca 5 V vermek onu zamanla zedeler ve 3,3 V çıkış çoğu zaman 5 V'luk bir parçanın geçerli yüksek olarak okuduğu seviyenin hemen altında kalır; bu da temiz arıza yerine aralıklı hatalar üretir.",
@@ -1119,16 +1119,16 @@ export const tr: Record<Key, string> = {
   'level-shifter.warn1':
     "Eşiğin üzerinde yalnızca {vgsMargin} kapı sürüşü var. FET zayıf ve yavaş iletime geçer, bu yüzden kenarlar bozulur ve Vth'nin kaydığı uç sıcaklıklarda seviye çevirici güvenilmez olur. Alt tarafta yaklaşık 1,8 V'un altında, bunun yerine özel bir çevirici tümdevre kullanın.",
   'level-shifter.warn2':
-    'Kenar {worstRise} sürüyor ve bu, kullanılabilir hızı yaklaşık {maxBitRate} ile sınırlıyor. {bitRate} hızında işaret, yeniden değişmesi istenmeden önce geçerli bir seviyeye hiç ulaşamaz. Daha güçlü bir pull-up kullanın ya da veri yolu kapasitansını azaltın.',
+    'Yükselen kenar {worstRise} sürüyor ve kullanılabilir veri hızını yaklaşık {maxBitRate} ile sınırlıyor. {bitRate} hızında sinyal, bir sonraki değişimden önce geçerli lojik seviyeye ulaşamıyor. Daha küçük bir yukarı çekme direnci kullanın veya veri yolu kapasitansını azaltın.',
   'level-shifter.warn3':
-    'Bölücü yalnızca yüksekten alçağa çevirir. Üst tarafı alt taraftan süremez, yani I2C gibi çift yönlü hiçbir iş için kullanılamaz ve hat yüksek olduğu sürece sürekli akım harcar.',
+    'Direnç bölücü yalnızca yüksek gerilimden düşük gerilime tek yönlü dönüşüm yapar. Düşük gerilim tarafı yüksek tarafı süremez; bu nedenle I2C gibi çift yönlü veri yollarında kullanılamaz. Hat yüksekken de sürekli akım tüketir.',
   'link-budget.band': 'Bant',
-  'link-budget.blurb': 'Alıcı hassasiyetine karşı serbest uzay yol kaybı, sönümleme payıyla.',
+  'link-budget.blurb': 'Alıcı hassasiyetine göre serbest uzay yol kaybı ve bağlantı payı.',
   'link-budget.budget': 'Bütçe',
   'link-budget.cableAndMiscLoss': 'Kablo ve diğer kayıplar',
   'link-budget.distance': 'Uzaklık',
   'link-budget.eirp': 'EIRP',
-  'link-budget.freeSpacePathLoss': 'Boş uzay yol kaybı',
+  'link-budget.freeSpacePathLoss': 'Serbest uzay yol kaybı',
   'link-budget.freeSpacePathLoss2':
     "Boş uzay yol kaybı `20·log10(d_km) + 20·log10(f_MHz) + 32.44` ile bulunur. İçselleştirmeye değer iki sonucu var: uzaklığı iki katına çıkarmak 6 dB'ye mal olur, frekansı iki katına çıkarmak da öyle. İkincisi, aynı güçte 868 MHz'in 2,4 GHz'den neden bu kadar uzağa ulaştığını açıklar; üstelik daha düşük frekansların engelleri daha iyi geçtiğini hesaba katmadan önce.",
   'link-budget.lede':
@@ -1138,30 +1138,30 @@ export const tr: Record<Key, string> = {
     'Asla sıfır paya göre tasarlamayın. Bu model, ilk Fresnel bölgesinde hiçbir şey olmayan açık bir görüş hattı varsayar ve bu neredeyse hiçbir zaman geçerli olmaz. On dB çalışan bir alt sınırdır, kolayca gidip düzeltemeyeceğiniz her şey için yirmi dB akla yatkındır.',
   'link-budget.prx': 'Prx',
   'link-budget.radio': 'Telsiz',
-  'link-budget.rangeAt0Db': '0 dB payla menzil',
-  'link-budget.rangeAtDbMargin': '{MARGIN_MIN_DB} dB payla menzil',
+  'link-budget.rangeAt0Db': '0 dB paydaki menzil',
+  'link-budget.rangeAtDbMargin': '{MARGIN_MIN_DB} dB paydaki menzil',
   'link-budget.receivedPower': 'Alınan güç',
   'link-budget.rxAntennaGain': 'RX anten kazancı',
-  'link-budget.sensitivity': 'duyarlılık',
+  'link-budget.sensitivity': 'Alıcı hassasiyeti',
   'link-budget.sensitivityIsWhereLora':
     "LoRa'nın hakkını verdiği yer duyarlılıktır. İşareti daha uzun zamana yaymak işlem kazancı sağlar: SF7 yaklaşık -123 dBm'e, SF12 yaklaşık -137 dBm'e iner. O 14 dB, menzilde beş kat demektir ve bedeli veri hızı ile yayın süresidir.",
   'link-budget.theory1':
     'Tüm bütçe dB cinsinden tek satırdır: `Prx = Ptx + Gtx + Grx - FSPL - losses`, ve bağlantı Prx alıcının duyarlılığının üzerinde durduğunda kurulur. Desibel ile çalışmak her çarpmayı toplamaya çevirir; bunun elle hesaplanabilir olmasının tek nedeni budur.',
-  'link-budget.title': 'RF Link Bütçesi (LoRa / WiFi)',
+  'link-budget.title': 'RF Bağlantı Bütçesi (LoRa / Wi-Fi)',
   'link-budget.txAntennaGain': 'TX anten kazancı',
   'link-budget.txPower': 'TX gücü',
-  'link-budget.usableInPractice': 'uygulamada kullanılabilir',
+  'link-budget.usableInPractice': 'pratikte güvenilir',
   'link-budget.use':
-    "Herhangi bir kurulum yapmadan önce, bir LoRa ya da WiFi bağlantısının ihtiyacınız olan menzilde gerçekten çalışıp çalışmayacağına karar vermek. Düşük frekansların neden daha uzağa ulaştığını, LoRa'nın veri hızını hassasiyet için neden feda ettiğini ve pay bırakmadan tasarlanan bir bağlantının ilk yağmurda neden koptuğunu gösterir.",
+    "Herhangi bir kurulum yapmadan önce, bir LoRa ya da Wi-Fi bağlantısının ihtiyacınız olan menzilde gerçekten çalışıp çalışmayacağına karar vermek. Düşük frekansların neden daha uzağa ulaştığını, LoRa'nın veri hızını hassasiyet için neden feda ettiğini ve pay bırakmadan tasarlanan bir bağlantının ilk yağmurda neden koptuğunu gösterir.",
   'link-budget.warn1':
     'Bağlantı kurulmuyor: alınan güç, duyarlılık tabanının {marginDb} dB altında. Uzaklığı yarıya indirmek 6 dB kazandırır, iki anten kazancını da ikiye katlamak da öyle. Daha yavaş bir LoRa yayılma çarpanı çok daha fazlasını kazandırır.',
   'link-budget.warn2':
-    'Yalnızca {marginDb} dB pay var. Boş uzay kaybı en iyi durumdur: yağmur, yapraklar, bir duvar, antene yakın bir el ya da yalın çok yollu sönümleme, her biri birkaç dB yer. Bir bağlantıya güvenilir demeden önce en az {MARGIN_MIN_DB} dB hedefleyin.',
+    'Yalnızca {marginDb} dB pay var. Boş uzay kaybı en iyi durumdur: yağmur, yapraklar, bir duvar, antene yakın bir el ya da çok yollu yayılım kaynaklı sönümleme, her biri birkaç dB yer. Bir bağlantıya güvenilir demeden önce en az {MARGIN_MIN_DB} dB hedefleyin.',
   'lipo-charger.1200Rprog': '1200 / Rprog',
   'lipo-charger.becauseItIsA':
-    "Doğrusal bir şarj devresi olduğundan giriş ile hücre gerilimi arasındaki farkın tamamı ısıya dönüşür: `P = (Vin - Vcell)·I`. 5 V'tan 1 A ile 3,0 V'luk boş bir hücreye bu, bir SOP-8 içinde 2 W eder; bu kartların ısınıp kendini kısmasının nedeni budur. Onları 5 V'un üzerinde herhangi bir şeyden beslemek durumu belirgin biçimde kötüleştirir.",
+    "Doğrusal bir şarj devresi olduğundan giriş ile hücre gerilimi arasındaki farkın tamamı ısıya dönüşür: `P = (Vin - Vcell)·I`. 5 V'tan 1 A ile 3,0 V'luk boş bir hücreye bu, bir SOP-8 içinde 2 W eder; bu kartların ısınıp şarj akımını sınırlamasının nedeni budur. Onları 5 V'un üzerinde herhangi bir şeyden beslemek durumu belirgin biçimde kötüleştirir.",
   'lipo-charger.blurb': 'Program direncinden şarj akımı, CC/CV aşamaları ve şarj süresi.',
-  'lipo-charger.ccPhase': 'CC evresi',
+  'lipo-charger.ccPhase': 'Sabit akım (CC) evresi',
   'lipo-charger.cell': 'Hücre',
   'lipo-charger.charger': 'Şarj devresi',
   'lipo-charger.chipDissipation': 'Yonga güç kaybı',
@@ -1222,7 +1222,7 @@ export const tr: Record<Key, string> = {
     'Her parça setindeki mavi ayarlanabilir buck modülü, 12 V beslemeden 5 V veya 3,3 V almak için kullanılır. Bu sayfa var, çünkü modüller 3 A iddiasıyla satılırken termal tasarımları çok daha önce pes eder ve geri besleme bölücüsünü deneme yanılmayla ayarlamak, insanların besledikleri şeyi yakma biçimidir.',
   'lm2596.voutTarget': 'Hedef Vout',
   'lm2596.warn1':
-    'Giriş, bu çıkışı bu yükte tutmak için gereken {vinMinimum} değerinin altında. Regülatör en büyük görev çevriminde çalışır ve çıkış, anahtar düşümü çıkarıldıktan sonra girişi aşağı doğru izler.',
+    'Giriş, bu çıkışı bu yükte tutmak için gereken {vinMinimum} değerinin altında. Regülatör en büyük görev oranında çalışır ve çıkış, anahtar düşümü çıkarıldıktan sonra girişi aşağı doğru izler.',
   'lm2596.warn2':
     "Veri sayfasının en küçük değeri olan {VIN_MIN} V'un altında. İçteki referans burada garanti edilmez.",
   'lm2596.warn3': "Mutlak en büyük değer olan {VIN_MAX} V'un üzerinde. Bu, parçayı yok eder.",
@@ -1236,21 +1236,21 @@ export const tr: Record<Key, string> = {
     'Hedef, {VREF} V geri besleme referansının altında; bu topoloji bunu hiçbir şekilde üretemez.',
   'lm317.240IsStandardKeeps': '240 Ω standarttır: {V_REF} parçayı yüksüzken regülasyonda tutar.',
   'lm317.298KIs25':
-    '298 K, 25 C demektir. Kapalı bir kutu içindeki durgun hava 10 - 20 K daha sıcak çalışır.',
+    '298 K, 25 C demektir. Kapalı bir kutu içindeki hareketsiz hava 10 - 20 K daha sıcak çalışır.',
   'lm317.aDifferentTopology': 'farklı bir topoloji',
   'lm317.adjustPinTerm': 'Ayar pini terimi',
   'lm317.againstTarget': '(hedefe göre {targetErr}{targetErr2})',
   'lm317.aHeatsinkIsMandatory': '(soğutucu zorunludur)',
   'lm317.aKWSink': "{rthSinkNeeded} K/W'lık bir soğutucu",
   'lm317.atAndAmbient': '({pd} güçte, {ambientK} ortamda)',
-  'lm317.blurb': 'Ayar dirençleri, güç kaybı ve soğutucu gerekip gerekmediği.',
+  'lm317.blurb': 'Ayar dirençleri, güç kaybı ve soğutucu geremod gerekmediği.',
   'lm317.clipOnTo220': 'Geçmeli TO-220 kanat 20 - 30, 25 mm profil 10, 50 mm blok 4.',
   'lm317.e24Gives': '(E24 {r2E24}, {voutE24} verir)',
   'lm317.everythingLeftOverIs':
     "Artan her şey ısıdır. Anahtarlama olmadığı ve saklanacak yer bulunmadığı için `Pd = (Vin - Vout)·I` olur, yani verim yalnızca Vout/Vin'dir. Jonksiyon `Tj = Ta + Pd·Rth` değerindedir; buradaki Rth jonksiyondan ortama giden seri yoldur: jonksiyondan kılıfa, macun ya da ped üzerinden kılıftan soğutucuya, sonra soğutucudan havaya. Soğutucuyu boyutlandırmak için tersine çevirin: `Rsa = (Tj_max - Ta)/Pd - Rjc - Rcs`. Negatif bir yanıt, darboğazın kılıfın kendisi olduğu ve hiçbir soğutucunun onu kurtaramayacağı anlamına gelir.",
   'lm317.freeAirIsEnough': '(serbest hava yeterli)',
   'lm317.greaseAlone05': 'Yalnızca macun 0,5, silikon ped 2, mika artı macun 1,4.',
-  'lm317.headroom': 'Pay',
+  'lm317.headroom': 'Giriş-çıkış gerilim payı',
   'lm317.heatsinkFitted': 'Takılı soğutucu',
   'lm317.heatsinkNeeded': 'Gereken soğutucu',
   'lm317.heatsinkRth': 'Soğutucu Rth',
@@ -1272,7 +1272,7 @@ export const tr: Record<Key, string> = {
     'İstediğiniz hat için R1 ve R2 seçin, sonra parçanın buna dayanıp dayanmadığını kontrol edin. Osiloskop bir dalga şekli göstermez: yatay eksen 0 ile {max} A arasındaki yük akımıdır, bu yüzden bölme başına değeri miliamper olarak okuyun; dikey eksen ise 398 K (125 C) sınırına karşı kelvin cinsinden jonksiyon sıcaklığıdır.',
   'lm317.programCurrent': 'Program akımı',
   'lm317.r1HasAnUpper':
-    "R1'in oranın göstermediği bir üst sınırı vardır. Parça regüle edebilmek için {I_LOAD_MIN} yük ister, bu yüzden bölücü normalde bunu tek başına sağlayacak biçimde boyutlandırılır: `R1 ≤ Vref/Imin = {I_LOAD_MIN2}` . Her referans şemadaki 240 Ω buradan gelir.",
+    "R1'in oranın göstermediği bir üst sınırı vardır. Parça regüle edebilmek için {I_LOAD_MIN} yük ister, bu yüzden bölücü normalde bunu tek başına sağlayacak biçimde boyutlandırılır: `R1 ≤ Vref/Imin = {I_LOAD_MIN2}`. Her referans şemadaki 240 Ω buradan gelir.",
   'lm317.r1OutToAdj': "R1 (OUT'tan ADJ'ye)",
   'lm317.r2AdjToGnd': "R2 (ADJ'den GND'ye)",
   'lm317.r2ForTarget': 'Hedef için R2',
@@ -1302,7 +1302,7 @@ export const tr: Record<Key, string> = {
   'lm317.warn3':
     'Jonksiyon {tjK} değerinde, 175 C civarındaki içsel ısıl kapanmanın ötesinde. Regülatör orada durmak yerine çıkışı geri kısar ve kapanıp açılarak salınır. {pdMax} kadarını atın ya da daha iyi bir soğutucu takın.',
   'lm317.warn4':
-    'Jonksiyon {tjK} değerinde, {TJ_MAX_K} sınırının üzerinde. Regüle etmeyi sürdürebilir ama belirtim dışıdır ve ömrü hızla tükenmektedir. {topology} , daha düşük bir Vin ya da {ioutCeiling} altında yük gerekir.',
+    'Jonksiyon {tjK} değerinde, {TJ_MAX_K} sınırının üzerinde. Regüle etmeyi sürdürebilir ama belirtim dışıdır ve ömrü hızla tükenmektedir. {topology}, daha düşük bir Vin ya da {ioutCeiling} altında yük gerekir.',
   'lm317.warn5':
     "Hiçbir soğutucu yetmez: {rthJC} K/W jonksiyon-kılıf yolundan geçen {pd}, {ambientK} ortam sıcaklığında bütçeyi tek başına zaten aşıyor. Vin'i Vout'a yaklaştırın ya da anahtarlamalı bir regülatör kullanıp farkı ısıya çevirmeyi bırakın.",
   'lm317.warn6':
@@ -1319,7 +1319,7 @@ export const tr: Record<Key, string> = {
   'mosfet-switch.conductionLoss': 'İletim kaybı',
   'mosfet-switch.conductionSwitching': '(iletim + anahtarlama)',
   'mosfet-switch.datasheetAt': '(veri sayfası {vgsSpec} değerinde {rdsOnSpec})',
-  'mosfet-switch.dIdRdsAt': '(%{duty} görev çevriminde D·Id²·RDS)',
+  'mosfet-switch.dIdRdsAt': '(%{duty} görev oranında D·Id²·RDS)',
   'mosfet-switch.dieLimited': '(yonga sınırlı)',
   'mosfet-switch.drainCurrent': 'Drain akımı',
   'mosfet-switch.driveLimitedNotDie': '(sürüş sınırlı, yonga sınırlı değil)',
@@ -1339,7 +1339,7 @@ export const tr: Record<Key, string> = {
     'Bir ESP32 GPIO ucundan yük anahtarlayan lojik seviyeli N kanal MOSFET. Osiloskop, bir veya daha fazla PWM çevrimi boyunca kapı ve drain gerilimini gösterir, yatay eksen zamandır. Aşağıdaki göstergeler çalışma noktası, kayıp dağılımı ve jonksiyon sıcaklığıdır.',
   'mosfet-switch.lossesSplitThreeWays':
     "Kayıplar üçe ayrılır. İletim kaybı `Pcond = D·Id²·RDS(on)` olur. Geçiş kaybı `Psw = 0.5·VDS·Id·(tr + tf)·fsw` olup her kenarı tam gerilimde bir akım yükselişi, ardından tam akımda bir gerilim düşüşü olarak ele alır; bu, kırpılmış endüktif yük için tutucu bir varsayımdır. Kapı yükü `Pgate = Qg·VGS·fsw` kadar bir güce mal olur ve bu, FET'te değil kapı direnci ile sürücü pininde harcanır. Yongayı yalnızca ilk iki kayıp ısıtır, yani `Tj = Ta + (Pcond + Psw)·Rth(j-a)` olur.",
-  'mosfet-switch.lowSideNChannel': 'Alt taraf N kanallı MOSFET anahtar',
+  'mosfet-switch.lowSideNChannel': 'N kanallı alt kol anahtarı',
   'mosfet-switch.millerPlateau': 'Miller platosu',
   'mosfet-switch.mosfet': 'MOSFET',
   'mosfet-switch.ofWhatTheSwitch': '(anahtarın geçirdiğinin %{efficiency} kadarı)',
@@ -1350,7 +1350,7 @@ export const tr: Record<Key, string> = {
   'mosfet-switch.quotedAtVgs': "VGS'te belirtildi",
   'mosfet-switch.rdsOnAtThis': "Bu VGS'te RDS(on)",
   'mosfet-switch.rdsOnIsNot':
-    "RDS(on) sabit bir değer değildir. Triyot bölgesinin derinlerinde kanal `rds = 1 / (k·Vov)` olur, yani veri sayfasındaki bir değer k'yi sabitler: `k = 1 / (RDS(on)spec · (VGSspec - Vth))`, başka herhangi bir kapı geriliminde ise `RDS(on) = RDS(on)spec · (VGSspec - Vth) / (VGS - Vth)` olur. 22 mΩ diye duyurulan bir parçanın 3,3 V'ta 51 mΩ'a yakın olmasının, 10 V'ta belirtilmiş bir parçanın ise büsbütün konu dışı kalmasının nedeni budur.",
+    "RDS(on) sabit bir değer değildir. Triyot bölgesinin derinlerinde kanal `rds = 1 / (k·Vov)` olur, yani veri sayfasındaki bir değer k'yi sabitler: `k = 1 / (RDS(on)spec · (VGSspec - Vth))`, başka herhangi bir kapı geriliminde ise `RDS(on) = RDS(on)spec · (VGSspec - Vth) / (VGS - Vth)` olur. 22 mΩ diye duyurulan bir parçanın 3,3 V'ta 51 mΩ'a yakın olmasının, 10 V'ta belirtilmiş bir parçanın ise tamamen konu dışı kalmasının nedeni budur.",
   'mosfet-switch.rdsOnQuoted': 'Belirtilen RDS(on)',
   'mosfet-switch.riseKOverC': '({ta2} °C üzerine {ta} K artış)',
   'mosfet-switch.riseTimeTr': 'Yükselme süresi tr',
@@ -1359,11 +1359,11 @@ export const tr: Record<Key, string> = {
   'mosfet-switch.switching': 'Anahtarlama',
   'mosfet-switch.switchingLoss': 'Anahtarlama kaybı',
   'mosfet-switch.theChannelFollowsThe':
-    'Kanal kare yasasını izler. Eşiğin altında hiç kanal yoktur. Üstünde, `Vov = VGS - Vth` ile drain akımı triyot bölgesinde `Id = k·(Vov·VDS - VDS²/2)` olur ve `VDS &gt; Vov` olduğunda `Id = 0.5·k·Vov²` değerinde doyar. Çalışma noktası, bu eğrinin `VDS = VS - Id·Rload` yük doğrusuyla kesişimidir ve yinelemeli değil kapalı biçimde çözülür.',
+    'Kanal kare yasasını izler. Eşiğin altında hiç kanal yoktur. Üstünde, `Vov = VGS - Vth` ile drain akımı triyot bölgesinde `Id = k·(Vov·VDS - VDS²/2)` olur ve `VDS &gt; Vov` olduğunda `Id = 0.5·k·Vov²` değerinde doyar. Çalışma noktası, bu eğrinin `VDS = VS - Id·Rload` yük doğrusuyla kesişimidir ve yinelemeli değil kapalı formda çözülür.',
   'mosfet-switch.theEdgeTimesUsed':
     'Kullanılan kenar süreleri `max(tr, Qg·Rg/VGS)` şeklindedir. Bir kapı, sürücünün yükünü kaydırabileceğinden hızlı hareket edemez; bu yüzden anahtarlama hızını, dolayısıyla anahtarlama kaybını, genellikle yonga değil bir GPIO üzerindeki büyük kapı direnci belirler.',
   'mosfet-switch.theScopeTraceIs':
-    'Osiloskop izi, bu parçalı tanımın her örnek anında doğrudan hesaplanmasıyla kurulur; bu yüzden her zaman tabanında tamdır ve üzerinde `VDS·Id` integrali almak yukarıdaki kapalı biçimlerle aynı sayıları verir.',
+    'Osiloskop izi, bu parçalı tanımın her örnek anında doğrudan hesaplanmasıyla kurulur; bu yüzden her zaman tabanında tamdır ve üzerinde `VDS·Id` integrali almak yukarıdaki kapalı formdaki denklemlerle aynı sayıları verir.',
   'mosfet-switch.thresholdVth': 'Eşik Vth',
   'mosfet-switch.title': 'MOSFET Devre Simülatörü',
   'mosfet-switch.use':
@@ -1389,7 +1389,7 @@ export const tr: Record<Key, string> = {
     'H köprüsündeki fırçalı bir motor için hız, tork, durma akımı ve PWM dalgalanması.',
   'motor-drive.copperLoss': '({w} bakır kaybı olarak)',
   'motor-drive.current': 'Akım',
-  'motor-drive.currentRipple': 'Akım dalgalanması',
+  'motor-drive.currentRipple': 'Motor akımı dalgalanması',
   'motor-drive.drive': 'Sürücü',
   'motor-drive.driverCurrentLimit': 'Sürücü akım sınırı',
   'motor-drive.driverHint':
@@ -1418,7 +1418,7 @@ export const tr: Record<Key, string> = {
   'motor-drive.shaftTorque': 'Mil torku',
   'motor-drive.speedConstantKv': 'Hız sabiti Kv',
   'motor-drive.speedKrpm': 'Hız (krpm)',
-  'motor-drive.stallCurrent': 'Durma akımı',
+  'motor-drive.stallCurrent': 'Kilitlenme akımı',
   'motor-drive.stallTorque': 'Durma torku',
   'motor-drive.theory1':
     'Tek değil, birbirine bağlı iki birinci derece sistem: sargı `L·di/dt = v - i·R - ke·w`, rotor ise `J·dw/dt = kt·i - b·w - Tload` denklemine uyar. Bağlantıyı kuran, motorun hızlandıkça beslemeye karşı koyması olan `ke·w` karşı EMK terimidir. Bir DC motorun tüm davranışı tek satırda budur.',
@@ -1435,11 +1435,11 @@ export const tr: Record<Key, string> = {
   'motor-drive.warnAudible':
     '{f} frekansında kıymak duyulabilir aralığın içindedir, bu yüzden sargılar o perdeden ötecektir. 20 kHz üzerinde bu gürültü kaybolur, bedeli köprüde daha fazla anahtarlama kaybıdır.',
   'motor-drive.warnDriver':
-    'Durma akımı {stall}, sürücünün dayandığı {limit} değerinin ötesinde. Bu akım yalnızca arızada değil, motor her kalkışta veya sıkıştığında akar; bu yüzden sürücünün ya bu payı ya da geri kısan bir akım sınırı olmalıdır. Bir H köprüsünün ısınıp sonra bozulmasının alışılmış nedeni budur.',
+    'Durma akımı {stall}, sürücünün dayandığı {limit} değerinin ötesinde. Bu akım yalnızca arızada değil, motor her kalkışta veya sıkıştığında akar; bu yüzden sürücünün ya bu payı ya da geri kısan bir akım sınırı olmalıdır. Bir H köprüsünün ısınıp sonra bozulmasının yaygın nedeni budur.',
   'motor-drive.warnRipple':
     'Dalgalanma, ortalama akımın %{pct} kadarı. Süzme işini burada sargı yapıyor ve bu kadar dalgalanma tork üretmeden onu ısıtır. PWM frekansını yükseltin.',
   'motor-drive.warnStalled':
-    'Durdu: {load} yük, motorun bu görev çevriminde üretebildiği {stall} değerinin ötesinde; bu yüzden rotor hiç dönmez ve sargı tam durma akımında kalır. Görev çevrimini ya da beslemeyi yükseltin, yükü dişliyle azaltın veya daha büyük bir motor takın.',
+    'Durdu: {load} yük, motorun bu görev oranında üretebildiği {stall} değerinin ötesinde; bu yüzden rotor hiç dönmez ve sargı tam durma akımında kalır. Görev oranını ya da beslemeyi yükseltin, yükü dişliyle azaltın veya daha büyük bir motor takın.',
   'motor-drive.whatSetsTheRamp': '(hız rampasını belirleyen değer)',
   'motor-drive.windingInductance': 'Sargı endüktansı',
   'motor-drive.windingLOverR': '(sargının L/R değeri)',
@@ -1456,10 +1456,10 @@ export const tr: Record<Key, string> = {
   'ntc-thermistor.rAtReference': 'Referanstaki R',
   'ntc-thermistor.referenceTemp': 'Referans sıcaklığı',
   'ntc-thermistor.resistanceNow': 'Anlık direnç',
-  'ntc-thermistor.selfHeating': 'Öz ısınma',
+  'ntc-thermistor.selfHeating': 'Kendi kendine ısınma',
   'ntc-thermistor.selfHeatingError': 'Öz ısınma hatası',
   'ntc-thermistor.selfHeatingIsThe':
-    'Asıl tuzak öz ısınmadır. Boncuktan geçen akım ısı üretir, ısı dağıtma sabiti (durgun havada tipik olarak 1 - 5 mW/K) bunu bir sıcaklık hatasına çevirir ve algılayıcı bunu hiç çekinmeden ölçüm diye bildirir. Akımı küçük tutun ya da bölücüye yalnızca örnekleme yaptığınız mikrosaniyeler boyunca güç verin.',
+    'Asıl tuzak öz ısınmadır. Boncuktan geçen akım ısı üretir, ısı dağıtma sabiti (hareketsiz havada tipik olarak 1 - 5 mW/K) bunu bir sıcaklık hatasına çevirir ve algılayıcı bunu ölçüm hatası olarak doğrudan çıktıya yansıtır. Akımı küçük tutun ya da bölücüye yalnızca örnekleme yaptığınız mikrosaniyeler boyunca güç verin.',
   'ntc-thermistor.steinhartHart1T':
     'Steinhart-Hart, `1/T = A + B·ln(R) + C·ln(R)³`, geniş bir aralıkta birkaç milikelvine iner ama üç kalibrasyon noktası ister. Beta biçimi, bunun C = 0 olan özel hâlidir.',
   'ntc-thermistor.sweepRange': 'Tarama aralığı',
@@ -1482,10 +1482,10 @@ export const tr: Record<Key, string> = {
   'op-amp.1RfRgSets': '(1 + Rf/Rg, bant genişliğini belirler)',
   'op-amp.2PerInputCycle': '(tetiklenirken giriş çevrimi başına 2)',
   'op-amp.aCompensatedOpAmp':
-    "Dengelenmiş bir işlemsel yükselteç, kazanç ile bant genişliğinin çarpımını sabit tutar; bu yüzden kapalı çevrim köşe frekansı `BW = GBW / noise gain` olur. Gürültü kazancı iki topoloji için de `1 + Rf/Rg`'dir; -10 kazançlı eviren bir katla +11 kazançlı evirmeyen bir katın işaret kazançları farklı olsa da bant genişliklerinin tam olarak aynı olmasının nedeni budur.",
+    "Dengelenmiş bir işlemsel yükselteç, kazanç ile bant genişliğinin çarpımını sabit tutar; bu yüzden kapalı çevrim köşe frekansı `BW = GBW / noise gain` olur. Gürültü kazancı iki topoloji için de `1 + Rf/Rg`'dir; -10 kazançlı eviren bir katla +11 kazançlı evirmeyen bir katın sinyal kazançları farklı olsa da bant genişliklerinin tam olarak aynı olmasının nedeni budur.",
   'op-amp.amplifier': 'İşlemsel yükselteç şeması',
   'op-amp.bandwidthIsASmall':
-    'Bant genişliği küçük işaretler için geçerli bir değerdir. Büyük işaretler bunun yerine yönelim hızına çarpar: tepe değeri Vp olan bir sinüs saniyede `2·pi·f·Vp` volt ister, yani bozulmasız en büyük sinüs, tam güç bant genişliği `SR / (2·pi·Vp)` olur. Bunun ötesinde, kazanç grafiği ne derse desin çıkış üçgene döner.',
+    'Bant genişliği küçük sinyaller için geçerli bir değerdir. Büyük sinyaller bunun yerine çıkış değişim hızına çarpar: tepe değeri Vp olan bir sinüs saniyede `2·pi·f·Vp` volt ister, yani bozulmasız en büyük sinüs, tam güç bant genişliği `SR / (2·pi·Vp)` olur. Bunun ötesinde, kazanç grafiği ne derse desin çıkış üçgene döner.',
   'op-amp.belowThisItIs': '(bunun altında yalnızca {gain}x bir evirici olur)',
   'op-amp.blurb': 'Evirici, evirmeyen, toplayıcı, fark, integral alıcı ve karşılaştırıcı modları.',
   'op-amp.classic': 'klasik',
@@ -1496,7 +1496,7 @@ export const tr: Record<Key, string> = {
   'op-amp.dcBleedCorner': 'DC boşaltma köşesi',
   'op-amp.edgesInWindow': 'Penceredeki kenarlar',
   'op-amp.everythingHereSwingsAbout':
-    "Buradaki her şey 0 V çevresinde değil Vbias çevresinde salınır, çünkü tek bir 3,3 V beslemede salınılacak negatif hat yoktur. Bu, eviren bir katın evirmeyen pininin de evirmeyen bir katın Rg bacağının da toprağa değil orta hatta dönmesi demektir. Vbias'ı 0 yapıp çift besleme seçtiğinizde formüller ders kitabındaki hâllerine geri döner.",
+    "Buradaki her şey 0 V çevresinde değil Vbias çevresinde salınır, çünkü tek bir 3,3 V beslemede salınılacak negatif hat yoktur. Bu, eviren bir katın evirmeyen pininin de evirmeyen bir katın Rg bacağının da toprağa değil besleme orta noktasına dönmesi demektir. Vbias'ı 0 yapıp çift besleme seçtiğinizde formüller ders kitabındaki hâllerine geri döner.",
   'op-amp.feedbackCf': 'Geri besleme Cf',
   'op-amp.feedbackR1': 'Geri besleme R1',
   'op-amp.feedbackRf': 'Geri besleme Rf',
@@ -1514,8 +1514,8 @@ export const tr: Record<Key, string> = {
     'İdeal kapalı çevrim kazancı ve gerçekten sınırlayan üç etken: kazanç-bant genişliği çarpımı, yükselme hızı ve çıkış salınımı. Osiloskop, Vin ile Vout izlerini gerçek zamanlı gösterir.',
   'op-amp.lowerThreshold': 'Alt eşik',
   'op-amp.mcp6002Is1Mhz': "MCP6002 1 MHz'dir. OPA2340 5,5 MHz'dir.",
-  'op-amp.midRailOnA': 'Tek beslemede orta hat, çift beslemede 0 V.',
-  'op-amp.negativeRail': 'Negatif hat',
+  'op-amp.midRailOnA': 'Tek beslemede besleme orta noktası, çift beslemede 0 V.',
+  'op-amp.negativeRail': 'Negatif besleme',
   'op-amp.network': 'Devre',
   'op-amp.neverTrips': '(hiç tetiklenmez)',
   'op-amp.noiseGain': 'Gürültü kazancı',
@@ -1523,17 +1523,17 @@ export const tr: Record<Key, string> = {
   'op-amp.outputStage': 'Çıkış katı',
   'op-amp.partAndSupply': 'Parça ve besleme',
   'op-amp.partDoesIE': '(parça {slewRate} yapar, yani {e6} V/µs)',
-  'op-amp.positiveRail': 'Pozitif hat',
+  'op-amp.positiveRail': 'Pozitif besleme',
   'op-amp.railsClipAt': '(hatlar {lo} / {hi} noktasında kırpar)',
-  'op-amp.railToRail': 'Hattan hatta',
+  'op-amp.railToRail': 'Rail-to-rail',
   'op-amp.referenceR2': 'Referans R2',
   'op-amp.referenceVbias': 'Referans Vbias',
   'op-amp.referenceVref': 'Referans Vref',
   'op-amp.responseAt': '{frequency} frekansındaki yanıt',
   'op-amp.rinIntoAVirtual': '(sanal toprağa Rin)',
   'op-amp.rrl': 'rrl',
-  'op-amp.slewDemanded': 'İstenen yönelim hızı',
-  'op-amp.slewRate': 'Yönelim hızı',
+  'op-amp.slewDemanded': 'İstenen çıkış değişim hızı',
+  'op-amp.slewRate': 'Çıkış değişim hızı (slew rate)',
   'op-amp.smallerR1MeansA': 'Küçük R1, geniş bir histerezis bandı demektir.',
   'op-amp.sr2PiVpk': '(SR / 2·pi·Vpk)',
   'op-amp.straightOntoThePin': '(doğrudan pine)',
@@ -1543,28 +1543,28 @@ export const tr: Record<Key, string> = {
   'op-amp.theory1':
     'Yeterli açık çevrim kazancıyla eviren pin evirmeyen pini izler, yani kazancı yalnızca direnç ağı belirler: evirende `Av = -Rf/Rin`, evirmeyende `Av = 1 + Rf/Rg`, tamponda `Av = 1`. Toplayıcı yükselteç tek bir sanal toprakta süperpozisyondur, `Vout = -Rf·(V1/R1 + V2/R2)`, fark yükselteci ise iki kolda eşleşmiş oranlarla `Vout = Vref + (Rf/Rin)·(V+ - V-)` olur.',
   'op-amp.theScopeTraceIs':
-    "Osiloskop izi, örnek örnek yürütülen bir benzetimdir. Her kutup, `y[n] = target + (y[n-1] - target)·e^(-dt/tau)` biçiminde tam sıfırıncı derece tutma ayrıklaştırması kullanır; bu sayede hangi zaman tabanında olursa olsun kararlı kalır. Ardından örnek başına yönelim hızı sınırlaması ve hat kırpması uygulanır, izdeki düz tepelerin ve dik kenarların kaynağı da budur. İntegral alıcı, Cf'ye paralel Rf ile pratikteki haliyle modellenmiştir; böylece bir hatta sürüklenmek yerine sonlu bir DC kazancına sahip olur.",
+    "Osiloskop izi, örnek örnek yürütülen bir benzetimdir. Her kutup, `y[n] = target + (y[n-1] - target)·e^(-dt/tau)` biçiminde sıfırıncı dereceden tutma (ZOH) ayrıklaştırması kullanır; bu sayede hangi zaman tabanında olursa olsun kararlı kalır. Ardından örnek başına çıkış değişim hızı sınırlaması ve hat kırpması uygulanır, izdeki düz tepelerin ve dik kenarların kaynağı da budur. İntegral alıcı, Cf'ye paralel Rf ile pratikteki haliyle modellenmiştir; böylece bir hatta sürüklenmek yerine sonlu bir DC kazancına sahip olur.",
   'op-amp.timeOnARail': 'Hatta geçen süre',
   'op-amp.title': 'İşlemsel Yükselteç',
   'op-amp.to': '({vmin} - {vmax})',
   'op-amp.upperThreshold': 'Üst eşik',
   'op-amp.use':
-    "Bir sensör sinyalini ADC aralığına yükseltmek, yüksek empedanslı bir kaynağı tamponlamak, toplama ve fark alma yapmak, integral almak ve histerezisli karşılaştırma yapmak için kullanılır. Ayrıca DC'de düzgün çalışan bir devrenin hızlandıkça neden bozulduğunu anlamak için de kullanılır: kazanç-bant genişliği sınırı ile yönelim hızı, kitaptaki tasarımı bozuk bir tasarıma çeviren etkenlerdir.",
+    "Bir sensör sinyalini ADC aralığına yükseltmek, yüksek empedanslı bir kaynağı tamponlamak, toplama ve fark alma yapmak, integral almak ve histerezisli karşılaştırma yapmak için kullanılır. Ayrıca DC'de düzgün çalışan bir devrenin hızlandıkça neden bozulduğunu anlamak için de kullanılır: kazanç-bant genişliği sınırı ile çıkış değişim hızı, kitaptaki tasarımı bozuk bir tasarıma çeviren etkenlerdir.",
   'op-amp.vth': 'Vth',
   'op-amp.warn1':
     'Çıkış, pencerenin %{clipped} kadarında bir hatta yapışık kalıyor. Bu noktadan sonra kazanç formülü devreyi artık tanımlamaz: kazancı azaltın, girişi azaltın ya da beslemeyi genişletin.',
   'op-amp.warn2':
-    'Yönelim hızıyla sınırlı. Çıkış {slewNeeded} istiyor ama parça yalnızca {slewRate} yapabiliyor, bu yüzden sinüs dalgaları üçgene dönüşüyor ve küçük işaret bant genişliği değeri artık geçerli olmuyor.',
+    'Çıkış değişim hızıyla sınırlı. Çıkış {slewNeeded} istiyor ama parça yalnızca {slewRate} yapabiliyor, bu yüzden sinüs dalgaları üçgene dönüşüyor ve küçük sinyal bant genişliği değeri artık geçerli olmuyor.',
   'op-amp.warn3':
     'Giriş pini besleme aralığının dışına çıkıyor ({vneg} - {vpos} hatlarına karşı {inMin} - {inMax}). Gerçek giriş katları bu noktada çalışmayı durdurur ve bazı parçalarda faz evrilmesi görülür; yani hatların dışındaki bu iz kurgudan ibarettir.',
   'op-amp.warn4':
     'Vbias kullanılabilir çıkış aralığının dışında kaldığından katın salınacak yeri kalmıyor. Tek beslemede bunu pozitif hattın yarısına, yani {vpos} değerine ayarlayın.',
   'op-amp.warn5':
-    "İntegral alıcının birim kazanç frekansı ({integratorUnity}), işlemsel yükseltecin GBW değerinden ({gbw}) yalnızca bir dekat uzaklıkta. Kondansatör devreyi ele almadan önce işlemsel yükseltecin açık çevrim kazancı tükeniyor, bu yüzden integral alma temiz kalmıyor. Rin ya da Cf'yi büyütün ya da daha hızlı bir parça seçin.",
+    "İntegral alıcının birim kazanç frekansı ({integratorUnity}), işlemsel yükseltecin GBW değerinden ({gbw}) yalnızca bir dekad uzaklıkta. Kondansatör devreyi ele almadan önce işlemsel yükseltecin açık çevrim kazancı tükeniyor, bu yüzden integral alma temiz kalmıyor. Rin ya da Cf'yi büyütün ya da daha hızlı bir parça seçin.",
   'opt.0Db': '0 dB',
   'opt.11Db': '11 dB',
   'opt.1n40071ASilicon': '1N4007 1 A silisyum',
-  'opt.1n4148Signal': '1N4148 işaret',
+  'opt.1n4148Signal': '1N4148 sinyal diyodu',
   'opt.1n54083ASilicon': '1N5408 3 A silisyum',
   'opt.1n5819Schottky': '1N5819 Schottky',
   'opt.25Db': '2,5 dB',
@@ -1632,10 +1632,10 @@ export const tr: Record<Key, string> = {
   'opt.uv395Nm': 'Morötesi 395 nm',
   'opt.violet': 'mor',
   'opt.white': 'beyaz',
-  'opt.wifi5Ghz': 'WiFi 5 GHz',
-  'opt.wifi80211b1': 'WiFi 802.11b 1 Mbps',
-  'opt.wifi80211nMcs7': 'WiFi 802.11n MCS7',
-  'opt.wifiBle24': 'WiFi/BLE 2,4 GHz',
+  'opt.wifi5Ghz': 'Wi-Fi 5 GHz',
+  'opt.wifi80211b1': 'Wi-Fi 802.11b 1 Mbps',
+  'opt.wifi80211nMcs7': 'Wi-Fi 802.11n MCS7',
+  'opt.wifiBle24': 'Wi-Fi/BLE 2,4 GHz',
   'opt.wire': 'tel',
   'opt.yellow': 'sarı',
   'photovoltaic.blurb': 'Tek diyot modeli: I-V ve P-V eğrileri, ışınım ve sıcaklığa karşı MPP.',
@@ -1658,7 +1658,7 @@ export const tr: Record<Key, string> = {
   'photovoltaic.overM': '{area} m² üzerinde',
   'photovoltaic.panelDatasheetAtStc': "Panel (veri sayfası, STC'de)",
   'photovoltaic.photocurrentScalesAlmostExactly':
-    "Fotoakım neredeyse tam olarak ışınımla ölçeklenir; Isc'nin güneş ışığını doğrusal izlemesinin nedeni budur. Voc yalnızca ışınımın logaritmasıyla değişir, yani buluttaki bir panel geriliminin çoğunu korur ve akımını yitirir.",
+    "Fotoakım neredeyse tam olarak ışınımla ölçeklenir; Isc'nin güneş ışığını doğrusal izlemesinin nedeni budur. Voc yalnızca ışınımın logaritmasıyla değişir, yani buluttaki bir panel geriliminin çoğunu korur ve akımını kaybeder.",
   'photovoltaic.pmp': 'Pmp',
   'photovoltaic.pmpAtStc': "STC'de Pmp",
   'photovoltaic.pmpTempCoeff': 'Pmp sıcaklık katsayısı',
@@ -1669,7 +1669,7 @@ export const tr: Record<Key, string> = {
   'photovoltaic.temperatureWorksTheOther':
     "Sıcaklık ters yönde etki eder. Isc hafifçe yükselir, ama I0 sıcaklıkla birlikte dik biçimde tırmanır; bu yüzden Voc kelvin başına yaklaşık %0,3 düşer ve Pmp'yi de beraberinde götürür. Soğuk ve güneşli bir günün sıcak bir günden daha iyi performans vermesinin nedeni budur; bir diziyi MPPT girişine göre boyutlandırırken panel Vmp değerinin beklenen en düşük sıcaklıkta denetlenmesi gerekmesinin nedeni de budur.",
   'photovoltaic.theory1':
-    'Tek diyot modeli `I = Iph - I0·(e^((V + I·Rs)/a) - 1) - (V + I·Rs)/Rsh` şeklindedir; burada `a = Ns·n·k·T/q`, tüm seri dizinin değiştirilmiş ısıl gerilimidir. I için kapalı biçimde çözülemediğinden çözücü, bir formül hesaplamak yerine yineleme yapar.',
+    'Tek diyot modeli `I = Iph - I0·(e^((V + I·Rs)/a) - 1) - (V + I·Rs)/Rsh` şeklindedir; burada `a = Ns·n·k·T/q`, tüm seri dizinin değiştirilmiş ısıl gerilimidir. I için kapalı formda çözülemediğinden çözücü, bir formül hesaplamak yerine yineleme yapar.',
   'photovoltaic.title': 'Fotovoltaik Panel',
   'photovoltaic.use':
     "Panel boyutlandırma, bir MPPT kontrolcüsünün neden fiyatına değdiğini ve 100 W etiketli bir panelin bunu neden nadiren verdiğini anlamak için kullanılır. Pratikteki çıkarım sıcaklık katsayısıdır: paneller ısındıkça gerilim kaybeder, bu yüzden 25 °C'deki veri sayfası değerine göre boyutlandırılmış bir dizi, sıcak bir çatıda MPPT giriş aralığının altına düşebilir.",
@@ -1679,19 +1679,19 @@ export const tr: Record<Key, string> = {
   'photovoltaic.warn1':
     "Paralel direnç, belirtilen Voc'yi destekleyemeyecek kadar düşük; bu yüzden model Voc'yi Iph·Rsh değerine doğru çökertiyor. Rsh'yi yükseltin ya da Voc'yi düşürün: bu kadar paralel kaçaklı gerçek bir panel arızalı olurdu.",
   'photovoltaic.warn2':
-    '100 W/m² altında tek diyot modeli iyimserleşir. Gerçek paneller az ışıkta doluluk çarpanını bundan daha hızlı yitirir, çünkü paralel kaçak yolu baskın hale gelir.',
+    '100 W/m² altında tek diyot modeli iyimserleşir. Gerçek paneller az ışıkta doluluk faktörünü bundan daha hızlı kaybeder, çünkü paralel kaçak yolu baskın hale gelir.',
   'photovoltaic.warn3': 'Hücre sıcaklığı, bu modelin uyarlandığı aralığın dışında.',
   'pwm-filter.12BitStep': '(12 bit adım {ADC_LSB})',
   'pwm-filter.5Tau': '(5·tau = {settle5tau})',
   'pwm-filter.anRcLowPass':
-    "Bir RC alçak geçiren süzgeç DC'de birim kazanca sahiptir ve dikdörtgen dalganın ortalaması `D·Vs` olduğundan, R ve C ne olursa olsun oturmuş çıkış `Vout = D·Vs` olur. R ve C yalnızca anahtarlama bileşeninin ne kadarının sızacağını belirler.",
+    "Bir RC alçak geçiren filtre DC'de birim kazanca sahiptir ve dikdörtgen dalganın ortalaması `D·Vs` olduğundan, R ve C ne olursa olsun oturmuş çıkış `Vout = D·Vs` olur. R ve C yalnızca anahtarlama bileşeninin ne kadarının sızacağını belirler.",
   'pwm-filter.attenuationAtFPwm': "f_pwm'de zayıflatma",
-  'pwm-filter.barelyFiltered': '(zar zor süzülmüş)',
+  'pwm-filter.barelyFiltered': '(çok az filtrelenmiş)',
   'pwm-filter.bitMaxAtThis': '({bits} bit, bu f değerinde en çok {maxBits})',
   'pwm-filter.blurb': 'PWM sinyalini analog gerilime çevirin. Dalgalanmaya karşı oturma süresi.',
   'pwm-filter.cleanDc': '(temiz DC)',
-  'pwm-filter.dutyResolution': 'Görev çevrimi çözünürlüğü',
-  'pwm-filter.dutyStep': 'Görev çevrimi adımı',
+  'pwm-filter.dutyResolution': 'Görev oranı çözünürlüğü',
+  'pwm-filter.dutyStep': 'Görev oranı adımı',
   'pwm-filter.esp32GpioIntoAn': "RC alçak geçiren süzgece bağlı ESP32 GPIO'su",
   'pwm-filter.fPwmFc': 'f_pwm / fc',
   'pwm-filter.lede':
@@ -1701,7 +1701,7 @@ export const tr: Record<Key, string> = {
   'pwm-filter.peakPinCurrent': 'Tepe pin akımı',
   'pwm-filter.powerOnCapEmpty': '(açılış, kondansatör boş)',
   'pwm-filter.rippleIsUsuallyQuoted':
-    'Dalgalanma genellikle `Vpp ≈ Vs·D·(1-D) / (f·R·C)` biçiminde verilir; bu, küçük dalgalanma yaklaşıklığıdır. Bu sayfa denklemi tam olarak çözer: `a = e^(-D·T/tau)` ve `b = e^(-(1-D)·T/tau)` tanımlanıp bir çevrim boyunca şarj ile deşarj eşitlenirse `Vpp = Vs·(1-a)(1-b) / (1-a·b)` elde edilir. tau, anahtarlama periyodunun yaklaşık on katından büyük olduğunda ikisi neredeyse birebir örtüşür; bunun altında yaklaşık formül yüksek okur. En kötü durum dalgalanması her zaman %50 görev çevriminde görülür.',
+    'Dalgalanma genellikle `Vpp ≈ Vs·D·(1-D) / (f·R·C)` biçiminde verilir; bu, küçük dalgalanma yaklaşıklığıdır. Bu sayfa denklemi tam olarak çözer: `a = e^(-D·T/tau)` ve `b = e^(-(1-D)·T/tau)` tanımlanıp bir çevrim boyunca şarj ile deşarj eşitlenirse `Vpp = Vs·(1-a)(1-b) / (1-a·b)` elde edilir. tau, anahtarlama periyodunun yaklaşık on katından büyük olduğunda ikisi neredeyse birebir örtüşür; bunun altında yaklaşık formül yüksek okur. En kötü durum dalgalanması her zaman %50 görev oranında görülür.',
   'pwm-filter.rippleLimited': '(dalgalanmayla sınırlı)',
   'pwm-filter.rippleOnTheAdc': "ADC'deki dalgalanma",
   'pwm-filter.rippleVpp': 'Dalgalanma Vpp',
@@ -1709,10 +1709,10 @@ export const tr: Record<Key, string> = {
   'pwm-filter.startup': 'Açılış',
   'pwm-filter.tau': '(tau = {tau})',
   'pwm-filter.theTraceIsThe':
-    'İz, kapalı biçimli yanıttır: `y(t) = y_ss(t) + (y0 - y_ss(0))·e^(-t/tau)`, yani dönemsel kararlı durum artı sönen tek bir üstel terim. Bu, doğrusal ve zamanla değişmeyen bir süzgeç için tam bir çözümdür, dolayısıyla hiçbir zaman tabanında kararsız hale gelemez.',
+    'İz, kapalı formdaki yanıttır: `y(t) = y_ss(t) + (y0 - y_ss(0))·e^(-t/tau)`, yani dönemsel kararlı durum artı sönen tek bir üstel terim. Bu, doğrusal ve zamanla değişmeyen bir filtre için tam bir çözümdür, dolayısıyla hiçbir zaman tabanında kararsız hale gelemez.',
   'pwm-filter.theTradeoffIsThe':
-    "Ödünleşim tam olarak meselenin kendisidir: dalgalanma `1/(R·C)` ile düşer, oturma süresi ise `5·R·C` ile yükselir; birini diğeriyle değiş tokuş etmenin hiçbir kazancı yoktur. Tek bedava kazanç, LEDC zamanlayıcısının görev çevrimi çözünürlüğü tükenene kadar f_pwm'i yükseltmektir; çünkü `2^bits · f` çarpımı 80 MHz'lik APB saatinin altında kalmalıdır.",
-  'pwm-filter.title': 'PWM Alçak Geçiren Süzgeç',
+    "Ödünleşim tam olarak meselenin kendisidir: dalgalanma `1/(R·C)` ile düşer, oturma süresi ise `5·R·C` ile yükselir; birini diğeriyle değiş tokuş etmenin hiçbir kazancı yoktur. Tek bedava kazanç, LEDC zamanlayıcısının görev oranı çözünürlüğü tükenene kadar f_pwm'i yükseltmektir; çünkü `2^bits · f` çarpımı 80 MHz'lik APB saatinin altında kalmalıdır.",
+  'pwm-filter.title': 'PWM Alçak Geçiren Filtre',
   'pwm-filter.use':
     "DAC'ı olmayan bir mikrodenetleyiciden ucuz bir analog çıkış üretmek için kullanılır; ESP32 kullanımının çoğu da budur: bir referans gerilim ayarlamak, analog bir gösterge sürmek, bir fan ya da vana için kontrol gerilimi üretmek. Ödünleşim her zaman aynıdır: daha az dalgalanma, daha yavaş oturma demektir; bu sayfa da kırılma noktasının tam olarak nerede olduğunu gösterir.",
   'pwm-filter.visibleRipple': '(görünür dalgalanma)',
@@ -1724,22 +1724,22 @@ export const tr: Record<Key, string> = {
   'pwm-filter.warn3':
     "Kondansatör henüz boşken, açılış anındaki tepe pin akımı {gpioPeakA}. Bu değer, bir ESP32 GPIO'su için belirtilen 12 mA sınırının üzerinde. R'yi büyütün.",
   'pwm-filter.warn4':
-    'Bu zaman tabanında bir PWM periyodu, bir osiloskop örneğinden daha kısa; bu yüzden Vpwm izi örtüşmeli (aliased) çizilmek yerine hiç gösterilmiyor. Vout kapalı biçimli bir çözüm olduğundan tam kalmaya devam ediyor.',
+    'Bu zaman tabanında bir PWM periyodu, bir osiloskop örneğinden daha kısa; bu yüzden Vpwm izi örtüşmeli (aliased) çizilmek yerine hiç gösterilmiyor. Vout kapalı formdaki bir çözüm olduğundan tam kalmaya devam ediyor.',
   'rc-filter.blurb':
     'Birinci derece RC tepkisi, zaman ve frekans düzleminde, canlı osiloskop izleriyle.',
   'rc-filter.cutoffIsWhereThe':
     'Kesim noktası, kondansatörün reaktansının dirence eşitlendiği noktadır; bu yüzden `fc = 1 / (2·pi·R·C)` olur ve çıkış 3 dB düşmüştür.',
   'rc-filter.lede':
-    'Bir direnç ve bir kondansatör: elektronikteki en yaygın süzgeç. Herhangi bir değeri değiştirin, osiloskop anında güncellenir.',
+    'Bir direnç ve bir kondansatör: elektronikteki en yaygın filtre. Herhangi bir değeri değiştirin, osiloskop anında güncellenir.',
   'rc-filter.magnitudeIsH1':
     'Genlik, alçak geçiren için `|H| = 1 / sqrt(1 + (f/fc)²)`, yüksek geçiren için ise `(f/fc) / sqrt(1 + (f/fc)²)` olarak bulunur. Faz ise sırasıyla `-atan(f/fc)` ve `90° - atan(f/fc)`dir.',
   'rc-filter.rcNetwork': 'RC devresi şeması',
   'rc-filter.reactanceXc': 'Reaktans Xc',
   'rc-filter.theScopeTraceIs':
     'Osiloskop izi o formülün kendisi değildir. Tam sıfırıncı derece tutma ayrıklaştırmasıyla örnek örnek yürütülen bir benzetimdir: `y[n] = x[n] + (y[n-1] - x[n])·e^(-dt/tau)`. Bu, her adım boyunda kararlı kalır ve frekans bölgesindeki bir yanıtın gösteremeyeceği kırpmayı, çınlamayı ve PWM kenarlarını da üretir.',
-  'rc-filter.title': 'RC Süzgeç (Alçak / Yüksek Geçiren)',
+  'rc-filter.title': 'RC Filtre (Alçak / Yüksek Geçiren)',
   'rc-filter.use':
-    'Elektronikteki en yaygın süzgeç. PWM çıkışını analog gerilime dönüştürmek, sensör hattındaki anahtarlama gürültüsünü temizlemek, ADC önünde örtüşme önleme (anti-aliasing) yapmak ve ses tonu kontrollerinde eğimi belirlemek için kullanılır. Kesim frekansını yanlış seçerseniz ya gidermek istediğiniz gürültüyü geçirirsiniz ya da korumak istediğiniz sinyali fazlasıyla zayıflatırsınız.',
+    'Elektronikteki en yaygın filtre. PWM çıkışını analog gerilime dönüştürmek, sensör hattındaki anahtarlama gürültüsünü temizlemek, ADC önünde örtüşme önleme (anti-aliasing) yapmak ve ses tonu kontrollerinde eğimi belirlemek için kullanılır. Kesim frekansını yanlış seçerseniz ya gidermek istediğiniz gürültüyü geçirirsiniz ya da korumak istediğiniz sinyali fazlasıyla zayıflatırsınız.',
   'reactive-power.afterCorrection': 'Düzeltmeden sonra',
   'reactive-power.apparentPowerS': 'Görünür güç S',
   'reactive-power.bankReactance': 'Grup reaktansı',
@@ -1756,7 +1756,7 @@ export const tr: Record<Key, string> = {
   'reactive-power.currentAfter': 'Düzeltmeden sonraki akım',
   'reactive-power.currentLags': 'akım geride kalır',
   'reactive-power.currentLeads': 'akım öne geçer',
-  'reactive-power.handedBackEachCycle': 'her çevrimde geri verilen',
+  'reactive-power.handedBackEachCycle': 'her çevrimde kaynağa geri verilen',
   'reactive-power.inductive': 'Endüktif',
   'reactive-power.lede':
     'Akımın gerilimin gerisinde kalmasını ve anlık gücün negatife düşmesini izleyin. Bu negatif çukur, yükün ödünç alıp hemen geri verdiği enerjidir; kablo ise bunu boşuna iki yönde de taşımak zorunda kalır. Akım ve güç izleri gerilim eksenine ölçeklenmiştir, gerçek değerler ise göstergelerde yer alır.',
@@ -1788,7 +1788,7 @@ export const tr: Record<Key, string> = {
   'reactive-power.warn1':
     'Hedef güç katsayısı şimdikiyle aynı ya da daha düşük, yani düzeltilecek bir şey yok. Hedefi {pf} üzerine çıkarın.',
   'reactive-power.warn2':
-    'Bu yük zaten ileri fazda, yani düzeltmek için kondansatör değil paralel bir *bobin* gerekir. Büyük ölçekte kapasitif yükler olağandışıdır: uzun ve az yüklü kablolar ile büyük süzgeç grupları alışılmış nedenlerdir.',
+    'Bu yük zaten ileri fazda, yani düzeltmek için kondansatör değil paralel bir *bobin* gerekir. Büyük ölçekte kapasitif yükler olağandışıdır: uzun ve az yüklü kablolar ile büyük filtre grupları yaygın nedenlerdir.',
   'reactive-power.warn3':
     'Bunlar şebeke gerilimleridir. Bir düzeltme kondansatörü ayrıldıktan sonra yüklü kalır ve boşaltma dirençleri taşımak zorundadır; ayrıca en az {capVoltageRating} RMS için seçilmelidir.',
   'rectifier.1NfIsEffectively': '1 nF neredeyse hiç düzleştirme yapmaz',
@@ -1815,7 +1815,7 @@ export const tr: Record<Key, string> = {
   'rectifier.rectifier2': 'Doğrultucu',
   'rectifier.reservoirCap': 'Depo kondansatörü',
   'rectifier.rippleFactor': 'Dalgalanma çarpanı',
-  'rectifier.rmsPeak': 'rms, {vPeakIn} tepe',
+  'rectifier.rmsPeak': 'RMS, {vPeakIn} tepe',
   'rectifier.rmsPerDiode': 'Diyot başına RMS',
   'rectifier.secondary': 'İkincil',
   'rectifier.sourceResistance': 'Kaynak direnci',
@@ -1823,7 +1823,7 @@ export const tr: Record<Key, string> = {
   'rectifier.theCapChargesTo':
     "Kondansatör diyotlar üzerinden tepe değere kadar dolar, ardından bir sonraki tepeye kadar yükü tek başına besler. Bu deşarjı doğrusal kabul etmek `Vr = Idc / (fr·C)` verir; burada `fr`, yarım dalga doğrultucu için şebeke frekansı, köprü ya da orta uçlu doğrultucu için ise `2f`'dir, çünkü ikisi de yarım dalganın bıraktığı boşluğu doldurur. Çıkış bu testere dişi dalganın ortasında, `Vdc = Vpeak - n·Vf - Vr/2` noktasında oturur; `n`, köprüde 2, diğer ikisinde 1'dir.",
   'rectifier.theTraceIsNot':
-    "İz, formülün kendisi değildir. İki alt devre arasında geçiş yapan, örnek örnek yürütülen bir çözümdür: iletim hali (Rs arkasındaki kaynaktan C'ye paralel RL'ye) ve kesim hali (C'nin RL üzerinden boşalması); her ikisi de tam sıfırıncı derece tutma ayrıklaştırmasıyla, `v[n] = vInf + (v[n-1] - vInf)·e^(-dt/tau)`, hesaplanır. Bu, her adım boyunda kararlı kalır. Aynı zamanda ölçülen dalgalanmanın neden formülün altında çıktığını da açıklar: kondansatör yalnızca çevrimin diyotların kapalı olduğu bölümünde, doğrusal değil üstel biçimde boşalır.",
+    "İz, formülün kendisi değildir. İki alt devre arasında geçiş yapan, örnek örnek yürütülen bir çözümdür: iletim hali (Rs arkasındaki kaynaktan C'ye paralel RL'ye) ve kesim hali (C'nin RL üzerinden boşalması); her ikisi de sıfırıncı dereceden tutma (ZOH) ayrıklaştırmasıyla, `v[n] = vInf + (v[n-1] - vInf)·e^(-dt/tau)`, hesaplanır. Bu, her adım boyunda kararlı kalır. Aynı zamanda ölçülen dalgalanmanın neden formülün altında çıktığını da açıklar: kondansatör yalnızca çevrimin diyotların kapalı olduğu bölümünde, doğrusal değil üstel biçimde boşalır.",
   'rectifier.title': 'Diyot Doğrultucu',
   'rectifier.use':
     'Şebekeden ya da bir transformatörden beslenen her kaynak ve USB dışı çoğu adaptörün ön katı için geçerlidir. Filtre kondansatörünüzün bıraktığı dalgalanmayı, ardından gelen regülatörün düşüm (dropout) bölgesine girip girmeyeceğini belirleyen değeri, ayrıca diyotların dayanması gereken ters tepe gerilimini gösterir.',
@@ -1861,7 +1861,7 @@ export const tr: Record<Key, string> = {
     'Eleman üreticileri boyutlandırmayı toplam güce göre değil yüzey yüküne, yani tel yüzeyinin metrekaresi başına düşen watta göre yapar. Aynı güçteki iki eleman, biri bu gücü yarı yüzeye sığdırıyorsa çok farklı davranır.',
   'resistive-heating.energyToTarget': 'Hedefe kadar enerji',
   'resistive-heating.equilibriumTemp': 'Denge sıcaklığı',
-  'resistive-heating.holdDuty': 'Tutma görev çevrimi',
+  'resistive-heating.holdDuty': 'Sıcaklığı koruma görev oranı',
   'resistive-heating.inrushCurrent': 'Ani akım',
   'resistive-heating.lede':
     'Nikrom ve Kanthal rezistanslar: pirograf uçları, köpük kesiciler, küçük fırınlar. Osiloskop, tel sıcaklığını °C, harcanan gücü ise W cinsinden zamana karşı gösterir; sonsuza kadar yükselmek yerine dengede oturur.',
@@ -1884,12 +1884,12 @@ export const tr: Record<Key, string> = {
   'resistive-heating.temperatureIsNotThat':
     'Sıcaklık o formülle bulunmaz. Tel şu dengeye uyar: `m·c·dT/dt = P - h·As·(T - Tamb)`. Kayıp terimi sıcaklıkla büyüdüğü için tel sonsuza tırmanmak yerine `Tamb + P/(h·As)` değerinde oturur. İzin yakınsadığı denge noktası budur ve `m·c/(h·As)` zaman sabiti uzunluktan bağımsızdır: daha uzun bir telin hem kütlesi hem de yüzeyi orantılı olarak artar.',
   'resistive-heating.theory1':
-    'Direnç `R = rho·L/A` ile bulunur, yani sabit bir beslemede güç `P = V²/R` olur. Uzunluğu yarıya indirmek direnci yarıya indirir, gücü ise ikiye katlar; insanların bir kalem ucunu kazara yakmasının olağan yolu budur.',
+    'Direnç `R = rho·L/A` ile bulunur, yani sabit bir beslemede güç `P = V²/R` olur. Uzunluğu yarıya indirmek direnci yarıya indirir, gücü ise ikiye katlar; insanların bir kalem ucunu kazara yakmasının yaygın yollarından biri budur.',
   'resistive-heating.thermalTau': 'Isıl tau',
   'resistive-heating.timeToTarget': 'Hedefe varma süresi',
   'resistive-heating.title': 'Dirençli Isıtma',
   'resistive-heating.use':
-    'Pirograf kalemleri, sıcak tel köpük kesiciler, 3D yazıcı sıcak uçları ve nozulları, küçük fırınlar ve lehim ekipmanları. Buradaki anahtar çıktı denge sıcaklığıdır: rezistans teli, harcanan gücün soğumaya eşit olduğu noktada oturur; bu yüzden aynı tel ve gerilim durgun havada, cereyanda ya da yalıtıma gömülüyken tamamen farklı davranır.',
+    'Pirograf kalemleri, sıcak tel köpük kesiciler, 3D yazıcı sıcak uçları ve nozulları, küçük fırınlar ve lehim emodmanları. Buradaki anahtar çıktı denge sıcaklığıdır: rezistans teli, harcanan gücün soğumaya eşit olduğu noktada oturur; bu yüzden aynı tel ve gerilim hareketsiz havada, cereyanda ya da yalıtıma gömülüyken tamamen farklı davranır.',
   'resistive-heating.warn1':
     'Denge sıcaklığı, {label} için geçerli {maxTemp} °C sürekli çalışma sınırının üzerinde. Eleman hızla oksitlenir ve erken bozulur. Daha kalın tel, daha uzun bir boy ya da daha düşük gerilim kullanın.',
   'resistive-heating.warn2':
@@ -1948,17 +1948,17 @@ export const tr: Record<Key, string> = {
   'rl-filter.rlNetwork': 'RL devresi şeması',
   'rl-filter.rTotal': '(toplam R {rTotal})',
   'rl-filter.theScopeTraceIs':
-    "Osiloskop izi transfer işlevi değildir. Çözücü, çevrim akımının integralini `L·di/dt = v - i·(R + Rw)` denklemiyle, tam sıfırıncı derece tutma ayrıklaştırmasıyla alır: `i[n] = i∞ + (i[n-1] - i∞)·e^(-dt/tau)`. Bu, her adım büyüklüğünde kararlıdır ve iki eleman gerilimi de doğrudan Kirchhoff gerilim yasasından çıkar; yani `V(R) + V(L)` örnek örnek Vin'e eşittir.",
+    "Osiloskop izi transfer işlevi değildir. Çözücü, çevrim akımının integralini `L·di/dt = v - i·(R + Rw)` denklemiyle, sıfırıncı dereceden tutma (ZOH) ayrıklaştırmasıyla alır: `i[n] = i∞ + (i[n-1] - i∞)·e^(-dt/tau)`. Bu, her adım büyüklüğünde kararlıdır ve iki eleman gerilimi de doğrudan Kirchhoff gerilim yasasından çıkar; yani `V(R) + V(L)` örnek örnek Vin'e eşittir.",
   'rl-filter.title': 'RL Filtre',
   'rl-filter.use':
     'Bobinler hacimli ve pahalı olduğu için RC kadar yaygın değildir, ama gerilim yerine akımın düzeltilmesi gerektiğinde kaçınılmazdır: motor sürücü filtreleri, anahtarlamalı dönüştürücü çıkış katları ve besleme hatlarındaki EMI bobinleri. Ayrıca filtre olmasını hiç istemediğiniz her sargının, örneğin uzun bir kablo çiftinin ya da röle bobininin, doğal modelidir.',
   'rl-filter.warn1':
-    "Tepe bobin akımı {ipk}, {isat} doyum değerinin ötesinde. Doyuma giren bir çekirdek endüktansını yitirir, yani gerçek köşe frekansı yukarı tırmanır ve bu iz artık geçerli değildir. R'yi büyütün, daha büyük bir çekirdek seçin ya da sürüşü kısın.",
+    "Tepe bobin akımı {ipk}, {isat} doyum değerinin ötesinde. Doyuma giren bir çekirdek endüktansını kaybeder, yani gerçek köşe frekansı yukarı tırmanır ve bu iz artık geçerli değildir. R'yi büyütün, daha büyük bir çekirdek seçin ya da sürüşü kısın.",
   'rl-filter.warn2':
     "Tepe akım {ipk}, bir ESP32 pininin verebileceği {GPIO_MAX_MA} mA sınırını aşıyor. Bu devreyi doğrudan bir GPIO'dan değil, bir tampon ya da MOSFET üzerinden sürün.",
   'rl-filter.windingResistance': 'Sargı direnci',
   'rl-filter.windingResistanceIsIn':
-    'Sargı direnci devrenin her yeriyle seri bağlıdır, bu yüzden hiçbir zaman devre dışı kalmaz. Köşe frekansını yükseltir (fc, R + Rw kullanır), alçak geçirenin geçirme bandından bir pay götürür ve yüksek geçirene `Rw / (R + Rw)` değerinde bir DC sızma tabanı bırakır. Çekirdek doyumu ve öz-rezonansla birlikte bu, işaret seviyesindeki süzgeçlerin neden kondansatörlerden kurulduğunun ve bobinlerin neden güç uygulamalarına saklandığının nedenidir.',
+    'Sargı direnci devrenin her yeriyle seri bağlıdır, bu yüzden hiçbir zaman devre dışı kalmaz. Köşe frekansını yükseltir (fc, R + Rw kullanır), alçak geçirenin geçirme bandından bir pay götürür ve yüksek geçirene `Rw / (R + Rw)` değerinde bir DC sızma tabanı bırakır. Çekirdek doyumu ve öz-rezonansla birlikte bu, sinyal seviyesindeki filtrelerin neden kondansatörlerden kurulduğunun ve bobinlerin neden güç uygulamalarına saklandığının nedenidir.',
   'rlc-resonance.blurb': 'Seri ve paralel rezonans, sönümleme ve basamak çınlaması.',
   'rlc-resonance.checkIsat': "(Isat'ı denetleyin)",
   'rlc-resonance.dampingAlpha': 'Sönüm alfa',
@@ -1984,19 +1984,19 @@ export const tr: Record<Key, string> = {
   'rlc-resonance.theory1':
     "Rezonans, iki reaktansın birbirini götürdüğü noktadır, `Xl = Xc`; buradan `f0 = 1 / (2·pi·sqrt(L·C))` çıkar. R'ye bağlı değildir.",
   'rlc-resonance.theTraceIsA':
-    'İz, `[Vc, Il]` durum çiftinin tam sıfırıncı derece tutma ayrıklaştırmasıyla iki durumlu benzetimidir: `x[n+1] = xss + e^(A·dt)·(x[n] - xss)`. Matris üsteli kapalı biçimde ifade edilir, yani çözücü parçalı sabit bir sürüş için tamdır ve her adım büyüklüğünde kararlıdır. Rezonanslı ikinci dereceden bir sistemde ileri Euler, `dt &gt; 2/w0` olur olmaz ıraksar.',
+    'İz, `[Vc, Il]` durum çiftinin sıfırıncı dereceden tutma (ZOH) ayrıklaştırmasıyla iki durumlu benzetimidir: `x[n+1] = xss + e^(A·dt)·(x[n] - xss)`. Matris üsteli kapalı formda ifade edilir, yani çözücü parçalı sabit bir sürüş için tamdır ve her adım büyüklüğünde kararlıdır. Rezonanslı ikinci dereceden bir sistemde ileri Euler, `dt &gt; 2/w0` olur olmaz ıraksar.',
   'rlc-resonance.title': 'RLC Rezonansı',
   'rlc-resonance.use':
     'Radyo ön katlarındaki ayarlı devreler, kristal ve LC osilatörler ve EMI filtreleri. En az o kadar sık istemeden de ortaya çıkar: kaçak kapasitesi olan her endüktans çınlar; anahtarlama düğümlerinin aşım yapmasının ve bir dekuplaj kondansatörüne giden uzun besleme hattının salınmasının nedeni de budur. f0 ve Q değerlerini bilmek, devrenin bir kez mi yoksa yüz çevrim boyunca mı çınlayacağını söyler.',
   'rlc-resonance.warn1':
-    'Kondansatör, {drive} sürüşte {peakVout} değerine ulaşıyor. Sönümsüz bir seri RLC, beslemenin yaklaşık 2 katında tavan yapar; bu yüzden kondansatörü ve anahtarlama elemanını hat gerilimine göre değil bu tepe değere göre seçin. Seri R ya da bir snubber ekleyin.',
+    'Kondansatör, {drive} sürüşte {peakVout} değerine ulaşıyor. Sönümsüz bir seri RLC, beslemenin yaklaşık 2 katında üst sınırına ulaşır; bu yüzden kondansatörü ve anahtarlama elemanını hat gerilimine göre değil bu tepe değere göre seçin. Seri R ya da bir snubber ekleyin.',
   'rlc-resonance.warn2':
     "{HIGH_Q_LIMIT} üzerindeki bir Q, kayıpsız bir L ve C varsayar. Gerçek bir bobinin sargı direnci ile çekirdek kaybı ve buna ek olarak kondansatörün ESR'si, ikisi de çevrimin içindedir ve ölçülen Q'yu bunun epey altında tutar. Gerçekçi bir sonuç için bobinin DCR'sini R'ye katın.",
   'rlc-resonance.warn3':
-    'Osiloskop penceresi, çınlama çevrimi başına yalnızca {perRing} örnek tutuyor, yani çizilen iz örtüşmelidir (alias). Yukarıdaki sayılar yine de tamdır; izden değil kapalı biçimli çözümden gelirler. Gerçek çınlamayı görmek için pencereyi kısaltın ya da kaynak frekansını yükseltin.',
+    'Osiloskop penceresi, çınlama çevrimi başına yalnızca {perRing} örnek tutuyor, yani çizilen iz örtüşmelidir (alias). Yukarıdaki sayılar yine de tamdır; izden değil kapalı formdaki çözümden gelirler. Gerçek çınlamayı görmek için pencereyi kısaltın ya da kaynak frekansını yükseltin.',
   'sallen-key.atFrequency': '({f} frekansında)',
   'sallen-key.blurb':
-    'Tek işlemsel yükselteçle iki kutuplu alçak veya yüksek geçiren süzgeç; Q, tepe yapma ve basamak çınlaması ile.',
+    'Tek işlemsel yükselteçle iki kutuplu alçak veya yüksek geçiren filtre; Q, tepe yapma ve basamak çınlaması ile.',
   'sallen-key.c1': 'C1',
   'sallen-key.c2': 'C2',
   'sallen-key.cutoff': 'Kesim',
@@ -2004,7 +2004,7 @@ export const tr: Record<Key, string> = {
   'sallen-key.gbwHint': 'MCP6002 için 1 MHz, TL072 için 3 MHz, OPA1656 için 50 MHz.',
   'sallen-key.gbwOverQ': '(GBW / Q)',
   'sallen-key.lede':
-    'Tek bir işlemsel yükselteç ikinci bir kutup kazandırır: dekat başına 20 yerine 40 dB ve pasif bir RC devresinin bobin olmadan ulaşamayacağı bir Q. Yatay eksen zamandır.',
+    'Tek bir işlemsel yükselteç ikinci bir kutup kazandırır: dekad başına 20 yerine 40 dB ve pasif bir RC devresinin bobin olmadan ulaşamayacağı bir Q. Yatay eksen zamandır.',
   'sallen-key.linearGain': '({gain}x)',
   'sallen-key.maximallyFlat': '(en düz veya daha yumuşak)',
   'sallen-key.none': 'yok',
@@ -2015,7 +2015,7 @@ export const tr: Record<Key, string> = {
   'sallen-key.r1': 'R1',
   'sallen-key.r2': 'R2',
   'sallen-key.rollOff': 'Sönüm eğimi',
-  'sallen-key.schematic': 'Birim kazançlı Sallen-Key süzgeci',
+  'sallen-key.schematic': 'Birim kazançlı Sallen-Key filtresi',
   'sallen-key.stepOvershoot': 'Basamak aşımı',
   'sallen-key.theory1':
     'Her iki topoloji de tek bir kutup çiftini paylaşır: `w0 = 1/sqrt(R1·R2·C1·C2)`. Q, onu hangi bileşenlerin belirlediğine göre değişir: alçak geçiren için `Q = sqrt(R1·R2·C1·C2)/(C2·(R1+R2))`, yüksek geçiren için `Q = sqrt(R1·R2·C1·C2)/(R1·(C1+C2))`. Yalnızca oran önemlidir, bu yüzden her direnci aynı çarpanla büyütüp her kondansatörü aynı çarpanla küçültmek empedans düzeyinden başka hiçbir şeyi değiştirmez.',
@@ -2024,15 +2024,15 @@ export const tr: Record<Key, string> = {
   'sallen-key.theory3':
     'Q = 0,707 değerinin ötesinde yanıt düşmeden önce `Q/sqrt(1 - 1/(4·Q²))` kadar tepe yapar ve basamak yanıtı çınlar. Aşım yalnızca sönüm oranına bağlıdır, `zeta = 1/(2Q)` ile `exp(-pi·zeta/sqrt(1 - zeta²))`; bu, bir RLC devresiyle aynı ifadedir çünkü aynı kutup çiftidir. Dolayısıyla yüksek Q, yalnızca geçirme bandının biçimiyle ilgili değil, çınlamayla ilgili bir tercihtir.',
   'sallen-key.theory4':
-    'İşlemsel yükselteç ideal birim kazançlı bir tampon olarak alınır; bu, elinde artacak çevrim kazancı olduğu sürece geçerlidir. Kabaca, `Q·f0` değerini kazanç bant genişliğinin en az bir dekat altında tutun. İz, transfer işlevi değildir: devre, iki kondansatör gerilimi olarak tam sıfırıncı derece tutma ayrıklaştırmasıyla adımlanır; böylece kırpma, çınlama ve PWM kenarları tezgahta görüleceği gibi belirir ve sürgülerin ulaştığı hiçbir Q değerinde hiçbir şey ıraksamaz.',
-  'sallen-key.title': 'Sallen-Key Aktif Süzgeç',
+    'İşlemsel yükselteç ideal birim kazançlı bir tampon olarak alınır; bu, elinde artacak çevrim kazancı olduğu sürece geçerlidir. Kabaca, `Q·f0` değerini kazanç bant genişliğinin en az bir dekad altında tutun. İz, transfer işlevi değildir: devre, iki kondansatör gerilimi olarak sıfırıncı dereceden tutma (ZOH) ayrıklaştırmasıyla adımlanır; böylece kırpma, çınlama ve PWM kenarları tezgahta görüleceği gibi belirir ve sürgülerin ulaştığı hiçbir Q değerinde hiçbir şey ıraksamaz.',
+  'sallen-key.title': 'Sallen-Key Aktif Filtre',
   'sallen-key.twiceASingleRc': '(tek bir RC devresinin iki katı)',
   'sallen-key.use':
-    'Bir ADC önündeki standart örtüşme önleyici süzgeç, PWM DAC sonrasındaki geri çatma süzgeci ve her ses yolundaki ton şekillendirme. Tek bir RC, anahtarlama gürültüsünü çeviriciden uzak tutacak kadar hızlı sönmez ve iki tanesini art arda bağlamak düz bir geçirme bandı üretemez. Düzgün bir Butterworth köşesi elde etmenin en ucuz yolu budur; neredeyse her karma işaretli kartta görünmesinin nedeni de budur.',
+    'ADC girişinde örtüşme önleyici filtre, PWM DAC çıkışında yeniden yapılandırma filtresi ve ses devrelerinde ton şekillendirme için kullanılır. Tek bir RC katı anahtarlama gürültüsünü yeterince dik bastıramaz; iki pasif RC katını art arda bağlamak ise düz bir geçirme bandı sağlamaz. Sallen-Key yapısı, düzgün bir Butterworth köşesi elde etmenin en ekonomik yollarından biridir ve bu nedenle karma sinyalli kartlarda sık görülür.',
   'sallen-key.warnBandwidth':
     'İşlemsel yükselteç bu köşe için fazla yavaş: {gbw} kazanç bant genişliğine karşı {f0} f0 değeri. Çevrim kazancı tükendiğinde tampon izlemeyi bırakır, bu yüzden gerçek yanıt ideal olanın altına düşer ve ölçtüğünüz Q hesapladığınız Q olmaz. Daha hızlı bir parça ya da daha düşük bir köşe seçin.',
   'sallen-key.warnPeaky':
-    'Q değeri {q}, olağan bileşen toleranslarının yanıtı gözle görülür biçimde kaydırmaya başladığı {limit} sınırının ötesinde. %5 toleranslı bir kondansatör Q değerini kabaca aynı oranda kaydırır, yani kurduğunuz tepe tasarladığınız tepe olmaz. %1 toleranslı parçalar kullanın ya da süzgeci daha yumuşak iki kata yayın.',
+    'Q değeri {q}; bu, tipik bileşen toleranslarının yanıtı belirgin biçimde değiştirmeye başladığı {limit} sınırının üzerindedir. %5 toleranslı bir kondansatör Q değerini yaklaşık aynı oranda kaydırabilir; kurulan tepe tasarlanan değerden farklı olur. %1 toleranslı parçalar kullanın veya filtreyi daha düşük Q değerli iki kata bölün.',
   'sallen-key.whereItIs3Db': '(3 dB düştüğü nokta)',
   'servo-pwm.actualAngle': 'Gerçek açı',
   'servo-pwm.actualPulse': 'Gerçek darbe',
@@ -2048,18 +2048,18 @@ export const tr: Record<Key, string> = {
   'servo-pwm.framesShown': 'Gösterilen çerçeve',
   'servo-pwm.ledcTimer': 'LEDC zamanlayıcısı',
   'servo-pwm.lede':
-    "Bir hobi servosu, görev oranını değil darbenin genişliğini okur ve 20 ms'lik çerçevenin geri kalanını yok sayar. Bu da görev oranı çözünürlüğünü sınırlayıcı etken hâline getirir: yazmaç aralığının yalnızca %5 ila %10'u bir işe yarar. Osiloskop, işaret ucunu birkaç çerçeve boyunca gösterir.",
+    "Bir hobi servosu, görev oranını değil darbenin genişliğini okur ve 20 ms'lik çerçevenin geri kalanını yok sayar. Bu da görev oranı çözünürlüğünü sınırlayıcı etken hâline getirir: yazmaç aralığının yalnızca %5 ila %10'u bir işe yarar. Osiloskop, sinyal ucunu birkaç çerçeve boyunca gösterir.",
   'servo-pwm.maxResolutionAtFrame': 'Bu çerçeve hızında en yüksek çözünürlük',
   'servo-pwm.ofTheFrame': 'çerçevenin',
   'servo-pwm.ofTotal': 'toplam {bits} içinden',
   'servo-pwm.oneWiringNoteThe':
-    "Bir kablolama notu: işaret pini 3,3 V'ta sorunsuzdur, çünkü servolar onu mantık seviyesi olarak okur; ama motorun kendisi 5 V ya da üstünü ister ve tıkandığında amperlerce akım çeker. Bir servoyu asla ESP32 kartının regülatöründen beslemeyin ve topraklarını ortak tutun.",
+    "Bir kablolama notu: sinyal pini 3,3 V'ta sorunsuzdur, çünkü servolar onu mantık seviyesi olarak okur; ama motorun kendisi 5 V ya da üstünü ister ve tıkandığında amperlerce akım çeker. Bir servoyu asla ESP32 kartının regülatöründen beslemeyin ve topraklarını ortak tutun.",
   'servo-pwm.pulseRange': 'Darbe aralığı',
   'servo-pwm.servo': 'Servo',
-  'servo-pwm.signal': 'işaret',
+  'servo-pwm.signal': 'Sinyal',
   'servo-pwm.step': '{degreesPerStep}°/adım',
   'servo-pwm.thatIsWhatMakes':
-    "Çözünürlüğü zorlaştıran da budur. Kullanışlı aralığın tamamı, 20 ms'lik çerçevenin yalnızca {minPulse2} kadarıdır, yani görev çevrimi yazmacının ancak yaklaşık %{frameHz} kadarı bir işe yarar. 8 bitte bu, tüm hareket için kabaca 13 adım, adım başına yaklaşık 14° bırakır; düşük LEDC çözünürlüğüne sahip acemi Arduino kodunun sarsak servolar üretmesinin nedeni budur.",
+    "Çözünürlüğü zorlaştıran da budur. Kullanışlı aralığın tamamı, 20 ms'lik çerçevenin yalnızca {minPulse2} kadarıdır, yani görev oranı yazmacının ancak yaklaşık %{frameHz} kadarı bir işe yarar. 8 bitte bu, tüm hareket için kabaca 13 adım, adım başına yaklaşık 14° bırakır; düşük LEDC çözünürlüğüne sahip acemi Arduino kodunun sarsak servolar üretmesinin nedeni budur.",
   'servo-pwm.theory1':
     "Servo konumu yalnızca darbe genişliğinde kodlanır: hareketin bir ucunda {minPulse}, öbür ucunda {maxPulse}, her 20 ms'de bir yinelenir. Darbeler arasındaki boşluk hiçbir bilgi taşımaz, yalnızca komutu tazeler.",
   'servo-pwm.title': 'Servo PWM',
@@ -2068,7 +2068,7 @@ export const tr: Record<Key, string> = {
   'servo-pwm.warn1':
     "Adım başına {degreesPerStep}°, servonun kendi çözebileceğinden daha kaba; yani sınırı belirleyen makine değil denetleyicidir. LEDC çözünürlüğünü yükseltin: 50 Hz'de bedelsiz olarak {maxBits} bite kadar çıkabilirsiniz.",
   'servo-pwm.warn2':
-    "Yaklaşık 60 Hz'in üzerinde, analog bir servonun beklediğinin dışına çıkmış olursunuz. Birçok sayısal servo 200-333 Hz arasını kabul eder ve daha hızlı yanıt verir, ama analog bir servo vızıldayabilir, aşırı ısınabilir ya da fazladan çerçeveleri büsbütün yok sayabilir. Çerçeve hızını yükseltmeden önce belirtimi denetleyin.",
+    "Yaklaşık 60 Hz'in üzerinde, analog bir servonun beklediğinin dışına çıkmış olursunuz. Birçok sayısal servo 200-333 Hz arasını kabul eder ve daha hızlı yanıt verir, ama analog bir servo vızıldayabilir, aşırı ısınabilir ya da fazladan çerçeveleri tamamen yok sayabilir. Çerçeve hızını yükseltmeden önce belirtimi denetleyin.",
   'solar-sizing.autonomy': 'Özerklik',
   'solar-sizing.batteryNeeded': 'Gereken pil',
   'solar-sizing.batterySizingIsThe':
@@ -2081,7 +2081,7 @@ export const tr: Record<Key, string> = {
   'solar-sizing.depthOfDischarge': 'Deşarj derinliği',
   'solar-sizing.harvestPerDay': 'Günlük hasat',
   'solar-sizing.lede':
-    'Güneş enerjili bir düğüm için panel ve batarya boyutlandırın. Yük, derin uyku sayfasındaki aynı görev çevrimi aritmetiğinden gelir; ardından panelin bunu ortalama bir günde geri koyması, bataryanın ise düğümü kötü günlerde ayakta tutması gerekir.',
+    'Güneş enerjili bir düğüm için panel ve batarya boyutlandırın. Yük, derin uyku sayfasındaki aynı görev oranı aritmetiğinden gelir; ardından panelin bunu ortalama bir günde geri koyması, bataryanın ise düğümü kötü günlerde ayakta tutması gerekir.',
   'solar-sizing.loadProfile': 'Yük profili',
   'solar-sizing.ofFullSunPer': 'kullanılan tam güneş / gün',
   'solar-sizing.panelFitted': 'Takılan panel',
@@ -2122,7 +2122,7 @@ export const tr: Record<Key, string> = {
   'thermal-design.dpakOn1Sq': '1 inç karelik bakır üzerinde DPAK',
   'thermal-design.efficient': '(%{efficiency} verim)',
   'thermal-design.esp32PeaksNear500':
-    "ESP32, WiFi gönderim patlamasında yaklaşık 500 mA'e tepe yapar.",
+    "ESP32, Wi-Fi gönderim patlamasında yaklaşık 500 mA'e tepe yapar.",
   'thermal-design.grease02Pad':
     "TO-220'de macun 0,2, ped 0,5, kuru temas 1,0. Lehimli tırnak için 0,01 kullanın.",
   'thermal-design.input': 'Giriş',
@@ -2157,7 +2157,7 @@ export const tr: Record<Key, string> = {
   'thermal-design.theory1':
     'Isı akışı, elektriksel benzetmeyle anlaşılır: güç akımı, sıcaklık artışı gerilimi, K/W cinsinden ısıl direnç de direnci temsil eder. Üç ayak seri bağlıdır, yani `Tj = Ta + P·(Rjc + Rcs + Rsa)` olur. Rjc kılıftan, Rcs montaj arayüzünden, Rsa ise soğutucudan ve üzerinden geçen havadan gelir.',
   'thermal-design.theTraceIsA':
-    'İz bir dalga şekli değil, bir geçici tepkidir. Isı sığasının neredeyse tamamını soğutucu taşıdığından tek kutup odur: `tau = Rsa·Cth` ve `Ts(t) = Ts(∞) + (Ta - Ts(∞))·e^(-t/tau)`, uygulamanın diğer yerlerinde de kullanılan aynı tam sıfırıncı derece tutma adımıyla hesaplanır ve böylece her dt değerinde kararlı kalır. Çip ile arayüz, yanındaki alüminyum kütleye kıyasla neredeyse hiç ısı tutmaz; bu yüzden bu zaman ölçeğinde jonksiyon yalnızca soğutucunun `P·(Rjc + Rcs)` kadar üzerinde durur, bu da t = 0 anında sıçrayıp ardından yavaşça ilerlemesinin nedenidir. Gerçek soğutucular çok kutupludur, bu yüzden eğrinin başlangıcını gösterge, bitiş noktasını ise gerçek yanıt olarak alın.',
+    'İz bir dalga şekli değil, bir geçici tepkidir. Isı sığasının neredeyse tamamını soğutucu taşıdığından tek kutup odur: `tau = Rsa·Cth` ve `Ts(t) = Ts(∞) + (Ta - Ts(∞))·e^(-t/tau)`, uygulamanın diğer yerlerinde de kullanılan aynı sıfırıncı dereceden tutma (ZOH) adımıyla hesaplanır ve böylece her dt değerinde kararlı kalır. Çip ile arayüz, yanındaki alüminyum kütleye kıyasla neredeyse hiç ısı tutmaz; bu yüzden bu zaman ölçeğinde jonksiyon yalnızca soğutucunun `P·(Rjc + Rcs)` kadar üzerinde durur, bu da t = 0 anında sıçrayıp ardından yavaşça ilerlemesinin nedenidir. Gerçek soğutucular çok kutupludur, bu yüzden eğrinin başlangıcını gösterge, bitiş noktasını ise gerçek yanıt olarak alın.',
   'thermal-design.title': 'Soğutucu / Termal',
   'thermal-design.tj': 'Tj',
   'thermal-design.to220BareFree': 'Çıplak TO-220, serbest hava',
@@ -2181,9 +2181,9 @@ export const tr: Record<Key, string> = {
   'thermal-design.willBurnOnContact': '(temasta yakar)',
   'timer-555.always50WithoutA': '(diyot olmadan her zaman >%50)',
   'timer-555.astable': 'Astable',
-  'timer-555.blurb': 'Astable ve monostable zamanlama, görev çevrimi ve ortaya çıkan dalga şekli.',
+  'timer-555.blurb': 'Astable ve monostable zamanlama, görev oranı ve ortaya çıkan dalga şekli.',
   'timer-555.bothTripPointsScale':
-    'İki eşik noktası da Vcc ile ölçeklenir; zamanlamanın birinci dereceden beslemeden bağımsız olmasının nedeni budur. İz formülden çizilmez; bu uygulamanın başka yerlerinde kullanılan aynı tam sıfırıncı derece tutma gevşemesiyle benzetilir, bu yüzden açılıştaki ilk çevrim gerçekten de ln2 değil ln3 kadar sürer.',
+    'İki eşik noktası da Vcc ile ölçeklenir; zamanlamanın birinci dereceden beslemeden bağımsız olmasının nedeni budur. İz formülden çizilmez; bu uygulamanın başka yerlerinde kullanılan aynı sıfırıncı dereceden tutma (ZOH) gevşemesiyle benzetilir, bu yüzden açılıştaki ilk çevrim gerçekten de ln2 değil ln3 kadar sürer.',
   'timer-555.dischargeCurrent': 'Deşarj akımı',
   'timer-555.dischargePinIsAsked':
     "Deşarj pininden {peak} çekmesi isteniyor, bu da {rating} değerinin üzerinde. R1'i büyütün.",
@@ -2202,7 +2202,7 @@ export const tr: Record<Key, string> = {
   'timer-555.recoveryTime': 'Toparlanma süresi',
   'timer-555.startFromPowerOn': 'Açılıştan başlatın',
   'timer-555.theory1':
-    "Kondansatör, R1+R2 üzerinden Vcc'ye doğru dolar ve yalnızca R2 üzerinden boşalır; bu yüzden yüksek süre `0.693·(R1+R2)·C` her zaman düşük süre `0.693·R2·C` değerinden uzundur. Sıradan bir astable devrenin asla %50 görev çevrimine ulaşamamasının nedeni budur: yalnızca R1 üzerinden dolmasını sağlamak için R2'ye paralel bir diyot eklemek gerekir.",
+    "Kondansatör, R1+R2 üzerinden Vcc'ye doğru dolar ve yalnızca R2 üzerinden boşalır; bu yüzden yüksek süre `0.693·(R1+R2)·C` her zaman düşük süre `0.693·R2·C` değerinden uzundur. Sıradan bir astable devrenin asla %50 görev oranına ulaşamamasının nedeni budur: yalnızca R1 üzerinden dolmasını sağlamak için R2'ye paralel bir diyot eklemek gerekir.",
   'timer-555.threshold23Vcc': 'Eşik 2/3 Vcc',
   'timer-555.timeHigh': 'Yüksek süresi',
   'timer-555.timeLow': 'Düşük süresi',
@@ -2215,7 +2215,7 @@ export const tr: Record<Key, string> = {
   'timer-555.trig': 'Tetik',
   'timer-555.trigger13Vcc': 'Tetik 1/3 Vcc',
   'timer-555.use':
-    'Yanıp sönen ışıklar, ton üretimi, mikrodenetleyicisiz PWM, tek atımlı darbeler ve reset denetimi için kullanılır. Hâlâ bilinmeye değer, çünkü yazılım olmadan zamanlanmış bir darbe elde etmenin çoğu zaman en ucuz ve en güvenilir yoludur; ayrıca astable görev çevrimi sınırı pek çok kafa karıştırıcı devreyi açıklığa kavuşturur.',
+    'Yanıp sönen ışıklar, ton üretimi, mikrodenetleyicisiz PWM, tek atımlı darbeler ve reset denetimi için kullanılır. Hâlâ bilinmeye değer, çünkü yazılım olmadan zamanlanmış bir darbe elde etmenin çoğu zaman en ucuz ve en güvenilir yoludur; ayrıca astable görev oranı sınırı pek çok kafa karıştırıcı devreyi açıklığa kavuşturur.',
   'timer-555.variant': 'Çeşit',
   'timer-555.vcap': 'Vcap',
   'timer-555.vcc': 'Vcc',
@@ -2296,7 +2296,7 @@ export const tr: Record<Key, string> = {
   'transformer.warn2':
     "%{regulation} regülasyon, çıkışın yük altında ciddi biçimde çöktüğü anlamına gelir. Küçük transformatörler bu konuda büyüklerden çok daha kötüdür; 12 V yazan 5 VA'lık bir parçanın yüksüzken çoğu zaman 15 V ölçmesinin nedeni budur.",
   'transformer.windings': 'Sargılar',
-  'ui.0To3v3': '0 - 3V3',
+  'ui.0To3v3': '0 - 3,3 V',
   'ui.allSimulators': 'Tüm simülatörler',
   'ui.amplitudePeak': 'Genlik (tepe)',
   'ui.backToTheCatalogue': 'Kataloğa dön',
@@ -2332,7 +2332,7 @@ export const tr: Record<Key, string> = {
   'voltage-divider.1206OrAxial1': '1206 ya da eksenel (1/4 W)',
   'voltage-divider.axial12W': 'Eksenel (1/2 W)',
   'voltage-divider.blurb': 'Yüksüz ve yüklü bölücü, çıkış empedansı, yükten kaynaklanan hata.',
-  'voltage-divider.defaultsToThe3v3': 'Varsayılan değer 3V3 ESP32 hattıdır.',
+  'voltage-divider.defaultsToThe3v3': 'Varsayılan değer 3,3 V ESP32 hattıdır.',
   'voltage-divider.hangRlOnIt':
     "Üzerine RL bağlayın, alt kol `R2||RL` olur ve `Vout = Vin·(R2||RL)/(R1 + R2||RL)` sonucunu verir. Eşdeğer olarak kaynak kendi empedansına karşı bölünür: `Vout·RL/(RL + Zout)`. Dolayısıyla hata `-Zout/(Zout + RL)` olur: RL = Zout iken %-50, 10 katında %-9,1, 100 katında %-1'dir.",
   'voltage-divider.inputResistanceOfWhatever': 'Orta ucun sürdüğü şeyin giriş direnci.',
@@ -2351,7 +2351,7 @@ export const tr: Record<Key, string> = {
   'voltage-divider.powerInR2': "R2'deki güç",
   'voltage-divider.powerIsIR':
     "Güç, R1'de `I²R`, şönt bacaklarda `V²/R` olur ve üçü toplanınca `Vin·I` eder. Tasarımın ödünleşimi değişmez: düşük dirençler sağlam bir çıkış verir ama sürekli akım harcar, yüksek dirençler akımı azıcık kullanır ama gerçek bir yük altında çöker.",
-  'voltage-divider.quiescentCurrent': 'Durgun akım',
+  'voltage-divider.quiescentCurrent': 'Boşta akım',
   'voltage-divider.ratio': '(oran {ratio})',
   'voltage-divider.resistiveVoltageDivider': 'Dirençli gerilim bölücü',
   'voltage-divider.resistorPackage': 'Direnç kılıfı',
@@ -2397,7 +2397,7 @@ export const tr: Record<Key, string> = {
   'wheatstone.tangent': 'Teğet',
   'wheatstone.tapATapB': 'Orta uç A / orta uç B',
   'wheatstone.theory1':
-    'Her yarı sade bir gerilim bölücüdür, yani orta uçlar `Vin·R2/(R1+R2)` ve `Vin·R4/(R3+R4)` değerlerinde durur. Köprü çıkışı bunların farkıdır, `Vout = Vin·(R2/(R1+R2) - R4/(R3+R4))`, ve `R1/R2 = R3/R4` yani `R1·R4 = R2·R3` olduğunda sıfırdır. Denge yalnızca oranlara bağlıdır, bu yüzden besleme kaymasından etkilenmez.',
+    'Köprünün iki yarısı birer gerilim bölücüdür. Orta düğümler `Vin·R2/(R1+R2)` ve `Vin·R4/(R3+R4)` gerilimlerindedir; köprü çıkışı bunların farkıdır: `Vout = Vin·(R2/(R1+R2) - R4/(R3+R4))`. `R1/R2 = R3/R4`, yani `R1·R4 = R2·R3` olduğunda çıkış sıfırdır. Denge yalnızca direnç oranlarına bağlı olduğundan besleme değişimlerinden etkilenmez.',
   'wheatstone.theveninRout': 'Thevenin Rout',
   'wheatstone.title': 'Wheatstone Köprüsü',
   'wheatstone.to': '{from} - {to}',
@@ -2414,13 +2414,13 @@ export const tr: Record<Key, string> = {
   'wheatstone.warn3':
     "Kaynak empedansı {ADC_MAX_SOURCE_OHMS} üzerinde, yani ADC'nin örnekle ve tut devresi penceresi içinde oturmayacak. Daha küçük kol değerleri kullanın ya da orta uçları bir işlemsel yükselteçle tamponlayın.",
   'wheatstone.warn4':
-    "En kötü kol {maxArmPower} harcıyor; bu, alışılmış 1/4 W'lık bir parçanın dayandığı {RESISTOR_POWER_W} değerinin ötesinde. Kendi kendine ısınma kol direncini kaydırır ve bu, çıkışta ofset olarak görünür.",
+    "En kötü kol {maxArmPower} harcıyor; bu, yaygın 1/4 W'lık bir parçanın dayandığı {RESISTOR_POWER_W} değerinin ötesinde. Kendi kendine ısınma kol direncini kaydırır ve bu, çıkışta ofset olarak görünür.",
   'wheatstone.wheatstoneBridge': 'Wheatstone köprüsü',
   'wheatstone.worstArm': '(en kötü kol {maxArmPower})',
   'wire-gauge.ampacityBundled': 'Akım kapasitesi, demet içi',
-  'wire-gauge.ampacityChassis': 'Akım kapasitesi, şase',
+  'wire-gauge.ampacityChassis': 'Akım kapasitesi, toprak',
   'wire-gauge.ampacityHereIsRule':
-    'Buradaki akım taşıma kapasitesi kabaca bir el kuralıdır: serbest havada tek bir şase hattı için yaklaşık 7,5 A/mm², demet içinde 3,5 A/mm². Gerçek tesisatlar; yalıtım sınıfını, gruplamayı ve ortam sıcaklığını hesaba katan kablolama yönetmeliklerine tabidir. Bunu bir başlangıç noktası seçmek için kullanın, bir tesisatı belgelendirmek için değil.',
+    'Buradaki akım taşıma kapasitesi kabaca bir el kuralıdır: serbest havada tek bir toprak hattı için yaklaşık 7,5 A/mm², demet içinde 3,5 A/mm². Gerçek tesisatlar; yalıtım sınıfını, gruplamayı ve ortam sıcaklığını hesaba katan kablolama yönetmeliklerine tabidir. Bunu bir başlangıç noktası seçmek için kullanın, bir tesisatı belgelendirmek için değil.',
   'wire-gauge.blurb':
     'AWG değerinden çap ve dirence, akım taşıma kapasitesi ve hat boyunca gerilim düşümü.',
   'wire-gauge.conductorTemp': 'İletken sıcaklığı',
@@ -2432,7 +2432,7 @@ export const tr: Record<Key, string> = {
     'Bir kablo kesiti seçin ve size gerçekte neye mal olduğunu görün: direnç, yüke giderken kaybedilen gerilim ve ısı. Varsayılan ayar iki iletkeni de sayar, ki bu insanların genelde unuttuğu yarısıdır.',
   'wire-gauge.loopResistance': 'Çevrim direnci',
   'wire-gauge.ofSupply': 'beslemenin %{dropFraction} kadarı',
-  'wire-gauge.powerLostAsHeat': 'Isı olarak yitirilen güç',
+  'wire-gauge.powerLostAsHeat': 'Isı olarak kaybedilen güç',
   'wire-gauge.resistanceIsRRho':
     'Direnç, bakır için 1,68e-8 Ω·m ile `R = rho·L/A` olur. Düşüm, akımın geri dönmesi gerektiği için *her iki* iletken üzerinden `V = I·R` eder. Yalnızca bir bacağı sayarak bunu yarıya indirmek, kablo boyutlandırmasındaki en yaygın tek hatadır.',
   'wire-gauge.resistancePerMetre': 'Metre başına direnç',
@@ -2447,7 +2447,7 @@ export const tr: Record<Key, string> = {
   'wire-gauge.warn1':
     '{awg} AWG üzerinden geçen {current}, {ampacityBundled} olan demet içi kablolama önerisini aşıyor. Tek başına serbest havada kabul edilebilir olabilir, ama bir demet ya da boru içinde ısının gidecek yeri yoktur. Bakırı ikiye katlamak için üç kalınlık aşağı inin.',
   'wire-gauge.warn2':
-    "{vDrop} yitiriliyor, bu da beslemenin %{dropFraction} kadarı. Yaklaşık %3'ün üzerinde çoğu yük yanlış davranır: regülatörler düşüm sınırına girer, motorlar tork yitirir ve LED şeritleri uzak uca doğru gözle görülür biçimde kararır.",
+    "{vDrop} kabloda kayboluyor, bu da beslemenin %{dropFraction} kadarı. Yaklaşık %3'ün üzerinde çoğu yük yanlış davranır: regülatörler düşüm sınırına girer, motorlar tork kaybeder ve LED şeritleri uzak uca doğru belirgin biçimde kararır.",
   'wire-gauge.wire': 'Tel',
   'ws2812-power.25Headroom': '%25 pay',
   'ws2812-power.allWhiteFullBrightness': 'hepsi beyaz, tam parlaklık',
@@ -2475,7 +2475,7 @@ export const tr: Record<Key, string> = {
   'ws2812-power.single': 'Tek',
   'ws2812-power.singleFeedIsFine': 'tek besleme yeterli',
   'ws2812-power.sizeTheSupplyFor':
-    'Beslemeyi, amaçladığınız ortalamaya göre değil, komut verebileceğiniz tepeye göre boyutlandırın. Her pikseli yanlışlıkla beyaz yapan bir yazılım tüm akımı çeker ve sanatsal niyete göre boyutlandırılmış bir besleme ya kapanır ya da veri işareti bozulana dek çöker.',
+    'Beslemeyi, amaçladığınız ortalamaya göre değil, komut verebileceğiniz tepeye göre boyutlandırın. Her pikseli yanlışlıkla beyaz yapan bir yazılım tüm akımı çeker ve sanatsal niyete göre boyutlandırılmış bir besleme ya kapanır ya da veri sinyali bozulana dek çöker.',
   'ws2812-power.strip': 'Şerit',
   'ws2812-power.stripLength': 'Şerit uzunluğu',
   'ws2812-power.supplyWiring': 'Besleme kablolaması',
@@ -2530,7 +2530,7 @@ export const tr: Record<Key, string> = {
   'zener.rsFitted': 'Takılan Rs',
   'zener.rsWindow': 'Rs penceresi',
   'zener.theDcModelTreats':
-    "DC modeli zeneri, dizinin üstünde ideal bir Vz kırpıcısı, altında ise açık devre sayar; alt köşenin regüle bir çıkış yerine yalın bir seri düşüm bildirmesinin nedeni budur. Zz teğet doğrusunu sıfır akıma kadar uzatmak daha gelişmiş görünür ve fena hâlde yanlış olurdu: bir 1N4728A, 76 mA'de 10 Ω, 1 mA'de ise 400 Ω'dur.",
+    "DC modeli zeneri, dizinin üstünde ideal bir Vz sınırlayıcısı, altında ise açık devre sayar; alt köşenin regüle bir çıkış yerine yalın bir seri düşüm bildirmesinin nedeni budur. Zz teğet doğrusunu sıfır akıma kadar uzatmak daha gelişmiş görünür ve fena hâlde yanlış olurdu: bir 1N4728A, 76 mA'de 10 Ω, 1 mA'de ise 400 Ω'dur.",
   'zener.theory1':
     "Zener bir şönttür: yükün almadığı akımı o alır. `Rs = (Vin - Vz) / (Iz + IL)` tasarımın tamamıdır ve can yakan iki uç durumda hesaplanır. En ağır yükle en düşük giriş, zenere en az akımı bırakır ve kullanılabilir en büyük Rs'yi belirler. En hafif yükle en yüksek giriş her şeyi zenerden geçirir ve en küçüğünü belirler.",
   'zener.title': 'Zener Regülatör',
@@ -2551,7 +2551,7 @@ export const tr: Record<Key, string> = {
   'zener.warn4':
     "Zener anma değerinin üzerinde: yük bağlı değilken {vinMax} değerinde {pzMax} bir parçada {pz}. Genellikle kısa devre olacak biçimde bozulur ve bu da Rs üzerine {irs} boşaltır. Rs'yi {rsMin} üzerine çıkarın.",
   'zener.warn5':
-    "Zener, anma değerinin %{pzFraction} kadarında. Mutlak sınırın içinde ama bu sayfanın kullandığı %{POWER_DERATING} bütçesinin ötesinde: anma değerleri 25 C'de verilir ve parça durgun havada sıcak çalışır.",
+    "Zener, anma değerinin %{pzFraction} kadarında. Mutlak sınırın içinde ama bu sayfanın kullandığı %{POWER_DERATING} bütçesinin ötesinde: anma değerleri 25 C'de verilir ve parça hareketsiz havada sıcak çalışır.",
   'zener.worstCaseForThe': 'Zener için en kötü durum. Yük her zaman açık değilse sıfır varsayın.',
   'zener.zener': 'Zener',
   'zener.zenerDissipation': 'Zener güç kaybı',

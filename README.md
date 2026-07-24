@@ -2,6 +2,8 @@
 
 ### [Open the simulators](https://hamzayslmn.github.io/open-electronic/)
 
+![ss](docs/ss.png)
+
 Browser-based electronics simulators and calculators for engineers. No install, no sign-up,
 nothing sent to a server: every formula runs in your browser.
 
