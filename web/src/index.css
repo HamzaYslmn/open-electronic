@@ -472,6 +472,20 @@ main {
   font-weight: 600;
 }
 
+/* A preset row: too many chips for one line, so wrap them and let each size to
+   its own label rather than sharing the width equally. */
+.seg.wrap {
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.seg.wrap button {
+  flex: 1 0 auto;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
 /* Stroke and text defaults live here so a page's SVG carries geometry only. */
 .schematic {
   width: 100%;

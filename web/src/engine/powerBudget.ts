@@ -48,6 +48,8 @@ export type DeepSleepReadout = {
   runtimeDays: number
   /** Wakes the pack supports before it is flat. */
   cycles: number
+  /** How many times a day the node wakes, the intuitive counterpart to period. */
+  wakesPerDay: number
   /** Fraction of the average current the sleep phase is responsible for. */
   sleepShare: number
   /** Daily consumption, Wh, which is what the solar page needs. */
@@ -82,6 +84,7 @@ export function analyseDeepSleep(
     runtimeS,
     runtimeDays: runtimeS / SECONDS_PER_DAY,
     cycles: period > 0 ? runtimeS / period : Infinity,
+    wakesPerDay: period > 0 ? SECONDS_PER_DAY / period : Infinity,
     sleepShare: averageCurrent > 0 ? sleepContribution / averageCurrent : 0,
     whPerDay: (averageCurrent * packVoltage * SECONDS_PER_DAY) / JOULES_PER_WH,
     sleepDominated: averageCurrent > 0 && sleepContribution / averageCurrent > 0.5,

@@ -769,7 +769,10 @@ export const en = {
   'deep-sleep.energyPerWake': 'Energy per wake',
   'deep-sleep.lede':
     'A battery node lives or dies on its average current, not its peak. The scope shows the current profile over one wake/sleep cycle against the resulting average, on a linear time axis.',
+  'deep-sleep.quickPick': 'Quick pick',
+  'deep-sleep.sleepDuration': 'Sleep duration',
   'deep-sleep.sleepShareOfBudget': 'Sleep share of budget',
+  'deep-sleep.timingBasis': 'Set timing by',
   'deep-sleep.theConsequenceIsUnintuitive':
     'The consequence is unintuitive. An ESP32 drawing 80 mA for 3 seconds every hour averages about 77 µA, so a 2 Ah cell lasts over two years. The same chip left awake would flatten it in a day. Deep sleep is not an optimisation, it is the entire design.',
   'deep-sleep.theory1':
@@ -781,10 +784,14 @@ export const en = {
   'deep-sleep.use':
     'Any battery powered ESP32 node: sensors reporting to a server, trackers, remote monitors. Average current is the only figure that determines battery life, and this shows why the sleep current usually matters far more than the wake time. It is also how you discover that a permanently connected divider or a leaky regulator is what is really draining the pack.',
   'deep-sleep.wakeCycles': 'Wake cycles',
+  'deep-sleep.wakeInterval': 'Wake interval',
+  'deep-sleep.wakesPerDay': 'Wakes per day',
   'deep-sleep.warn1':
     "Sleep current is {sleepShare}% of the budget, so optimising the wake phase buys you almost nothing. Attack the standby draw instead: a linear regulator's quiescent current, a permanently connected divider, or a peripheral left powered are the usual culprits, and each can dwarf the ESP32's own 10 µA.",
   'deep-sleep.warn2':
     'Above about 150 mA you are almost certainly transmitting. WiFi association costs far more energy than the transmission itself, so batching several readings into one wake is usually a bigger win than making each wake shorter.',
+  'deep-sleep.warn3':
+    'The active time is longer than the wake interval, so the node never sleeps. Shorten the wake, or raise the interval above {activeTime}.',
   'deep-sleep.whDay': '{whPerDay} Wh/day',
   'deep-sleep.whichTermDominatesDecides':
     'Which term dominates decides where to spend effort. Once the sleep phase carries most of the average, shortening the wake is wasted work, and the target becomes standby leakage: regulator quiescent current, pull-up and divider networks, and sensors that stay powered.',

@@ -53,6 +53,13 @@ describe('duty cycled battery life', () => {
     const r = analyseDeepSleep(PROFILE, 2, 3.7)
     expect(r.cycles).toBeCloseTo(r.runtimeS / r.period, 6)
   })
+
+  it('reports wakes per day from the cycle period', () => {
+    // 3 s + 3600 s = 3603 s per cycle, so 86400/3603 = 23.98 wakes a day.
+    const r = analyseDeepSleep(PROFILE, 2, 3.7)
+    expect(r.wakesPerDay).toBeCloseTo(SECONDS_PER_DAY / r.period, 9)
+    expect(r.wakesPerDay).toBeCloseTo(23.98, 1)
+  })
 })
 
 describe('solar sizing', () => {
