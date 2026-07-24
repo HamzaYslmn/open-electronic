@@ -51,7 +51,7 @@ The `ui/` primitives exist so a simulator is mostly declaration. Use them rather
 | `SimPage` | Page layout. Reads title/blurb from the catalog by `id`, so a sim never renders its own `<h1>`. |
 | `Oscilloscope` | The scope. Pages pass data only; it owns its front panel. Colours from `TRACE_COLORS`. |
 | `Param` | Log slider + SI text box that parses `4k7`, `100n`, `2.2 uF`. |
-| `ReadoutGrid` / `Warning` / `Theory` | Derived-value tiles, out-of-range caution, collapsible maths. |
+| `ReadoutGrid` / `Warning` / `Theory` | Derived-value tiles, out-of-range caution, collapsible maths. Prose is passed as `text` strings, never as markup, so it can be translated: wrap formulas in `` `backticks` `` and emphasis in `*stars*`, and interpolate live values with `{name}` plus a `vars` entry. |
 | `Group` / `Segmented` / `Select` / `Toggle` | Controls-column building blocks. |
 | `useSource` + `SourceControls` | The shared stimulus (waveform, frequency, amplitude, offset, duty, cycles). |
 
@@ -61,16 +61,35 @@ the scope above the fold on a phone while still rendering controls on the right 
 The shell in `App.tsx` is a CSS grid: topbar across the top, `Sidebar` (every simulator, always visible) in the
 left column, routed page in the right. Under 800px the sidebar becomes an off-canvas drawer, same markup.
 
-**Adding a simulator is four steps:** write `engine/<domain>.ts` plus its test, write `sims/<id>.tsx`,
-add a `useCases.ts` entry for the same id, then flip the catalog entry to `status: 'ready'` and attach
-`Component: lazy(() => import('./sims/<id>'))`. Routes, the home grid, the sidebar and the
-"Where is it used?" card all pick it up automatically. Do not add a route by hand.
+**Adding a simulator is five steps:** write `engine/<domain>.ts` plus its test, write `sims/<id>.tsx`,
+add a `useCases.ts` entry for the same id, flip the catalog entry to `status: 'ready'` and attach
+`Component: lazy(() => import('./sims/<id>'))`, then run `pnpm test` and add the strings it lists to
+`i18n/en.ts` and `i18n/tr.ts`. Routes, the home grid, the sidebar and the "Where is it used?" card all pick
+it up automatically. Do not add a route by hand.
 
 ### Internationalisation
 
-`i18n/index.ts` uses the **English source string as the lookup key**, so there is no `en.ts` and any string
-without a Turkish entry falls back to English by itself. Call `const t = useT()` then `t('Catalogue')`.
-Add a language by adding one map. Do not introduce per-language files or a key-naming scheme.
+`i18n/index.tsx` uses the **English source string as the lookup key**, so English needs no map, any string
+without a Turkish entry falls back to English by itself, and there is no key-naming scheme to keep in sync
+with the text it names. `{name}` placeholders are filled from a `vars` object, which lets a translation
+reorder them; a placeholder holding a string is itself translated, so a page can pick between whole phrases
+rather than gluing fragments together.
+
+**Pages almost never call `t()`.** The `ui/` primitives translate their own `label`, `note`, `value` and
+`hint` when given a plain string, so a simulator passes English and gets translation for free and cannot
+forget. Reach for `<T k="..." vars={{ ... }} />` only where the text interpolates a live value into a slot
+that takes a node, and for `useT()` only in a component that needs a bare string, such as an `aria-label`.
+
+- `en.ts` is the **generated inventory** of every displayable string, not a runtime lookup. It is the
+  checklist a translator works from and what `coverage.test.ts` diffs `tr.ts` against. Nothing imports it in
+  the app: since the key already is the English text, shipping it would add 68 kB gzipped of identity map.
+- `tr.ts` is fetched **on demand**, only when Turkish is selected (`LOADERS` in `i18n/index.tsx`). It is
+  120 kB gzipped, more than the rest of the app, so an English visitor must not pay for it.
+- `coverage.test.ts` scans the source and fails if a displayable string is missing from `en.ts`, if `tr.ts`
+  is missing a key, or if a translation's placeholders do not match its key. Adding a page fails this test
+  until its strings are in both maps, which is the only thing stopping a string from silently staying English.
+
+Add a language by adding one map next to `tr.ts` and one line in `LOADERS`.
 
 ### Rules that matter
 

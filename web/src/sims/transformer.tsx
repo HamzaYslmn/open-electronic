@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { analyseTransformer } from '../engine/ac'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group } from '../ui/Controls'
 import Param from '../ui/Param'
 import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
@@ -51,7 +52,7 @@ export default function Transformer() {
           { label: 'Secondary current', value: formatSI(t.iSecondary, 'A') },
           { label: 'Primary current', value: formatSI(t.iPrimary, 'A') },
           { label: 'Reflected impedance', value: formatSI(t.reflected, 'Ω'), note: 'seen by the primary' },
-          { label: 'Apparent power', value: formatSI(t.va, 'VA'), note: `rated ${vaRating} VA`, warn: t.overRated },
+          { label: 'Apparent power', value: formatSI(t.va, 'VA'), note: <T k="rated {vaRating} VA" vars={{ vaRating }} />, warn: t.overRated },
           { label: 'Primary copper loss', value: formatSI(t.lossPrimary, 'W') },
           { label: 'Secondary copper loss', value: formatSI(t.lossSecondary, 'W') },
           { label: 'Efficiency', value: `${(t.efficiency * 100).toFixed(1)}%`, note: 'copper loss only' },
@@ -64,45 +65,26 @@ export default function Transformer() {
       />
 
       {t.overRated && (
-        <Warning>
-          {formatSI(t.va, 'VA')} exceeds the {vaRating} VA rating. The windings will overheat,
-          and since the rating is thermal rather than magnetic it may run for a while before
-          failing, which is what makes it dangerous.
-        </Warning>
+        <Warning
+          text="{VA} exceeds the {vaRating} VA rating. The windings will overheat, and since the rating is thermal rather than magnetic it may run for a while before failing, which is what makes it dangerous."
+          vars={{ VA: formatSI(t.va, 'VA'), vaRating }}
+        />
       )}
       {t.poorRegulation && (
-        <Warning>
-          {(t.regulation * 100).toFixed(0)}% regulation means the output sags badly under load.
-          Small transformers are much worse than large ones here, which is why a 5 VA part
-          marked 12 V often measures 15 V unloaded.
-        </Warning>
+        <Warning
+          text="{regulation}% regulation means the output sags badly under load. Small transformers are much worse than large ones here, which is why a 5 VA part marked 12 V often measures 15 V unloaded."
+          vars={{ regulation: (t.regulation * 100).toFixed(0) }}
+        />
       )}
 
-      <Theory>
-        <p>
-          The defining relations are <code>Vs = Vp·Ns/Np</code> and{' '}
-          <code>Is = Ip·Np/Ns</code>. Voltage steps down while current steps up, so apparent
-          power is conserved: a transformer moves energy, it does not make it.
-        </p>
-        <p>
-          The consequence people forget is impedance. A load Zs on the secondary appears to the
-          primary as <code>(Np/Ns)²·Zs</code>. That square is why transformers match impedances
-          as well as voltages, and it is the entire basis of valve amplifier output stages and
-          RF matching networks.
-        </p>
-        <p>
-          Regulation is what winding resistance costs you. Current through the secondary
-          resistance, plus the primary resistance reflected across the same ratio, drops
-          voltage in proportion to load. So the no-load voltage is always higher than the
-          nameplate, and a small transformer can read 25% high when unloaded.
-        </p>
-        <p>
-          This model covers copper loss only. Real transformers also have core loss from
-          hysteresis and eddy currents, which is roughly constant with load and dominates at
-          light load, plus leakage inductance that worsens regulation further at higher
-          frequencies. The VA rating is a thermal limit covering all of it together.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "The defining relations are `Vs = Vp·Ns/Np` and `Is = Ip·Np/Ns`. Voltage steps down while current steps up, so apparent power is conserved: a transformer moves energy, it does not make it.",
+          "The consequence people forget is impedance. A load Zs on the secondary appears to the primary as `(Np/Ns)²·Zs`. That square is why transformers match impedances as well as voltages, and it is the entire basis of valve amplifier output stages and RF matching networks.",
+          "Regulation is what winding resistance costs you. Current through the secondary resistance, plus the primary resistance reflected across the same ratio, drops voltage in proportion to load. So the no-load voltage is always higher than the nameplate, and a small transformer can read 25% high when unloaded.",
+          "This model covers copper loss only. Real transformers also have core loss from hysteresis and eddy currents, which is roughly constant with load and dominates at light load, plus leakage inductance that worsens regulation further at higher frequencies. The VA rating is a thermal limit covering all of it together.",
+        ]}
+      />
     </SimPage>
   )
 }

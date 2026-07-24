@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { DEFAULT_DERATING, analyseDeepSleep } from '../engine/powerBudget'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -74,8 +75,8 @@ export default function DeepSleep() {
           { label: 'Energy per wake', value: formatSI(r.energyPerCycle, 'J') },
           {
             label: 'Runtime',
-            value: `${r.runtimeDays.toFixed(0)} days`,
-            note: `${(r.runtimeDays / 365).toFixed(2)} years`,
+            value: <T k="{runtimeDays} days" vars={{ runtimeDays: r.runtimeDays.toFixed(0) }} />,
+            note: <T k="{runtimeDays} years" vars={{ runtimeDays: (r.runtimeDays / 365).toFixed(2) }} />,
           },
           { label: 'Wake cycles', value: Math.floor(r.cycles).toLocaleString() },
           {
@@ -83,50 +84,30 @@ export default function DeepSleep() {
             value: `${(r.sleepShare * 100).toFixed(1)}%`,
             warn: r.sleepDominated,
           },
-          { label: 'Consumption', value: `${r.whPerDay.toFixed(3)} Wh/day` },
+          { label: 'Consumption', value: <T k="{whPerDay} Wh/day" vars={{ whPerDay: r.whPerDay.toFixed(3) }} /> },
         ]}
       />
 
       {r.sleepDominated && (
-        <Warning>
-          Sleep current is {(r.sleepShare * 100).toFixed(0)}% of the budget, so optimising the
-          wake phase buys you almost nothing. Attack the standby draw instead: a linear
-          regulator's quiescent current, a permanently connected divider, or a peripheral left
-          powered are the usual culprits, and each can dwarf the ESP32's own 10 µA.
-        </Warning>
+        <Warning
+          text="Sleep current is {sleepShare}% of the budget, so optimising the wake phase buys you almost nothing. Attack the standby draw instead: a linear regulator's quiescent current, a permanently connected divider, or a peripheral left powered are the usual culprits, and each can dwarf the ESP32's own 10 µA."
+          vars={{ sleepShare: (r.sleepShare * 100).toFixed(0) }}
+        />
       )}
       {activeCurrent > 0.15 && (
-        <Warning>
-          Above about 150 mA you are almost certainly transmitting. WiFi association costs far
-          more energy than the transmission itself, so batching several readings into one wake
-          is usually a bigger win than making each wake shorter.
-        </Warning>
+        <Warning
+          text="Above about 150 mA you are almost certainly transmitting. WiFi association costs far more energy than the transmission itself, so batching several readings into one wake is usually a bigger win than making each wake shorter."
+        />
       )}
 
-      <Theory>
-        <p>
-          Average current is the time-weighted mean over one cycle,{' '}
-          <code>Iavg = (Ion·ton + Isleep·tsleep) / (ton + tsleep)</code>. Runtime is then the
-          usable capacity divided by that. Nothing else matters: the peak current only affects
-          whether the supply can deliver it, not how long the pack lasts.
-        </p>
-        <p>
-          The consequence is unintuitive. An ESP32 drawing 80 mA for 3 seconds every hour
-          averages about 77 µA, so a 2 Ah cell lasts over two years. The same chip left awake
-          would flatten it in a day. Deep sleep is not an optimisation, it is the entire design.
-        </p>
-        <p>
-          Which term dominates decides where to spend effort. Once the sleep phase carries most
-          of the average, shortening the wake is wasted work, and the target becomes standby
-          leakage: regulator quiescent current, pull-up and divider networks, and sensors that
-          stay powered.
-        </p>
-        <p>
-          The usable fraction is doing real work here. Nominal capacity assumes a slow discharge
-          to a low cutoff at room temperature, none of which holds in the field. Planning on
-          80% is normal, and less in the cold.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "Average current is the time-weighted mean over one cycle, `Iavg = (Ion·ton + Isleep·tsleep) / (ton + tsleep)`. Runtime is then the usable capacity divided by that. Nothing else matters: the peak current only affects whether the supply can deliver it, not how long the pack lasts.",
+          "The consequence is unintuitive. An ESP32 drawing 80 mA for 3 seconds every hour averages about 77 µA, so a 2 Ah cell lasts over two years. The same chip left awake would flatten it in a day. Deep sleep is not an optimisation, it is the entire design.",
+          "Which term dominates decides where to spend effort. Once the sleep phase carries most of the average, shortening the wake is wasted work, and the target becomes standby leakage: regulator quiescent current, pull-up and divider networks, and sensors that stay powered.",
+          "The usable fraction is doing real work here. Nominal capacity assumes a slow discharge to a low cutoff at room temperature, none of which holds in the field. Planning on 80% is normal, and less in the cold.",
+        ]}
+      />
     </SimPage>
   )
 }

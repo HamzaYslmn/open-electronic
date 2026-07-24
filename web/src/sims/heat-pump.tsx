@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { J_PER_KWH, analyse } from '../engine/heatPump'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group } from '../ui/Controls'
 import Param from '../ui/Param'
 import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
@@ -62,7 +63,7 @@ export default function HeatPump() {
         items={[
           { label: 'Temperature lift', value: `${r.liftK.toFixed(1)} K` },
           { label: 'Carnot ceiling', value: r.carnot.toFixed(2), note: 'Th/(Th-Tc)' },
-          { label: 'Real COP', value: r.cop.toFixed(2), note: `${(eta * 100).toFixed(0)}% of Carnot` },
+          { label: 'Real COP', value: r.cop.toFixed(2), note: <T k="{eta}% of Carnot" vars={{ eta: (eta * 100).toFixed(0) }} /> },
           { label: 'Heat delivered', value: formatSI(r.heatW, 'W') },
           { label: 'Lifted from outside', value: formatSI(r.absorbedW, 'W'), note: 'the free part' },
           { label: 'Cost per kWh heat', value: money(r.heatCostPerKwh) },
@@ -78,38 +79,23 @@ export default function HeatPump() {
       />
 
       {r.noLift && (
-        <Warning>
-          The cold side is at or above the hot side, so there is no lift to perform and the
-          COP is undefined. Raise the flow temperature or lower the outdoor temperature.
-        </Warning>
+        <Warning
+          text="The cold side is at or above the hot side, so there is no lift to perform and the COP is undefined. Raise the flow temperature or lower the outdoor temperature."
+        />
       )}
       {r.liftK > 55 && !r.noLift && (
-        <Warning>
-          A lift over about 55 K is outside what most domestic refrigerants manage. Real
-          machines cut out or fall back to a resistive heater here, so treat this COP as
-          optimistic.
-        </Warning>
+        <Warning
+          text="A lift over about 55 K is outside what most domestic refrigerants manage. Real machines cut out or fall back to a resistive heater here, so treat this COP as optimistic."
+        />
       )}
 
-      <Theory>
-        <p>
-          The Carnot ceiling for heating is <code>COP = Th / (Th - Tc)</code>, with both
-          temperatures in kelvin. Only the difference matters, which is why a heat pump
-          feeding underfloor pipes at 35 °C thrashes one feeding radiators at 65 °C: the
-          lift is smaller, so the ceiling is higher.
-        </p>
-        <p>
-          Real machines reach a fraction of Carnot, here the second-law efficiency, typically
-          0.4 to 0.6 for domestic units. So <code>COP = eta · Th/(Th - Tc)</code> and the heat
-          delivered is <code>Qh = COP · W</code>.
-        </p>
-        <p>
-          A COP of 3 means a kWh of heat costs a third of the tariff, so the saving against a
-          resistive heater is <code>1 - 1/COP</code>. That is the number that decides whether
-          the machine pays back, and it collapses on the coldest days precisely when demand
-          peaks, which is why the seasonal figure matters more than the headline one.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "The Carnot ceiling for heating is `COP = Th / (Th - Tc)`, with both temperatures in kelvin. Only the difference matters, which is why a heat pump feeding underfloor pipes at 35 °C thrashes one feeding radiators at 65 °C: the lift is smaller, so the ceiling is higher.",
+          "Real machines reach a fraction of Carnot, here the second-law efficiency, typically 0.4 to 0.6 for domestic units. So `COP = eta · Th/(Th - Tc)` and the heat delivered is `Qh = COP · W`.",
+          "A COP of 3 means a kWh of heat costs a third of the tariff, so the saving against a resistive heater is `1 - 1/COP`. That is the number that decides whether the machine pays back, and it collapses on the coldest days precisely when demand peaks, which is why the seasonal figure matters more than the headline one.",
+        ]}
+      />
     </SimPage>
   )
 }

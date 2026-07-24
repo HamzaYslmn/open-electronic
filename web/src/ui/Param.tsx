@@ -1,5 +1,7 @@
 import { useEffect, useId, useState } from 'react'
+import type { ReactNode } from 'react'
 import { clamp, formatSI, parseSI } from '../engine/units'
+import { useT } from '../i18n'
 
 export type ParamProps = {
   label: string
@@ -12,7 +14,8 @@ export type ParamProps = {
   log?: boolean
   /** Linear step. Ignored when log is set. */
   step?: number
-  hint?: string
+  /** A plain string is translated; use <T> when the hint interpolates a value. */
+  hint?: ReactNode
 }
 
 const TICKS = 1000
@@ -35,6 +38,8 @@ export default function Param({
   hint,
 }: ParamProps) {
   const id = useId()
+  const t = useT()
+  const name = t(label)
   const [text, setText] = useState(() => formatSI(value, unit))
   const [invalid, setInvalid] = useState(false)
 
@@ -68,7 +73,7 @@ export default function Param({
   return (
     <div className="param">
       <label htmlFor={id}>
-        <span>{label}</span>
+        <span>{name}</span>
         <input
           id={id}
           className={invalid ? 'param-text invalid' : 'param-text'}
@@ -89,9 +94,11 @@ export default function Param({
         step={usableLog ? 1 : ((step ?? (max - min) / TICKS) / (max - min)) * TICKS}
         value={clamp(toSlider(value), 0, TICKS)}
         onChange={(e) => onChange(clamp(fromSlider(Number(e.target.value)), min, max))}
-        aria-label={label}
+        aria-label={name}
       />
-      {hint && <small className="param-hint">{hint}</small>}
+      {hint && (
+        <small className="param-hint">{typeof hint === 'string' ? t(hint) : hint}</small>
+      )}
     </div>
   )
 }

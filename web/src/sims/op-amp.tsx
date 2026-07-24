@@ -12,6 +12,7 @@ import { OPAMP_MODES } from '../engine/opamp'
 import type { OpAmp, OpAmpConfig, OpAmpMode } from '../engine/opamp'
 import { peakToPeak, sweep } from '../engine/signal'
 import { formatSI } from '../engine/units'
+import { T, useT } from '../i18n'
 import { Group, Segmented, Select } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import type { Trace } from '../ui/Oscilloscope'
@@ -45,8 +46,9 @@ function summingNodeInput(mode: OpAmpMode): boolean {
 
 function Schematic({ mode }: { mode: OpAmpMode }) {
   const inverting = summingNodeInput(mode)
+  const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 130" aria-label={`${mode} amplifier`}>
+    <svg className="schematic" viewBox="0 0 260 130" aria-label={t('{mode} amplifier', { mode })}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         {/* the part itself */}
         <path d="M100 30v70l60-35z" />
@@ -261,7 +263,7 @@ export default function OpAmp() {
           {
             label: 'Closed-loop gain',
             value: `${readout.gain.toFixed(3)} V/V`,
-            note: `(${readout.gainDb.toFixed(2)} dB${readout.gain < 0 ? ', inverted' : ''})`,
+            note: <T k="({gainDb} dB{inverted})" vars={{ gainDb: readout.gainDb.toFixed(2), inverted: readout.gain < 0 ? ', inverted' : '' }} />,
           },
           {
             label: 'Noise gain',
@@ -271,19 +273,19 @@ export default function OpAmp() {
           {
             label: 'Bandwidth',
             value: formatSI(readout.bandwidth, 'Hz'),
-            note: `(GBW / ${readout.noiseGain.toFixed(2)})`,
+            note: <T k="(GBW / {noiseGain})" vars={{ noiseGain: readout.noiseGain.toFixed(2) }} />,
           },
           {
-            label: `Response at ${formatSI(source.frequency, 'Hz')}`,
+            label: <T k="Response at {frequency}" vars={{ frequency: formatSI(source.frequency, 'Hz') }} />,
             value: `${(20 * Math.log10(readout.gainError)).toFixed(2)} dB`,
-            note: `(${(readout.gainError * 100).toFixed(2)}% of the DC gain)`,
+            note: <T k="({gainError}% of the DC gain)" vars={{ gainError: (readout.gainError * 100).toFixed(2) }} />,
             warn: readout.gainError < 0.9,
           },
         ]),
     {
       label: 'Slew demanded',
       value: formatSI(readout.slewNeeded, 'V/s'),
-      note: `(part does ${formatSI(slewRate, 'V/s')}, i.e. ${(slewRate / 1e6).toFixed(2)} V/µs)`,
+      note: <T k="(part does {slewRate}, i.e. {e6} V/µs)" vars={{ slewRate: formatSI(slewRate, 'V/s'), e6: (slewRate / 1e6).toFixed(2) }} />,
       warn: readout.slewLimited || stats.slewed > 0,
     },
     {
@@ -295,12 +297,12 @@ export default function OpAmp() {
     {
       label: 'Output swing',
       value: formatSI(stats.vpp, 'V') + ' pp',
-      note: `(${formatSI(stats.vmin, 'V')} to ${formatSI(stats.vmax, 'V')})`,
+      note: <T k="({vmin} to {vmax})" vars={{ vmin: formatSI(stats.vmin, 'V'), vmax: formatSI(stats.vmax, 'V') }} />,
     },
     {
       label: 'Time on a rail',
       value: `${(stats.clipped * 100).toFixed(1)} %`,
-      note: `(rails clip at ${formatSI(readout.lo, 'V')} / ${formatSI(readout.hi, 'V')})`,
+      note: <T k="(rails clip at {lo} / {hi})" vars={{ lo: formatSI(readout.lo, 'V'), hi: formatSI(readout.hi, 'V') }} />,
       warn: stats.clipped > 0,
     },
     ...(mode === 'integrator'
@@ -314,7 +316,7 @@ export default function OpAmp() {
           {
             label: 'DC bleed corner',
             value: formatSI(readout.integratorCorner, 'Hz'),
-            note: `(below this it is just a ${Math.abs(readout.gain).toFixed(1)}x inverter)`,
+            note: <T k="(below this it is just a {gain}x inverter)" vars={{ gain: Math.abs(readout.gain).toFixed(1) }} />,
           },
         ]
       : [
@@ -469,89 +471,59 @@ export default function OpAmp() {
       <Oscilloscope traces={traces} dt={dt} unit="V" />
 
       {stats.clipped > 0 && (
-        <Warning>
-          The output is on a rail for {(stats.clipped * 100).toFixed(1)}% of the window. Beyond
-          that point the gain formula no longer describes the circuit: reduce the gain, reduce
-          the input, or widen the supply.
-        </Warning>
+        <Warning
+          text="The output is on a rail for {clipped}% of the window. Beyond that point the gain formula no longer describes the circuit: reduce the gain, reduce the input, or widen the supply."
+          vars={{ clipped: (stats.clipped * 100).toFixed(1) }}
+        />
       )}
       {(readout.slewLimited || stats.slewed > 0) && (
-        <Warning>
-          Slew limited. The output needs {formatSI(readout.slewNeeded, 'V/s')} but the part only
-          does {formatSI(amp.slewRate, 'V/s')}, so sine waves come out as triangles and the
-          small-signal bandwidth figure no longer applies.
-        </Warning>
+        <Warning
+          text="Slew limited. The output needs {slewNeeded} but the part only does {slewRate}, so sine waves come out as triangles and the small-signal bandwidth figure no longer applies."
+          vars={{
+            slewNeeded: formatSI(readout.slewNeeded, 'V/s'),
+            slewRate: formatSI(amp.slewRate, 'V/s'),
+          }}
+        />
       )}
       {commonMode && (
-        <Warning>
-          The input pin leaves the supply range ({formatSI(stats.inMin, 'V')} to{' '}
-          {formatSI(stats.inMax, 'V')} against rails of {formatSI(vneg, 'V')} to{' '}
-          {formatSI(vpos, 'V')}). Real input stages stop working there and some parts phase
-          invert, so this trace is fiction outside the rails.
-        </Warning>
+        <Warning
+          text="The input pin leaves the supply range ({inMin} to {inMax} against rails of {vneg} to {vpos}). Real input stages stop working there and some parts phase invert, so this trace is fiction outside the rails."
+          vars={{
+            inMin: formatSI(stats.inMin, 'V'),
+            inMax: formatSI(stats.inMax, 'V'),
+            vneg: formatSI(vneg, 'V'),
+            vpos: formatSI(vpos, 'V'),
+          }}
+        />
       )}
       {biasOffRail && (
-        <Warning>
-          Vbias sits outside the usable output range, so the stage has nowhere to swing. On a
-          single supply set it to half the positive rail, i.e. {formatSI(vpos / 2, 'V')}.
-        </Warning>
+        <Warning
+          text="Vbias sits outside the usable output range, so the stage has nowhere to swing. On a single supply set it to half the positive rail, i.e. {vpos}."
+          vars={{ vpos: formatSI(vpos / 2, 'V') }}
+        />
       )}
       {integratorTooFast && (
-        <Warning>
-          The integrator's unity gain frequency ({formatSI(readout.integratorUnity, 'Hz')}) is
-          within a decade of the op-amp's GBW ({formatSI(gbw, 'Hz')}). The op-amp runs out of
-          open-loop gain before the capacitor takes over, so the integration stops being clean.
-          Raise Rin or Cf, or pick a faster part.
-        </Warning>
+        <Warning
+          text="The integrator's unity gain frequency ({integratorUnity}) is within a decade of the op-amp's GBW ({gbw}). The op-amp runs out of open-loop gain before the capacitor takes over, so the integration stops being clean. Raise Rin or Cf, or pick a faster part."
+          vars={{
+            integratorUnity: formatSI(readout.integratorUnity, 'Hz'),
+            gbw: formatSI(gbw, 'Hz'),
+          }}
+        />
       )}
 
       <ReadoutGrid items={items} />
 
-      <Theory>
-        <p>
-          With enough open-loop gain the inverting pin tracks the non-inverting pin, so the
-          resistor network alone sets the gain: <code>Av = -Rf/Rin</code> inverting,
-          <code> Av = 1 + Rf/Rg</code> non-inverting, <code>Av = 1</code> for a buffer. The
-          summing amp is superposition on one virtual earth,
-          <code> Vout = -Rf·(V1/R1 + V2/R2)</code>, and the difference amp is
-          <code> Vout = Vref + (Rf/Rin)·(V+ - V-)</code> with matched ratios on both branches.
-        </p>
-        <p>
-          Everything here swings about Vbias rather than about 0 V, because on a single 3.3 V
-          supply there is no negative rail to swing into. That means the non-inverting pin of an
-          inverting stage and the Rg leg of a non-inverting stage both return to mid rail, not
-          to ground. Set Vbias to 0 and a split supply and the formulas collapse back to the
-          textbook ones.
-        </p>
-        <p>
-          A compensated op-amp holds gain times bandwidth constant, so the closed-loop corner is
-          <code> BW = GBW / noise gain</code>. Noise gain is <code>1 + Rf/Rg</code> for both
-          topologies, which is why an inverting stage of -10 and a non-inverting stage of +11
-          have exactly the same bandwidth even though their signal gains differ.
-        </p>
-        <p>
-          Bandwidth is a small-signal figure. Large signals hit the slew rate instead: a sine of
-          peak Vp needs <code>2·pi·f·Vp</code> volts per second, so the largest undistorted sine
-          is the full power bandwidth <code>SR / (2·pi·Vp)</code>. Past it the output turns into
-          a triangle no matter what the gain plot says.
-        </p>
-        <p>
-          The comparator is the same part with positive feedback instead of negative. The
-          non-inverting node sits on a divider between Vref through R2 and the output through
-          R1, so <code>Vth = (Vref·R2 + Vout·R1)/(R1 + R2)</code>. With R2 much larger than R1
-          that is the familiar <code>Vth = Vref ± Vout·R1/(R1+R2)</code>, and the band is exactly
-          <code> (Vhigh - Vlow)·R1/(R1+R2)</code>. Anything smaller than that band cannot make
-          the output chatter.
-        </p>
-        <p>
-          The scope trace is a sample-by-sample simulation. Every pole uses exact
-          zero-order-hold discretisation, <code>y[n] = target + (y[n-1] - target)·e^(-dt/tau)</code>,
-          so it stays stable at any time base; slew limiting and rail clipping are then applied
-          per sample, which is what puts the flat tops and straight edges on the trace. The
-          integrator is modelled as the practical one, Rf across Cf, so it has a finite DC gain
-          instead of drifting into a rail.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "With enough open-loop gain the inverting pin tracks the non-inverting pin, so the resistor network alone sets the gain: `Av = -Rf/Rin` inverting, `Av = 1 + Rf/Rg` non-inverting, `Av = 1` for a buffer. The summing amp is superposition on one virtual earth, `Vout = -Rf·(V1/R1 + V2/R2)`, and the difference amp is `Vout = Vref + (Rf/Rin)·(V+ - V-)` with matched ratios on both branches.",
+          "Everything here swings about Vbias rather than about 0 V, because on a single 3.3 V supply there is no negative rail to swing into. That means the non-inverting pin of an inverting stage and the Rg leg of a non-inverting stage both return to mid rail, not to ground. Set Vbias to 0 and a split supply and the formulas collapse back to the textbook ones.",
+          "A compensated op-amp holds gain times bandwidth constant, so the closed-loop corner is `BW = GBW / noise gain`. Noise gain is `1 + Rf/Rg` for both topologies, which is why an inverting stage of -10 and a non-inverting stage of +11 have exactly the same bandwidth even though their signal gains differ.",
+          "Bandwidth is a small-signal figure. Large signals hit the slew rate instead: a sine of peak Vp needs `2·pi·f·Vp` volts per second, so the largest undistorted sine is the full power bandwidth `SR / (2·pi·Vp)`. Past it the output turns into a triangle no matter what the gain plot says.",
+          "The comparator is the same part with positive feedback instead of negative. The non-inverting node sits on a divider between Vref through R2 and the output through R1, so `Vth = (Vref·R2 + Vout·R1)/(R1 + R2)`. With R2 much larger than R1 that is the familiar `Vth = Vref ± Vout·R1/(R1+R2)`, and the band is exactly `(Vhigh - Vlow)·R1/(R1+R2)`. Anything smaller than that band cannot make the output chatter.",
+          "The scope trace is a sample-by-sample simulation. Every pole uses exact zero-order-hold discretisation, `y[n] = target + (y[n-1] - target)·e^(-dt/tau)`, so it stays stable at any time base; slew limiting and rail clipping are then applied per sample, which is what puts the flat tops and straight edges on the trace. The integrator is modelled as the practical one, Rf across Cf, so it has a finite DC gain instead of drifting into a rail.",
+        ]}
+      />
     </SimPage>
   )
 }

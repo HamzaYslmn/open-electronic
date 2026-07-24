@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { VCC } from '../engine/constants'
 import { analyseNtc, ntcResistance, toKelvin } from '../engine/sensing'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -64,7 +65,7 @@ export default function NtcThermistor() {
 
       <ReadoutGrid
         items={[
-          { label: 'Resistance now', value: formatSI(r.resistance, 'Ω'), note: `at ${tempC} °C` },
+          { label: 'Resistance now', value: formatSI(r.resistance, 'Ω'), note: <T k="at {tempC} °C" vars={{ tempC }} /> },
           { label: 'Divider output', value: formatSI(r.vOut, 'V') },
           { label: 'Sensitivity', value: `${(r.sensitivity * 1000).toFixed(2)} mV/K` },
           { label: 'ADC counts per K', value: r.countsPerK.toFixed(1) },
@@ -80,46 +81,26 @@ export default function NtcThermistor() {
       />
 
       {r.selfHeatSignificant && (
-        <Warning>
-          The bead is dissipating {formatSI(r.selfHeatW, 'W')}, warming itself by{' '}
-          {r.selfHeatK.toFixed(2)} K. It is measuring its own current, not the ambient. Raise
-          the series resistor, or switch the divider on only while sampling.
-        </Warning>
+        <Warning
+          text="The bead is dissipating {selfHeatW}, warming itself by {selfHeatK} K. It is measuring its own current, not the ambient. Raise the series resistor, or switch the divider on only while sampling."
+          vars={{ selfHeatW: formatSI(r.selfHeatW, 'W'), selfHeatK: r.selfHeatK.toFixed(2) }}
+        />
       )}
       {rSeries !== r0 && (
-        <Warning>
-          Sensitivity peaks when the series resistor equals the thermistor's resistance at the
-          temperature you care most about. For best resolution around {t0C} °C, set the series
-          resistor to {formatSI(r0, 'Ω')}.
-        </Warning>
+        <Warning
+          text="Sensitivity peaks when the series resistor equals the thermistor's resistance at the temperature you care most about. For best resolution around {t0C} °C, set the series resistor to {r0}."
+          vars={{ t0C, r0: formatSI(r0, 'Ω') }}
+        />
       )}
 
-      <Theory>
-        <p>
-          The Beta equation is <code>1/T = 1/T0 + ln(R/R0)/B</code>, rearranged to{' '}
-          <code>R = R0·exp(B·(1/T - 1/T0))</code>. One parameter, one calibration point, good
-          to about half a kelvin over a 50 K span. Datasheets quote different B values for
-          different intervals, e.g. B25/85, precisely because it is only a local fit.
-        </p>
-        <p>
-          Steinhart-Hart, <code>1/T = A + B·ln(R) + C·ln(R)³</code>, gets to a few millikelvin
-          over a wide range but needs three calibration points. The Beta form is the special
-          case with C = 0.
-        </p>
-        <p>
-          The curve on screen is the real design constraint. Sensitivity is highest where the
-          thermistor's resistance matches the series resistor, and falls away at both ends: at
-          high temperature the thermistor is a short next to the fixed resistor, and at low
-          temperature it swamps it. So a 10k NTC with a 10k series resistor resolves beautifully
-          near 25 °C and poorly at 120 °C.
-        </p>
-        <p>
-          Self heating is the trap. Current through the bead makes heat, the dissipation
-          constant (typically 1 to 5 mW/K in still air) converts that to a temperature error,
-          and the sensor confidently reports it. Keep the current small, or power the divider
-          only for the microseconds you are sampling.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "The Beta equation is `1/T = 1/T0 + ln(R/R0)/B`, rearranged to `R = R0·exp(B·(1/T - 1/T0))`. One parameter, one calibration point, good to about half a kelvin over a 50 K span. Datasheets quote different B values for different intervals, e.g. B25/85, precisely because it is only a local fit.",
+          "Steinhart-Hart, `1/T = A + B·ln(R) + C·ln(R)³`, gets to a few millikelvin over a wide range but needs three calibration points. The Beta form is the special case with C = 0.",
+          "The curve on screen is the real design constraint. Sensitivity is highest where the thermistor's resistance matches the series resistor, and falls away at both ends: at high temperature the thermistor is a short next to the fixed resistor, and at low temperature it swamps it. So a 10k NTC with a 10k series resistor resolves beautifully near 25 °C and poorly at 120 °C.",
+          "Self heating is the trap. Current through the bead makes heat, the dissipation constant (typically 1 to 5 mW/K in still air) converts that to a temperature error, and the sensor confidently reports it. Keep the current small, or power the divider only for the microseconds you are sampling.",
+        ]}
+      />
     </SimPage>
   )
 }

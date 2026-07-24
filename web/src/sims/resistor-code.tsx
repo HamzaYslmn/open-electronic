@@ -91,44 +91,24 @@ export default function ResistorCode() {
       />
 
       {codes.eia96 === 'not in E96' && (
-        <Warning>
-          This value is not a member of the E96 series, so it has no EIA-96 code. EIA-96
-          marking only exists for 1% parts, which are drawn from E96 by definition. A 4.7 kΩ
-          5% part is an E24 value and would be marked 472 or 4701 instead.
-        </Warning>
+        <Warning
+          text="This value is not a member of the E96 series, so it has no EIA-96 code. EIA-96 marking only exists for 1% parts, which are drawn from E96 by definition. A 4.7 kΩ 5% part is an E24 value and would be marked 472 or 4701 instead."
+        />
       )}
       {value < 10 && (
-        <Warning>
-          Values under 10 Ω use the R notation on SMD parts, where R marks the decimal point:
-          4R7 is 4.7 Ω, R22 is 0.22 Ω. The plain digit codes cannot express a fraction.
-        </Warning>
+        <Warning
+          text="Values under 10 Ω use the R notation on SMD parts, where R marks the decimal point: 4R7 is 4.7 Ω, R22 is 0.22 Ω. The plain digit codes cannot express a fraction."
+        />
       )}
 
-      <Theory>
-        <p>
-          Every marking scheme encodes a mantissa and a multiplier. Four bands give two
-          significant figures and are used for 5% and 10% parts drawn from E24 and E12. Five
-          bands give three figures for 1% and 2% parts from E96 and E48. The extra digit exists
-          because a tighter tolerance needs a finer grid of values to be worth anything.
-        </p>
-        <p>
-          SMD codes work the same way. Three digits is two figures plus an exponent, so 472 is
-          47 × 10², i.e. 4.7 kΩ. Four digits is three figures plus an exponent, so 4701 is
-          470 × 10¹, also 4.7 kΩ. Note the last digit is never a zero of the value itself, which
-          catches people out constantly.
-        </p>
-        <p>
-          EIA-96 is the compact scheme for tiny 1% parts: two digits index into the 96 values of
-          the E96 series, and a letter gives the multiplier. So 68C is the 68th E96 value, 499,
-          times 100, i.e. 49.9 kΩ. It is dense but requires the table.
-        </p>
-        <p>
-          Tolerance and series always match, and that is not a coincidence. The gaps in each
-          series are sized so neighbouring values just touch at their tolerance limits: E24 has
-          about 5% gaps and E96 about 1%. Buying a 1% part on an E12 nominal is pointless, since
-          a nearer E96 value exists for whatever you actually wanted.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "Every marking scheme encodes a mantissa and a multiplier. Four bands give two significant figures and are used for 5% and 10% parts drawn from E24 and E12. Five bands give three figures for 1% and 2% parts from E96 and E48. The extra digit exists because a tighter tolerance needs a finer grid of values to be worth anything.",
+          "SMD codes work the same way. Three digits is two figures plus an exponent, so 472 is 47 × 10², i.e. 4.7 kΩ. Four digits is three figures plus an exponent, so 4701 is 470 × 10¹, also 4.7 kΩ. Note the last digit is never a zero of the value itself, which catches people out constantly.",
+          "EIA-96 is the compact scheme for tiny 1% parts: two digits index into the 96 values of the E96 series, and a letter gives the multiplier. So 68C is the 68th E96 value, 499, times 100, i.e. 49.9 kΩ. It is dense but requires the table.",
+          "Tolerance and series always match, and that is not a coincidence. The gaps in each series are sized so neighbouring values just touch at their tolerance limits: E24 has about 5% gaps and E96 about 1%. Buying a 1% part on an E12 nominal is pointless, since a nearer E96 value exists for whatever you actually wanted.",
+        ]}
+      />
     </SimPage>
   )
 }

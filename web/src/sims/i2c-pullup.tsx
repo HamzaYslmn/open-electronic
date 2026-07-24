@@ -8,6 +8,7 @@ import {
 } from '../engine/logic'
 import type { I2cSpeed } from '../engine/logic'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group, Select } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -79,7 +80,7 @@ export default function I2cPullup() {
           {
             label: 'Rise time',
             value: formatSI(r.rise, 's'),
-            note: `limit ${formatSI(r.spec.maxRise, 's')}`,
+            note: <T k="limit {maxRise}" vars={{ maxRise: formatSI(r.spec.maxRise, 's') }} />,
             warn: r.tooSlow,
           },
           {
@@ -92,59 +93,42 @@ export default function I2cPullup() {
           {
             label: 'Bus capacitance',
             value: formatSI(busC, 'F'),
-            note: `limit ${formatSI(r.spec.maxCapacitance, 'F')}`,
+            note: <T k="limit {maxCapacitance}" vars={{ maxCapacitance: formatSI(r.spec.maxCapacitance, 'F') }} />,
             warn: r.overCapacitance,
           },
         ]}
       />
 
       {r.windowEmpty && (
-        <Warning>
-          No resistance satisfies both limits here: the value needed to meet the rise time is
-          already below the value a device can pull low. Shorten the bus, remove devices, or
-          drop to a slower speed. This is the point where you need an active bus buffer.
-        </Warning>
+        <Warning
+          text="No resistance satisfies both limits here: the value needed to meet the rise time is already below the value a device can pull low. Shorten the bus, remove devices, or drop to a slower speed. This is the point where you need an active bus buffer."
+        />
       )}
       {!r.windowEmpty && r.outOfWindow && (
-        <Warning>
-          {formatSI(rPullup, 'Ω')} is outside the {formatSI(r.rMin, 'Ω')} to{' '}
-          {formatSI(r.rMax, 'Ω')} window. Too small and devices cannot hold a valid low, too
-          large and the edge is too slow for the clock.
-        </Warning>
+        <Warning
+          text="{rPullup} is outside the {rMin} to {rMax} window. Too small and devices cannot hold a valid low, too large and the edge is too slow for the clock."
+          vars={{
+            rPullup: formatSI(rPullup, 'Ω'),
+            rMin: formatSI(r.rMin, 'Ω'),
+            rMax: formatSI(r.rMax, 'Ω'),
+          }}
+        />
       )}
       {r.overCapacitance && (
-        <Warning>
-          Bus capacitance is past the {formatSI(r.spec.maxCapacitance, 'F')} the specification
-          allows at this speed. Each device contributes roughly 10 pF and wiring adds about
-          1 pF per cm, so long ribbon runs add up fast.
-        </Warning>
+        <Warning
+          text="Bus capacitance is past the {maxCapacitance} the specification allows at this speed. Each device contributes roughly 10 pF and wiring adds about 1 pF per cm, so long ribbon runs add up fast."
+          vars={{ maxCapacitance: formatSI(r.spec.maxCapacitance, 'F') }}
+        />
       )}
 
-      <Theory>
-        <p>
-          Open drain means a device can only pull the line down. Releasing it leaves the bus
-          capacitance to be charged through the pull-up, so the rising edge is an RC curve
-          while the falling edge is nearly instant. Everything about pull-up sizing follows
-          from that asymmetry.
-        </p>
-        <p>
-          The floor comes from the low level: a device must sink enough current to hold the
-          line under {I2C_VOL} V, and the specification only guarantees 3 mA. So{' '}
-          <code>Rmin = (Vcc - 0.4) / 3mA</code>, about 970 Ω at 3.3 V.
-        </p>
-        <p>
-          The ceiling comes from the edge: <code>Rmax = tr / (0.8473·Cb)</code>. The 0.8473 is{' '}
-          <code>ln(0.7/0.3)</code>, from the 30% to 70% points the specification measures
-          between.
-        </p>
-        <p>
-          The window spans decades, so the sensible choice is the geometric mean rather than
-          the arithmetic one. 4.7 kΩ is the traditional default and it is fine for a short
-          100 kHz bus, but at 400 kHz with any real cable length it is often too weak, which
-          is the usual cause of an I2C bus that works on the bench and fails with a longer
-          lead.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "Open drain means a device can only pull the line down. Releasing it leaves the bus capacitance to be charged through the pull-up, so the rising edge is an RC curve while the falling edge is nearly instant. Everything about pull-up sizing follows from that asymmetry.",
+          "The floor comes from the low level: a device must sink enough current to hold the line under {I2C_VOL} V, and the specification only guarantees 3 mA. So `Rmin = (Vcc - 0.4) / 3mA`, about 970 Ω at 3.3 V.",
+          "The ceiling comes from the edge: `Rmax = tr / (0.8473·Cb)`. The 0.8473 is `ln(0.7/0.3)`, from the 30% to 70% points the specification measures between.",
+          "The window spans decades, so the sensible choice is the geometric mean rather than the arithmetic one. 4.7 kΩ is the traditional default and it is fine for a short 100 kHz bus, but at 400 kHz with any real cable length it is often too weak, which is the usual cause of an I2C bus that works on the bench and fails with a longer lead.",
+        ]} vars={{ I2C_VOL }}
+      />
     </SimPage>
   )
 }

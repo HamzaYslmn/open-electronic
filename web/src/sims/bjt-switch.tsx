@@ -3,6 +3,7 @@ import { GPIO_MAX_MA, VCC, VCC_5V } from '../engine/constants'
 import { ODF_TARGET, ampTrace, analyseAmp, analyseSwitch, switchTrace } from '../engine/bjt'
 import { sweep } from '../engine/signal'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group, Segmented, Toggle } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -228,18 +229,23 @@ export default function BjtSwitch() {
         <Oscilloscope traces={traces} dt={dt} unit="V" />
 
         {sw.state !== 'saturated' && (
-          <Warning>
-            Not saturated at {formatSI(driveHigh, 'V')} of drive: hFE·IB gives only{' '}
-            {formatSI(sw.icAvailable, 'A')} against the {formatSI(sw.icSat, 'A')} the load wants,
-            so the device sits in the active region at {formatSI(sw.vce, 'V')} and burns{' '}
-            {formatSI(sw.pCollector, 'W')}. Drop RB to {formatSI(sw.rbForTarget, 'Ω')} or below.
-          </Warning>
+          <Warning
+            text="Not saturated at {driveHigh} of drive: hFE·IB gives only {icAvailable} against the {icSat} the load wants, so the device sits in the active region at {vce} and burns {pCollector}. Drop RB to {rbForTarget} or below."
+            vars={{
+              driveHigh: formatSI(driveHigh, 'V'),
+              icAvailable: formatSI(sw.icAvailable, 'A'),
+              icSat: formatSI(sw.icSat, 'A'),
+              vce: formatSI(sw.vce, 'V'),
+              pCollector: formatSI(sw.pCollector, 'W'),
+              rbForTarget: formatSI(sw.rbForTarget, 'Ω'),
+            }}
+          />
         )}
         {sw.overGpio && (
-          <Warning>
-            Base current is {formatSI(sw.ib, 'A')}, past the {GPIO_MAX_MA} mA an ESP32 pin will
-            source. Raise RB or drive the base from a buffer.
-          </Warning>
+          <Warning
+            text="Base current is {ib}, past the {GPIO_MAX_MA} mA an ESP32 pin will source. Raise RB or drive the base from a buffer."
+            vars={{ ib: formatSI(sw.ib, 'A'), GPIO_MAX_MA }}
+          />
         )}
 
         <ReadoutGrid
@@ -247,7 +253,7 @@ export default function BjtSwitch() {
             {
               label: 'Base current IB',
               value: formatSI(sw.ib, 'A'),
-              note: `min ${formatSI(sw.ibMin, 'A')}`,
+              note: <T k="min {ibMin}" vars={{ ibMin: formatSI(sw.ibMin, 'A') }} />,
               warn: sw.overGpio,
             },
             {
@@ -261,41 +267,26 @@ export default function BjtSwitch() {
             {
               label: 'Transistor dissipation',
               value: formatSI(sw.pTransistor, 'W'),
-              note: `${formatSI(sw.pCollector, 'W')} collector`,
+              note: <T k="{pCollector} collector" vars={{ pCollector: formatSI(sw.pCollector, 'W') }} />,
             },
             { label: 'Load power', value: formatSI(sw.pLoad, 'W') },
             {
-              label: `RB for ODF ${ODF_TARGET}`,
+              label: <T k="RB for ODF {ODF_TARGET}" vars={{ ODF_TARGET }} />,
               value: formatSI(sw.rbForTarget, 'Ω'),
-              note: `now ${formatSI(rb, 'Ω')}`,
+              note: <T k="now {rb}" vars={{ rb: formatSI(rb, 'Ω') }} />,
             },
             { label: 'RB dissipation', value: formatSI(sw.pBaseResistor, 'W') },
           ]}
         />
 
-        <Theory>
-          <p>
-            The base resistor sets everything: <code>IB = (Vin - VBE) / RB</code> with VBE taken
-            as 0.7 V. The transistor can then deliver <code>IC = hFE·IB</code>, but the load only
-            asks for <code>IC(sat) = (Vload - VCEsat) / RL</code>. Whichever is smaller wins.
-          </p>
-          <p>
-            The overdrive factor is the ratio, <code>ODF = IB·hFE / IC(load)</code>. Below 1 the
-            transistor never saturates and sits in the active region dropping volts across itself.
-            Design for ODF of about {ODF_TARGET} so worst case hFE, cold silicon and a heavier
-            load still leave it hard on.
-          </p>
-          <p>
-            Saturated dissipation is <code>P = VCEsat·IC + VBE·IB</code>, a few milliwatts here.
-            In the active region VCE is volts rather than 0.2 V and the same current turns into
-            heat, which is how switching transistors die.
-          </p>
-          <p>
-            The trace is a per-sample algebraic solve. There is no storage element in this model,
-            so edges are instant: a real device adds a turn-off storage time of hundreds of
-            nanoseconds, which is exactly what heavy overdrive makes worse.
-          </p>
-        </Theory>
+        <Theory
+          text={[
+            "The base resistor sets everything: `IB = (Vin - VBE) / RB` with VBE taken as 0.7 V. The transistor can then deliver `IC = hFE·IB`, but the load only asks for `IC(sat) = (Vload - VCEsat) / RL`. Whichever is smaller wins.",
+            "The overdrive factor is the ratio, `ODF = IB·hFE / IC(load)`. Below 1 the transistor never saturates and sits in the active region dropping volts across itself. Design for ODF of about {ODF_TARGET} so worst case hFE, cold silicon and a heavier load still leave it hard on.",
+            "Saturated dissipation is `P = VCEsat·IC + VBE·IB`, a few milliwatts here. In the active region VCE is volts rather than 0.2 V and the same current turns into heat, which is how switching transistors die.",
+            "The trace is a per-sample algebraic solve. There is no storage element in this model, so edges are instant: a real device adds a turn-off storage time of hundreds of nanoseconds, which is exactly what heavy overdrive makes worse.",
+          ]} vars={{ ODF_TARGET }}
+        />
       </SimPage>
     )
   }
@@ -351,28 +342,28 @@ export default function BjtSwitch() {
       <Oscilloscope traces={traces} dt={dt} unit="V" />
 
       {q.region === 'saturated' && (
-        <Warning>
-          Biased into saturation: VCE is pinned at {formatSI(q.vce, 'V')} and there is no headroom
-          left to swing. Lower RC or R2, or raise RE.
-        </Warning>
+        <Warning
+          text="Biased into saturation: VCE is pinned at {vce} and there is no headroom left to swing. Lower RC or R2, or raise RE."
+          vars={{ vce: formatSI(q.vce, 'V') }}
+        />
       )}
       {q.region === 'cutoff' && (
-        <Warning>
-          Cut off: the divider only puts {formatSI(q.vth, 'V')} on the base, under the 0.7 V the
-          junction needs. Raise R2 or lower R1.
-        </Warning>
+        <Warning
+          text="Cut off: the divider only puts {vth} on the base, under the 0.7 V the junction needs. Raise R2 or lower R1."
+          vars={{ vth: formatSI(q.vth, 'V') }}
+        />
       )}
       {q.region === 'active' && !q.stiff && (
-        <Warning>
-          Divider is not stiff: it bleeds only {q.stiffness.toFixed(1)}x IB, so the bias point
-          moves with hFE and temperature. Aim for 10x, i.e. lower R1 and R2 together.
-        </Warning>
+        <Warning
+          text="Divider is not stiff: it bleeds only {stiffness}x IB, so the bias point moves with hFE and temperature. Aim for 10x, i.e. lower R1 and R2 together."
+          vars={{ stiffness: q.stiffness.toFixed(1) }}
+        />
       )}
       {q.region === 'active' && clipping && (
-        <Warning>
-          Input of {formatSI(ac.amplitude, 'V')} peak exceeds the {formatSI(q.maxInput, 'V')} this
-          Q point can amplify without clipping, which is the flat top on the trace.
-        </Warning>
+        <Warning
+          text="Input of {amplitude} peak exceeds the {maxInput} this Q point can amplify without clipping, which is the flat top on the trace."
+          vars={{ amplitude: formatSI(ac.amplitude, 'V'), maxInput: formatSI(q.maxInput, 'V') }}
+        />
       )}
 
       <ReadoutGrid
@@ -380,7 +371,7 @@ export default function BjtSwitch() {
           {
             label: 'Quiescent IC',
             value: formatSI(q.ic, 'A'),
-            note: `IB ${formatSI(q.ib, 'A')}`,
+            note: <T k="IB {ib}" vars={{ ib: formatSI(q.ib, 'A') }} />,
           },
           {
             label: 'VCE',
@@ -395,7 +386,7 @@ export default function BjtSwitch() {
           {
             label: 'Voltage gain Av',
             value: `${q.av.toFixed(1)}x`,
-            note: Number.isFinite(q.avDb) ? `${q.avDb.toFixed(1)} dB, inverting` : 'no gain',
+            note: Number.isFinite(q.avDb) ? <T k="{avDb} dB, inverting" vars={{ avDb: q.avDb.toFixed(1) }} /> : 'no gain',
           },
           { label: 'Emitter re', value: formatSI(q.reSmall, 'Ω'), note: 'VT / IE' },
           { label: 'Input impedance', value: formatSI(q.zin, 'Ω') },
@@ -403,46 +394,26 @@ export default function BjtSwitch() {
           {
             label: 'Max input (peak)',
             value: formatSI(q.maxInput, 'V'),
-            note: `swing ${formatSI(q.swing, 'V')}`,
+            note: <T k="swing {swing}" vars={{ swing: formatSI(q.swing, 'V') }} />,
             warn: clipping,
           },
           {
             label: 'Divider stiffness',
             value: Number.isFinite(q.stiffness) ? `${q.stiffness.toFixed(0)}x IB` : 'n/a',
-            note: `${formatSI(q.dividerCurrent, 'A')} bleed`,
+            note: <T k="{dividerCurrent} bleed" vars={{ dividerCurrent: formatSI(q.dividerCurrent, 'A') }} />,
             warn: !q.stiff,
           },
         ]}
       />
 
-      <Theory>
-        <p>
-          The divider is solved as its Thevenin equivalent, <code>VTH = VCC·R2/(R1+R2)</code> and
-          <code> RTH = R1||R2</code>, so the base loop gives{' '}
-          <code>IB = (VTH - VBE) / (RTH + (hFE+1)·RE)</code>. That is the exact answer, not the
-          "assume IB is negligible" shortcut, which is why a floppy divider shows up here as a
-          shifted Q point instead of reading correct.
-        </p>
-        <p>
-          From there <code>IC = hFE·IB</code>, <code>IE = (hFE+1)·IB</code> and{' '}
-          <code>VCE = VCC - IC·RC - IE·RE</code>. Put VCE somewhere near the middle of the rail so
-          the output can swing both ways.
-        </p>
-        <p>
-          Midband gain is <code>Av = -RC / (RE + re)</code> where <code>re = VT/IE</code> is the
-          intrinsic emitter resistance, about 26 mV over the emitter current. With RE much larger
-          than re this is the familiar <code>-RC/RE</code>, set by resistors and therefore stable.
-          Bypassing RE shorts it at signal frequencies, leaving <code>-RC/re</code>: much more
-          gain, but now it moves with bias current and temperature.
-        </p>
-        <p>
-          Output swing is limited by whichever end runs out first, the rail at{' '}
-          <code>IC·RC</code> above the Q point or saturation at <code>VCE - VCEsat</code> below it.
-          The trace applies the midband gain sample by sample and clips there, so it shows the
-          headroom honestly, though a real stage clips softly at cutoff and the coupling capacitor
-          rolls off the low end.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "The divider is solved as its Thevenin equivalent, `VTH = VCC·R2/(R1+R2)` and `RTH = R1||R2`, so the base loop gives `IB = (VTH - VBE) / (RTH + (hFE+1)·RE)`. That is the exact answer, not the \"assume IB is negligible\" shortcut, which is why a floppy divider shows up here as a shifted Q point instead of reading correct.",
+          "From there `IC = hFE·IB`, `IE = (hFE+1)·IB` and `VCE = VCC - IC·RC - IE·RE`. Put VCE somewhere near the middle of the rail so the output can swing both ways.",
+          "Midband gain is `Av = -RC / (RE + re)` where `re = VT/IE` is the intrinsic emitter resistance, about 26 mV over the emitter current. With RE much larger than re this is the familiar `-RC/RE`, set by resistors and therefore stable. Bypassing RE shorts it at signal frequencies, leaving `-RC/re`: much more gain, but now it moves with bias current and temperature.",
+          "Output swing is limited by whichever end runs out first, the rail at `IC·RC` above the Q point or saturation at `VCE - VCEsat` below it. The trace applies the midband gain sample by sample and clips there, so it shows the headroom honestly, though a real stage clips softly at cutoff and the coupling capacitor rolls off the low end.",
+        ]}
+      />
     </SimPage>
   )
 }

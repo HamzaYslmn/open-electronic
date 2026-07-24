@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { formatSI } from '../engine/units'
+import { useT } from '../i18n'
 import { PAD, clampView, drawScope, stepScale, zoomView } from './scopeDraw'
 import type { Trace, View } from './scopeDraw'
 
@@ -29,6 +30,7 @@ export default function Oscilloscope({
   unit = 'V',
   height = 340,
 }: OscilloscopeProps) {
+  const t = useT()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const wrapRef = useRef<HTMLDivElement>(null)
 
@@ -210,17 +212,17 @@ export default function Oscilloscope({
 
       <div className="scope-panel">
         <Knob label="Timebase">
-          <button onClick={() => zoomBy(2, 0.5)} title="Zoom out">
+          <button onClick={() => zoomBy(2, 0.5)} title={t('Zoom out')}>
             &minus;
           </button>
           <span className="knob-value">{zoom > 1.001 ? `${zoom.toFixed(1)}x` : '1x'}</span>
-          <button onClick={() => zoomBy(0.5, 0.5)} title="Zoom in">
+          <button onClick={() => zoomBy(0.5, 0.5)} title={t('Zoom in')}>
             +
           </button>
         </Knob>
 
         <Knob label="Volts / div">
-          <button onClick={() => nudgeVpd(1)} title="Coarser">
+          <button onClick={() => nudgeVpd(1)} title={t('Coarser')}>
             &minus;
           </button>
           <button
@@ -229,13 +231,13 @@ export default function Oscilloscope({
           >
             {voltsPerDiv === null ? 'AUTO' : formatSI(voltsPerDiv, unit, 2)}
           </button>
-          <button onClick={() => nudgeVpd(-1)} title="Finer">
+          <button onClick={() => nudgeVpd(-1)} title={t('Finer')}>
             +
           </button>
         </Knob>
 
         <div className="knob wide">
-          <span className="knob-label">Trace {thickness.toFixed(1)} px</span>
+          <span className="knob-label">{t('Trace {px} px', { px: thickness.toFixed(1) })}</span>
           <input
             type="range"
             min={1}
@@ -243,19 +245,19 @@ export default function Oscilloscope({
             step={0.2}
             value={thickness}
             onChange={(e) => setThickness(Number(e.target.value))}
-            aria-label="Trace thickness"
+            aria-label={t('Trace thickness')}
           />
         </div>
 
         <Knob label="Channels">
-          {traces.map((t) => (
+          {traces.map((trace) => (
             <button
-              key={t.label}
-              className={hidden[t.label] ? 'chan off' : 'chan'}
-              style={{ '--chan': t.color } as React.CSSProperties}
-              onClick={() => setHidden((h) => ({ ...h, [t.label]: !h[t.label] }))}
+              key={trace.label}
+              className={hidden[trace.label] ? 'chan off' : 'chan'}
+              style={{ '--chan': trace.color } as React.CSSProperties}
+              onClick={() => setHidden((h) => ({ ...h, [trace.label]: !h[trace.label] }))}
             >
-              {t.label}
+              {trace.label}
             </button>
           ))}
         </Knob>
@@ -266,17 +268,18 @@ export default function Oscilloscope({
       </div>
 
       <p className="scope-hint">
-        Scroll or pinch to zoom the time base, drag to pan, double click to reset.
+        {t('Scroll or pinch to zoom the time base, drag to pan, double click to reset.')}
       </p>
     </div>
   )
 }
 
 function Knob({ label, children }: { label?: string; children: React.ReactNode }) {
+  const t = useT()
   return (
     <div className="knob">
       {/* non-breaking space keeps unlabelled knobs aligned with labelled ones */}
-      <span className="knob-label">{label ?? ' '}</span>
+      <span className="knob-label">{label ? t(label) : ' '}</span>
       <div className="knob-row">{children}</div>
     </div>
   )

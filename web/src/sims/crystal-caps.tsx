@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { analyseCrystal } from '../engine/parts'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group } from '../ui/Controls'
 import Param from '../ui/Param'
 import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
@@ -42,7 +43,7 @@ export default function CrystalCaps() {
         items={[
           { label: 'C1 = C2 ideal', value: formatSI(r.cLoad, 'F'), warn: r.strayTooHigh },
           { label: 'Nearest standard', value: formatSI(r.cStandard, 'F') },
-          { label: 'Load actually seen', value: formatSI(r.actualCL, 'F'), note: `spec ${formatSI(clSpec, 'F')}` },
+          { label: 'Load actually seen', value: formatSI(r.actualCL, 'F'), note: <T k="spec {clSpec}" vars={{ clSpec: formatSI(clSpec, 'F') }} /> },
           {
             label: 'Frequency error',
             value: `${r.errorPpm.toFixed(2)} ppm`,
@@ -51,53 +52,35 @@ export default function CrystalCaps() {
           { label: 'Absolute error', value: formatSI(r.errorHz, 'Hz') },
           {
             label: 'Clock drift',
-            value: `${secondsPerDay.toFixed(2)} s/day`,
-            note: `${(secondsPerDay * 365).toFixed(0)} s/year`,
+            value: <T k="{secondsPerDay} s/day" vars={{ secondsPerDay: secondsPerDay.toFixed(2) }} />,
+            note: <T k="{secondsPerDay} s/year" vars={{ secondsPerDay: (secondsPerDay * 365).toFixed(0) }} />,
           },
         ]}
       />
 
       {r.strayTooHigh && (
-        <Warning>
-          Stray capacitance alone already exceeds the specified load, so no external capacitors
-          can bring it down: the crystal will always run slow. Shorten the tracks, remove ground
-          pour from under them, or choose a crystal specified for a higher CL.
-        </Warning>
+        <Warning
+          text="Stray capacitance alone already exceeds the specified load, so no external capacitors can bring it down: the crystal will always run slow. Shorten the tracks, remove ground pour from under them, or choose a crystal specified for a higher CL."
+        />
       )}
       {r.outOfSpec && !r.strayTooHigh && (
-        <Warning>
-          {r.errorPpm.toFixed(1)} ppm is a drift of {Math.abs(secondsPerDay).toFixed(1)} seconds
-          a day. For a real-time clock that is far too much. Pick capacitors closer to the ideal
-          value, or trim one of them.
-        </Warning>
+        <Warning
+          text="{errorPpm} ppm is a drift of {secondsPerDay} seconds a day. For a real-time clock that is far too much. Pick capacitors closer to the ideal value, or trim one of them."
+          vars={{
+            errorPpm: r.errorPpm.toFixed(1),
+            secondsPerDay: Math.abs(secondsPerDay).toFixed(1),
+          }}
+        />
       )}
 
-      <Theory>
-        <p>
-          The oscillator sees the two load capacitors in series, plus whatever the pins and
-          tracks contribute: <code>CL = C1·C2/(C1+C2) + Cstray</code>. With C1 = C2 that
-          simplifies to <code>C1/2 + Cstray</code>, so{' '}
-          <code>C1 = C2 = 2·(CL - Cstray)</code>.
-        </p>
-        <p>
-          Stray capacitance is not a rounding error here. Two or three picofarads per pin is
-          typical for a small package with short tracks, and against a 12.5 pF specified load
-          that is a quarter of the budget. Ignoring it is the single most common reason a design
-          runs fast or slow by tens of ppm.
-        </p>
-        <p>
-          The pull follows from the crystal's motional capacitance:{' '}
-          <code>df/f = Cm/2 · (1/(C0+CL_actual) - 1/(C0+CL_spec))</code>. Too much load pulls
-          the frequency down, too little pulls it up. Cm is tiny, femtofarads, which is exactly
-          why a crystal is stable at all: the load has only a weak grip on it.
-        </p>
-        <p>
-          For a 32.768 kHz timekeeping crystal, 20 ppm is about 1.7 seconds a day, or ten
-          minutes a year. If that matters, either trim the capacitors or use a temperature
-          compensated module: temperature drift will typically dwarf the load error anyway,
-          since a watch crystal has a parabolic tempco of about -0.035 ppm per °C squared.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "The oscillator sees the two load capacitors in series, plus whatever the pins and tracks contribute: `CL = C1·C2/(C1+C2) + Cstray`. With C1 = C2 that simplifies to `C1/2 + Cstray`, so `C1 = C2 = 2·(CL - Cstray)`.",
+          "Stray capacitance is not a rounding error here. Two or three picofarads per pin is typical for a small package with short tracks, and against a 12.5 pF specified load that is a quarter of the budget. Ignoring it is the single most common reason a design runs fast or slow by tens of ppm.",
+          "The pull follows from the crystal's motional capacitance: `df/f = Cm/2 · (1/(C0+CL_actual) - 1/(C0+CL_spec))`. Too much load pulls the frequency down, too little pulls it up. Cm is tiny, femtofarads, which is exactly why a crystal is stable at all: the load has only a weak grip on it.",
+          "For a 32.768 kHz timekeeping crystal, 20 ppm is about 1.7 seconds a day, or ten minutes a year. If that matters, either trim the capacitors or use a temperature compensated module: temperature drift will typically dwarf the load error anyway, since a watch crystal has a parabolic tempco of about -0.035 ppm per °C squared.",
+        ]}
+      />
     </SimPage>
   )
 }

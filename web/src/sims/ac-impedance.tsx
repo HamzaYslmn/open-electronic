@@ -86,32 +86,14 @@ export default function AcImpedance() {
         ]}
       />
 
-      <Theory>
-        <p>
-          Reactance is frequency dependent: <code>XL = 2·pi·f·L</code> rises with frequency and{' '}
-          <code>XC = 1/(2·pi·f·C)</code> falls. Written as complex impedances they are{' '}
-          <code>+jXL</code> and <code>-jXC</code>, so they subtract rather than add, and at one
-          particular frequency they cancel entirely.
-        </p>
-        <p>
-          That is resonance, <code>f0 = 1/(2·pi·sqrt(LC))</code>. In series the cancellation
-          leaves only R, so impedance hits a minimum and current peaks. In parallel it is the
-          admittances that cancel, so impedance hits a maximum and the network becomes a tank
-          that draws almost nothing from the source while circulating a large current
-          internally.
-        </p>
-        <p>
-          Q measures how sharp that is: <code>Q = (1/R)·sqrt(L/C)</code> for series. Bandwidth
-          follows as <code>f0/Q</code>. High Q means a narrow, selective peak and a large
-          circulating current; low Q means a broad gentle one.
-        </p>
-        <p>
-          The phase trace tells you which element is winning. Below series resonance the
-          capacitor dominates and current leads voltage, giving negative phase. Above it the
-          inductor dominates and current lags. Exactly at f0 the network looks purely resistive,
-          which is what makes it useful for matching and filtering.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "Reactance is frequency dependent: `XL = 2·pi·f·L` rises with frequency and `XC = 1/(2·pi·f·C)` falls. Written as complex impedances they are `+jXL` and `-jXC`, so they subtract rather than add, and at one particular frequency they cancel entirely.",
+          "That is resonance, `f0 = 1/(2·pi·sqrt(LC))`. In series the cancellation leaves only R, so impedance hits a minimum and current peaks. In parallel it is the admittances that cancel, so impedance hits a maximum and the network becomes a tank that draws almost nothing from the source while circulating a large current internally.",
+          "Q measures how sharp that is: `Q = (1/R)·sqrt(L/C)` for series. Bandwidth follows as `f0/Q`. High Q means a narrow, selective peak and a large circulating current; low Q means a broad gentle one.",
+          "The phase trace tells you which element is winning. Below series resonance the capacitor dominates and current leads voltage, giving negative phase. Above it the inductor dominates and current lags. Exactly at f0 the network looks purely resistive, which is what makes it useful for matching and filtering.",
+        ]}
+      />
     </SimPage>
   )
 }

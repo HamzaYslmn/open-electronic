@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { analyse, waveform } from '../engine/buckBoost'
 import type { Topology } from '../engine/buckBoost'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group, Segmented, Toggle } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -95,15 +96,15 @@ export default function BuckBoost() {
       <ReadoutGrid
         items={[
           { label: 'Output', value: formatSI(r.voutSigned, 'V'), note: MODE_LABEL[r.op.mode] },
-          { label: 'Duty', value: `${(r.op.duty * 100).toFixed(1)}%`, note: `ideal ${(r.op.dutyIdeal * 100).toFixed(1)}%`, warn: r.dutyLimited },
+          { label: 'Duty', value: `${(r.op.duty * 100).toFixed(1)}%`, note: <T k="ideal {dutyIdeal}%" vars={{ dutyIdeal: (r.op.dutyIdeal * 100).toFixed(1) }} />, warn: r.dutyLimited },
           { label: 'Conduction', value: r.op.conduction.toUpperCase(), note: r.op.conduction === 'dcm' ? 'current hits zero' : 'continuous' },
           { label: 'Conversion ratio', value: `${r.ratio.toFixed(3)}x` },
           { label: 'Inductor average', value: formatSI(r.op.ilAvg, 'A') },
-          { label: 'Inductor ripple', value: formatSI(r.op.dIl, 'A'), note: `${(r.rippleRatio * 100).toFixed(0)}% of average` },
-          { label: 'Inductor peak', value: formatSI(r.op.ilPeak, 'A'), note: `Isat ${formatSI(isat, 'A')}`, warn: r.saturating },
+          { label: 'Inductor ripple', value: formatSI(r.op.dIl, 'A'), note: <T k="{rippleRatio}% of average" vars={{ rippleRatio: (r.rippleRatio * 100).toFixed(0) }} /> },
+          { label: 'Inductor peak', value: formatSI(r.op.ilPeak, 'A'), note: <T k="Isat {isat}" vars={{ isat: formatSI(isat, 'A') }} />, warn: r.saturating },
           { label: 'Inductor RMS', value: formatSI(r.op.ilRms, 'A') },
           { label: 'Input current', value: formatSI(r.iinAvg, 'A') },
-          { label: 'Output ripple', value: formatSI(r.vRipple, 'V'), note: `cap ${formatSI(r.vRippleCap, 'V')} + esr ${formatSI(r.vRippleEsr, 'V')}` },
+          { label: 'Output ripple', value: formatSI(r.vRipple, 'V'), note: <T k="cap {vRippleCap} + esr {vRippleEsr}" vars={{ vRippleCap: formatSI(r.vRippleCap, 'V'), vRippleEsr: formatSI(r.vRippleEsr, 'V') }} /> },
           { label: 'Cout ripple current', value: formatSI(r.icoutRms, 'A'), note: 'RMS' },
           { label: 'Cin ripple current', value: formatSI(r.icinRms, 'A'), note: 'RMS' },
           { label: 'Switch stress', value: formatSI(r.vSwitch, 'V') },
@@ -111,64 +112,40 @@ export default function BuckBoost() {
           { label: 'L for 40% ripple', value: formatSI(r.lTarget, 'H'), note: 'design target' },
           { label: 'L at DCM boundary', value: formatSI(r.lCrit, 'H') },
           { label: 'Output power', value: formatSI(r.pOut, 'W') },
-          { label: 'Efficiency', value: `${(r.efficiency * 100).toFixed(1)}%`, note: `loss ${formatSI(r.losses.total, 'W')}` },
+          { label: 'Efficiency', value: `${(r.efficiency * 100).toFixed(1)}%`, note: <T k="loss {total}" vars={{ total: formatSI(r.losses.total, 'W') }} /> },
         ]}
       />
 
       {!r.op.reachable && (
-        <Warning>
-          Losses put this output out of reach at this load: the duty needed exceeds what the
-          stage can hold. Lower the load current, raise the input, or cut the resistive losses
-          (lower DCR and Rds(on)).
-        </Warning>
+        <Warning
+          text="Losses put this output out of reach at this load: the duty needed exceeds what the stage can hold. Lower the load current, raise the input, or cut the resistive losses (lower DCR and Rds(on))."
+        />
       )}
       {r.saturating && (
-        <Warning>
-          Peak inductor current {formatSI(r.op.ilPeak, 'A')} is past the{' '}
-          {formatSI(isat, 'A')} saturation rating. A saturated inductor loses inductance, so
-          current runs away within a single switching cycle. Choose a larger core or raise L.
-        </Warning>
+        <Warning
+          text="Peak inductor current {ilPeak} is past the {isat} saturation rating. A saturated inductor loses inductance, so current runs away within a single switching cycle. Choose a larger core or raise L."
+          vars={{ ilPeak: formatSI(r.op.ilPeak, 'A'), isat: formatSI(isat, 'A') }}
+        />
       )}
       {r.dutyLimited && (
-        <Warning>
-          Duty is outside the range a real controller can hold. Near 0 or 1 the on-time
-          approaches the minimum pulse width and the output collapses or pulse-skips.
-        </Warning>
+        <Warning
+          text="Duty is outside the range a real controller can hold. Near 0 or 1 the on-time approaches the minimum pulse width and the output collapses or pulse-skips."
+        />
       )}
       {r.op.conduction === 'dcm' && (
-        <Warning>
-          Running in discontinuous conduction: inductor current reaches zero each cycle. The
-          conversion ratio then depends on load, not just duty, so the output moves as the
-          load changes and the control loop gets harder.
-        </Warning>
+        <Warning
+          text="Running in discontinuous conduction: inductor current reaches zero each cycle. The conversion ratio then depends on load, not just duty, so the output moves as the load changes and the control loop gets harder."
+        />
       )}
 
-      <Theory>
-        <p>
-          The inverting buck-boost gives <code>Vout = -Vin·D/(1-D)</code>, so duty is{' '}
-          <code>D = |Vout|/(|Vout| + Vin)</code>. It steps up or down freely, but the output is
-          negative and both switch and rectifier stand off <code>Vin + |Vout|</code>.
-        </p>
-        <p>
-          The four-switch stage puts a buck leg and a boost leg around one inductor. It keeps
-          the output positive and, crucially, runs as a plain buck when Vin is comfortably
-          above Vout and a plain boost when it is below, only using both legs in the narrow
-          band between. That is why it is far more efficient than the inverting stage: in
-          either single-leg mode only one pair of switches is chopping.
-        </p>
-        <p>
-          Ripple is <code>dIL = vL(on)·D/(fsw·L)</code>. Aim for 30 to 40% of the average
-          current: less means a bulky inductor, more pushes the peak toward saturation and
-          raises RMS heating. When ripple exceeds twice the average, current hits zero and the
-          converter drops into discontinuous conduction.
-        </p>
-        <p>
-          Output ripple has two parts that do not peak together: the capacitor term{' '}
-          <code>dIL/(8·fsw·C)</code> and the ESR term <code>dIL·ESR</code>. In most real
-          designs with ceramic output caps the ESR term is small, but with electrolytics it
-          dominates completely.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "The inverting buck-boost gives `Vout = -Vin·D/(1-D)`, so duty is `D = |Vout|/(|Vout| + Vin)`. It steps up or down freely, but the output is negative and both switch and rectifier stand off `Vin + |Vout|`.",
+          "The four-switch stage puts a buck leg and a boost leg around one inductor. It keeps the output positive and, crucially, runs as a plain buck when Vin is comfortably above Vout and a plain boost when it is below, only using both legs in the narrow band between. That is why it is far more efficient than the inverting stage: in either single-leg mode only one pair of switches is chopping.",
+          "Ripple is `dIL = vL(on)·D/(fsw·L)`. Aim for 30 to 40% of the average current: less means a bulky inductor, more pushes the peak toward saturation and raises RMS heating. When ripple exceeds twice the average, current hits zero and the converter drops into discontinuous conduction.",
+          "Output ripple has two parts that do not peak together: the capacitor term `dIL/(8·fsw·C)` and the ESR term `dIL·ESR`. In most real designs with ceramic output caps the ESR term is small, but with electrolytics it dominates completely.",
+        ]}
+      />
     </SimPage>
   )
 }

@@ -4,6 +4,7 @@ import { BSS138_VGS_TH, analyseShifter } from '../engine/parts'
 import type { ShifterKind } from '../engine/parts'
 import { voltageAt } from '../engine/logic'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group, Segmented } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -87,7 +88,7 @@ export default function LevelShifter() {
                 {
                   label: 'Margin over Vth',
                   value: formatSI(r.vgsMargin, 'V'),
-                  note: `Vth ${BSS138_VGS_TH} V`,
+                  note: <T k="Vth {BSS138_VGS_TH} V" vars={{ BSS138_VGS_TH }} />,
                   warn: r.insufficientDrive,
                 },
                 { label: 'Rise time', value: formatSI(r.worstRise, 's') },
@@ -105,54 +106,35 @@ export default function LevelShifter() {
       />
 
       {r.insufficientDrive && (
-        <Warning>
-          Only {formatSI(r.vgsMargin, 'V')} of gate drive over the threshold. The FET turns on
-          weakly and slowly, so edges degrade and the shifter becomes unreliable at temperature
-          extremes where Vth shifts. Below about 1.8 V on the low side, use a dedicated shifter
-          IC instead.
-        </Warning>
+        <Warning
+          text="Only {vgsMargin} of gate drive over the threshold. The FET turns on weakly and slowly, so edges degrade and the shifter becomes unreliable at temperature extremes where Vth shifts. Below about 1.8 V on the low side, use a dedicated shifter IC instead."
+          vars={{ vgsMargin: formatSI(r.vgsMargin, 'V') }}
+        />
       )}
       {r.tooSlow && (
-        <Warning>
-          The edge takes {formatSI(r.worstRise, 's')}, which caps the usable rate at about{' '}
-          {formatSI(r.maxBitRate, 'Hz')}. At {formatSI(bitRate, 'Hz')} the signal never reaches
-          a valid level before it is asked to change again. Use a stronger pull-up or reduce
-          bus capacitance.
-        </Warning>
+        <Warning
+          text="The edge takes {worstRise}, which caps the usable rate at about {maxBitRate}. At {bitRate} the signal never reaches a valid level before it is asked to change again. Use a stronger pull-up or reduce bus capacitance."
+          vars={{
+            worstRise: formatSI(r.worstRise, 's'),
+            maxBitRate: formatSI(r.maxBitRate, 'Hz'),
+            bitRate: formatSI(bitRate, 'Hz'),
+          }}
+        />
       )}
       {kind === 'divider' && (
-        <Warning>
-          A divider only shifts high to low. It cannot drive the high side from the low side, so
-          it is useless for anything bidirectional such as I2C, and it wastes current
-          continuously whenever the line is high.
-        </Warning>
+        <Warning
+          text="A divider only shifts high to low. It cannot drive the high side from the low side, so it is useless for anything bidirectional such as I2C, and it wastes current continuously whenever the line is high."
+        />
       )}
 
-      <Theory>
-        <p>
-          The BSS138 circuit is deceptively clever. The FET's gate sits at the low-side rail and
-          its source faces the low side. Pull the low side down and VGS becomes the full low
-          rail, turning the FET on and dragging the high side down with it. Drive the high side
-          low and the body diode conducts first, pulling the source down, which then turns the
-          FET on properly. That is what makes one FET bidirectional.
-        </p>
-        <p>
-          The consequence is that it is an open-drain circuit: it can only pull down, and both
-          sides need pull-ups. Speed is therefore set entirely by the RC of the pull-up against
-          bus capacitance, exactly as with I2C. These boards top out around a few hundred kHz
-          with typical 10 kΩ pull-ups.
-        </p>
-        <p>
-          Gate drive matters. With a 1.3 V threshold, a 3.3 V low rail gives 2 V of overdrive
-          and works well. A 1.8 V rail leaves only 0.5 V, which is marginal and drifts with
-          temperature.
-        </p>
-        <p>
-          A resistor divider is fine for one-way signals into a 3.3 V input, and nothing else.
-          It is unidirectional, it loads the driver continuously, and its own RC is set by the
-          parallel combination of the two resistors, so making it low-current makes it slow.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "The BSS138 circuit is deceptively clever. The FET's gate sits at the low-side rail and its source faces the low side. Pull the low side down and VGS becomes the full low rail, turning the FET on and dragging the high side down with it. Drive the high side low and the body diode conducts first, pulling the source down, which then turns the FET on properly. That is what makes one FET bidirectional.",
+          "The consequence is that it is an open-drain circuit: it can only pull down, and both sides need pull-ups. Speed is therefore set entirely by the RC of the pull-up against bus capacitance, exactly as with I2C. These boards top out around a few hundred kHz with typical 10 kΩ pull-ups.",
+          "Gate drive matters. With a 1.3 V threshold, a 3.3 V low rail gives 2 V of overdrive and works well. A 1.8 V rail leaves only 0.5 V, which is marginal and drifts with temperature.",
+          "A resistor divider is fine for one-way signals into a 3.3 V input, and nothing else. It is unidirectional, it loads the driver continuously, and its own RC is set by the parallel combination of the two resistors, so making it low-current makes it slow.",
+        ]}
+      />
     </SimPage>
   )
 }

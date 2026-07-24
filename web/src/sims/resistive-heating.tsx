@@ -9,6 +9,7 @@ import {
 } from '../engine/heating'
 import type { HeatingInput, MaterialKey } from '../engine/heating'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group, Segmented, Select } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -110,7 +111,7 @@ export default function ResistiveHeating() {
           {
             label: 'Equilibrium temp',
             value: `${toC(r.equilibrium).toFixed(0)} °C`,
-            note: `limit ${toC(material.maxTemp).toFixed(0)} °C`,
+            note: <T k="limit {maxTemp} °C" vars={{ maxTemp: toC(material.maxTemp).toFixed(0) }} />,
             warn: r.overTemp,
           },
           { label: 'Thermal tau', value: formatSI(r.tau, 's') },
@@ -131,52 +132,30 @@ export default function ResistiveHeating() {
       />
 
       {r.overTemp && (
-        <Warning>
-          Equilibrium is above the {toC(material.maxTemp).toFixed(0)} °C continuous rating for{' '}
-          {material.label}. The element will oxidise fast and fail early. Use thicker wire, a
-          longer run, or less voltage.
-        </Warning>
+        <Warning
+          text="Equilibrium is above the {maxTemp} °C continuous rating for {label}. The element will oxidise fast and fail early. Use thicker wire, a longer run, or less voltage."
+          vars={{ maxTemp: toC(material.maxTemp).toFixed(0), label: material.label }}
+        />
       )}
       {!r.reachable && (
-        <Warning>
-          The target sits above the equilibrium temperature, so the wire never reaches it no
-          matter how long it runs. Raise the supply or reduce the cooling.
-        </Warning>
+        <Warning
+          text="The target sits above the equilibrium temperature, so the wire never reaches it no matter how long it runs. Raise the supply or reduce the cooling."
+        />
       )}
       {materialKey === 'copper' && (
-        <Warning>
-          Copper is here for contrast, not for building elements. Its temperature coefficient
-          is roughly 80x that of nichrome, so its resistance and therefore its power swing
-          wildly as it heats, and it oxidises away quickly at element temperatures.
-        </Warning>
+        <Warning
+          text="Copper is here for contrast, not for building elements. Its temperature coefficient is roughly 80x that of nichrome, so its resistance and therefore its power swing wildly as it heats, and it oxidises away quickly at element temperatures."
+        />
       )}
 
-      <Theory>
-        <p>
-          Resistance is <code>R = rho·L/A</code>, so power at a fixed supply is{' '}
-          <code>P = V²/R</code>. Halving the length halves the resistance and doubles the
-          power, which is the usual way people accidentally burn out a pen tip.
-        </p>
-        <p>
-          Temperature is not that formula. The wire obeys a balance:{' '}
-          <code>m·c·dT/dt = P - h·As·(T - Tamb)</code>. The loss term grows with temperature,
-          so the wire settles at <code>Tamb + P/(h·As)</code> rather than climbing forever.
-          That equilibrium is what the trace converges to, and the time constant{' '}
-          <code>m·c/(h·As)</code> is independent of length: a longer wire has proportionally
-          more mass and more surface.
-        </p>
-        <p>
-          Resistance drifts with temperature too, so the settled power is not the switch-on
-          power. This is why the simulation freezes the power over each step and applies the
-          exact solution: the feedback is negative for every real element alloy, hotter means
-          more resistance means less power, so it converges rather than running away.
-        </p>
-        <p>
-          Element makers size on surface load, watts per square metre of wire surface, not on
-          total power. Two elements of the same wattage behave very differently if one packs
-          it into half the surface.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "Resistance is `R = rho·L/A`, so power at a fixed supply is `P = V²/R`. Halving the length halves the resistance and doubles the power, which is the usual way people accidentally burn out a pen tip.",
+          "Temperature is not that formula. The wire obeys a balance: `m·c·dT/dt = P - h·As·(T - Tamb)`. The loss term grows with temperature, so the wire settles at `Tamb + P/(h·As)` rather than climbing forever. That equilibrium is what the trace converges to, and the time constant `m·c/(h·As)` is independent of length: a longer wire has proportionally more mass and more surface.",
+          "Resistance drifts with temperature too, so the settled power is not the switch-on power. This is why the simulation freezes the power over each step and applies the exact solution: the feedback is negative for every real element alloy, hotter means more resistance means less power, so it converges rather than running away.",
+          "Element makers size on surface load, watts per square metre of wire surface, not on total power. Two elements of the same wattage behave very differently if one packs it into half the surface.",
+        ]}
+      />
     </SimPage>
   )
 }

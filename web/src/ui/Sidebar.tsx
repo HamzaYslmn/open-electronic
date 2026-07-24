@@ -25,13 +25,15 @@ export default function Sidebar({ open, onNavigate }: SidebarProps) {
       sims: SIMULATORS.filter(
         (s) =>
           s.category === category &&
+          // Match the translated text as well as the English, so filtering
+          // works whichever language the list is currently showing.
           (q === '' ||
-            s.title.toLowerCase().includes(q) ||
-            s.blurb.toLowerCase().includes(q) ||
-            s.formula.toLowerCase().includes(q)),
+            [s.title, s.blurb, s.formula, t(s.title), t(s.blurb)].some((f) =>
+              f.toLowerCase().includes(q),
+            )),
       ),
     })).filter((g) => g.sims.length > 0)
-  }, [filter])
+  }, [filter, t])
 
   return (
     <nav className={open ? 'sidebar open' : 'sidebar'} aria-label={t('All simulators')}>
@@ -56,12 +58,12 @@ export default function Sidebar({ open, onNavigate }: SidebarProps) {
                     className={({ isActive }) => (isActive ? 'active' : undefined)}
                     onClick={onNavigate}
                   >
-                    {sim.title}
+                    {t(sim.title)}
                   </NavLink>
                 </li>
               ) : (
-                <li key={sim.id} className="soon" title="Not built yet">
-                  {sim.title}
+                <li key={sim.id} className="soon" title={t('Not built yet.')}>
+                  {t(sim.title)}
                 </li>
               ),
             )}

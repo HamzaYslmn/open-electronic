@@ -81,52 +81,29 @@ export default function LipoCharger() {
       />
 
       {r.overRate && (
-        <Warning>
-          Charging at {r.cRate.toFixed(2)} C. Most lithium cells want 0.5 C to 1 C, and going
-          faster shortens life sharply and generates heat the little TP4056 board cannot shed.
-          Raise Rprog: {formatSI(1200 / capacityAh, 'Ω')} gives exactly 1 C for this cell.
-        </Warning>
+        <Warning
+          text="Charging at {cRate} C. Most lithium cells want 0.5 C to 1 C, and going faster shortens life sharply and generates heat the little TP4056 board cannot shed. Raise Rprog: {capacityAh} gives exactly 1 C for this cell."
+          vars={{ cRate: r.cRate.toFixed(2), capacityAh: formatSI(1200 / capacityAh, 'Ω') }}
+        />
       )}
       {r.hot && (
-        <Warning>
-          The chip dissipates {formatSI(r.dissipation, 'W')} at the start of charging. It is a
-          linear charger, so every volt between input and cell becomes heat in that small
-          package. It will thermally throttle, stretching the charge time well past the estimate
-          here. Keep the input close to 5 V.
-        </Warning>
+        <Warning
+          text="The chip dissipates {dissipation} at the start of charging. It is a linear charger, so every volt between input and cell becomes heat in that small package. It will thermally throttle, stretching the charge time well past the estimate here. Keep the input close to 5 V."
+          vars={{ dissipation: formatSI(r.dissipation, 'W') }}
+        />
       )}
-      <Warning>
-        A bare TP4056 board has no protection. The version with the DW01 and dual MOSFET adds
-        over-discharge, over-current and short-circuit protection, and lithium cells should not
-        be used without it. Neither version does cell balancing, so neither is suitable for a
-        multi-cell series pack.
-      </Warning>
+      <Warning
+        text="A bare TP4056 board has no protection. The version with the DW01 and dual MOSFET adds over-discharge, over-current and short-circuit protection, and lithium cells should not be used without it. Neither version does cell balancing, so neither is suitable for a multi-cell series pack."
+      />
 
-      <Theory>
-        <p>
-          Charge current is set by one resistor: <code>Ichg = 1200 / Rprog</code> amps with
-          Rprog in ohms. The datasheet default of 1.2 kΩ gives 1 A, and 10 kΩ gives 120 mA,
-          which is the right order for a small 200 mAh cell.
-        </p>
-        <p>
-          Lithium charging is constant current then constant voltage. During CC the current is
-          fixed and the cell voltage climbs. Once it reaches 4.2 V the charger holds that
-          voltage instead and the current decays as the cell fills. Charging stops when the
-          current falls to about a tenth of the set value.
-        </p>
-        <p>
-          The CV tail is slower than people expect. It carries only the last fifth or so of the
-          capacity but takes a substantial part of the total time, because current is decaying
-          exponentially the whole way. This is why charging to 90% is much faster per unit of
-          energy than charging to 100%, and why stopping early is kind to the cell.
-        </p>
-        <p>
-          Because it is a linear charger, the input to cell voltage difference all becomes heat:{' '}
-          <code>P = (Vin - Vcell)·I</code>. At 1 A from 5 V into a 3.0 V empty cell that is 2 W
-          in a SOP-8, which is why these boards get hot and throttle. Feeding them from anything
-          above 5 V makes it markedly worse.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "Charge current is set by one resistor: `Ichg = 1200 / Rprog` amps with Rprog in ohms. The datasheet default of 1.2 kΩ gives 1 A, and 10 kΩ gives 120 mA, which is the right order for a small 200 mAh cell.",
+          "Lithium charging is constant current then constant voltage. During CC the current is fixed and the cell voltage climbs. Once it reaches 4.2 V the charger holds that voltage instead and the current decays as the cell fills. Charging stops when the current falls to about a tenth of the set value.",
+          "The CV tail is slower than people expect. It carries only the last fifth or so of the capacity but takes a substantial part of the total time, because current is decaying exponentially the whole way. This is why charging to 90% is much faster per unit of energy than charging to 100%, and why stopping early is kind to the cell.",
+          "Because it is a linear charger, the input to cell voltage difference all becomes heat: `P = (Vin - Vcell)·I`. At 1 A from 5 V into a 3.0 V empty cell that is 2 W in a SOP-8, which is why these boards get hot and throttle. Feeding them from anything above 5 V makes it markedly worse.",
+        ]}
+      />
     </SimPage>
   )
 }

@@ -4,6 +4,7 @@ import { HIGH_Q_LIMIT, analyse, simulate } from '../engine/rlc'
 import type { RLCTopology } from '../engine/rlc'
 import { sweep } from '../engine/signal'
 import { formatSI } from '../engine/units'
+import { T, useT } from '../i18n'
 import { Group, Segmented } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -25,8 +26,9 @@ const DAMPING_TEXT = {
 
 function Schematic({ topology }: { topology: RLCTopology }) {
   const series = topology === 'series'
+  const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 110" aria-label={`${topology} RLC network`}>
+    <svg className="schematic" viewBox="0 0 260 110" aria-label={t('{topology} RLC network', { topology })}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         <circle cx="24" cy="34" r="10" />
         <path d="M18 34a6 6 0 0 1 12 0M24 24V14M24 44v36h212" />
@@ -200,7 +202,7 @@ export default function RLCResonance() {
           {
             label: 'Peak Vout',
             value: formatSI(peakVout, 'V'),
-            note: `(drive ${formatSI(drive, 'V')})`,
+            note: <T k="(drive {drive})" vars={{ drive: formatSI(drive, 'V') }} />,
             warn: overshootWarn,
           },
           {
@@ -212,65 +214,35 @@ export default function RLCResonance() {
       />
 
       {overshootWarn && (
-        <Warning>
-          The capacitor reaches {formatSI(peakVout, 'V')} on a {formatSI(drive, 'V')} drive.
-          An undamped series RLC tops out near 2x the supply, so rate the capacitor and the
-          switching device for the peak, not the rail. Add series R or a snubber.
-        </Warning>
+        <Warning
+          text="The capacitor reaches {peakVout} on a {drive} drive. An undamped series RLC tops out near 2x the supply, so rate the capacitor and the switching device for the peak, not the rail. Add series R or a snubber."
+          vars={{ peakVout: formatSI(peakVout, 'V'), drive: formatSI(drive, 'V') }}
+        />
       )}
 
       {lossyQ && (
-        <Warning>
-          Q above {HIGH_Q_LIMIT} assumes a lossless L and C. A real inductor's winding
-          resistance and core loss, plus the capacitor ESR, both sit in the loop and will
-          hold the measured Q well below this. Add the coil DCR into R for a realistic
-          answer.
-        </Warning>
+        <Warning
+          text="Q above {HIGH_Q_LIMIT} assumes a lossless L and C. A real inductor's winding resistance and core loss, plus the capacitor ESR, both sit in the loop and will hold the measured Q well below this. Add the coil DCR into R for a realistic answer."
+          vars={{ HIGH_Q_LIMIT }}
+        />
       )}
 
       {aliased && (
-        <Warning>
-          The scope window holds {perRing.toFixed(1)} samples per ring cycle, so the drawn
-          trace is aliased. The numbers above are still exact, they come from closed form,
-          not the trace. Shorten the window or raise the source frequency to see the real
-          ring.
-        </Warning>
+        <Warning
+          text="The scope window holds {perRing} samples per ring cycle, so the drawn trace is aliased. The numbers above are still exact, they come from closed form, not the trace. Shorten the window or raise the source frequency to see the real ring."
+          vars={{ perRing: perRing.toFixed(1) }}
+        />
       )}
 
-      <Theory>
-        <p>
-          Resonance is where the two reactances cancel, <code>Xl = Xc</code>, giving
-          <code> f0 = 1 / (2·pi·sqrt(L·C))</code>. It does not depend on R.
-        </p>
-        <p>
-          R sets how fast the stored energy leaks away. Series:{' '}
-          <code>Q = (1/R)·sqrt(L/C)</code> and <code>alpha = R / (2L)</code>. Parallel:{' '}
-          <code>Q = R·sqrt(C/L)</code> and <code>alpha = 1 / (2·R·C)</code>. The two are
-          reciprocal about the characteristic impedance <code>Z0 = sqrt(L/C)</code>, so
-          series wants R small for a high Q and parallel wants R large.
-        </p>
-        <p>
-          From there, <code>BW = f0 / Q</code>, <code>zeta = 1 / (2Q) = alpha / w0</code> and
-          the ring frequency is <code>wd = w0·sqrt(1 - zeta²)</code>. zeta below 1 rings,
-          zeta at 1 is critical damping (fastest settle with no overshoot), zeta above 1
-          crawls in without ringing. First peak overshoot is
-          <code> exp(-pi·zeta / sqrt(1 - zeta²))</code>, which is 100% at zeta = 0 and why a
-          lossless step doubles the supply.
-        </p>
-        <p>
-          The trace is a two-state simulation of <code>[Vc, Il]</code> using exact
-          zero-order-hold discretisation, <code>x[n+1] = xss + e^(A·dt)·(x[n] - xss)</code>.
-          The matrix exponential is closed form, so the solver is exact for a piecewise
-          constant drive and stable at any step size. Forward Euler on a resonant
-          second-order system diverges as soon as <code>dt &gt; 2/w0</code>.
-        </p>
-        <p>
-          Parallel here is driven Thevenin style, i.e. the source feeds R in series into the
-          L-C node. That is the same circuit as a current step <code>Vin/R</code> into
-          R || L || C, so the parallel Q applies. Its output decays to zero because the
-          inductor is a short at DC.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "Resonance is where the two reactances cancel, `Xl = Xc`, giving `f0 = 1 / (2·pi·sqrt(L·C))`. It does not depend on R.",
+          "R sets how fast the stored energy leaks away. Series: `Q = (1/R)·sqrt(L/C)` and `alpha = R / (2L)`. Parallel: `Q = R·sqrt(C/L)` and `alpha = 1 / (2·R·C)`. The two are reciprocal about the characteristic impedance `Z0 = sqrt(L/C)`, so series wants R small for a high Q and parallel wants R large.",
+          "From there, `BW = f0 / Q`, `zeta = 1 / (2Q) = alpha / w0` and the ring frequency is `wd = w0·sqrt(1 - zeta²)`. zeta below 1 rings, zeta at 1 is critical damping (fastest settle with no overshoot), zeta above 1 crawls in without ringing. First peak overshoot is `exp(-pi·zeta / sqrt(1 - zeta²))`, which is 100% at zeta = 0 and why a lossless step doubles the supply.",
+          "The trace is a two-state simulation of `[Vc, Il]` using exact zero-order-hold discretisation, `x[n+1] = xss + e^(A·dt)·(x[n] - xss)`. The matrix exponential is closed form, so the solver is exact for a piecewise constant drive and stable at any step size. Forward Euler on a resonant second-order system diverges as soon as `dt &gt; 2/w0`.",
+          "Parallel here is driven Thevenin style, i.e. the source feeds R in series into the L-C node. That is the same circuit as a current step `Vin/R` into R || L || C, so the parallel Q applies. Its output decays to zero because the inductor is a short at DC.",
+        ]}
+      />
     </SimPage>
   )
 }

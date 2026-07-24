@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { analyseDeepSleep, analyseSolar } from '../engine/powerBudget'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group } from '../ui/Controls'
 import Param from '../ui/Param'
 import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
@@ -76,7 +77,7 @@ export default function SolarSizing() {
             value: `${solar.surplusWh.toFixed(2)} Wh`,
             warn: solar.deficit,
           },
-          { label: 'Battery needed', value: `${solar.batteryAh.toFixed(2)} Ah`, note: `${autonomyDays} days at ${(dod * 100).toFixed(0)}% DoD` },
+          { label: 'Battery needed', value: `${solar.batteryAh.toFixed(2)} Ah`, note: <T k="{autonomyDays} days at {dod}% DoD" vars={{ autonomyDays, dod: (dod * 100).toFixed(0) }} /> },
           { label: 'Recharge time', value: `${solar.rechargeHours.toFixed(2)} h`, note: 'of full sun per day used' },
           {
             label: 'Days to refill',
@@ -87,54 +88,35 @@ export default function SolarSizing() {
       />
 
       {solar.deficit && (
-        <Warning>
-          The panel harvests {solar.harvestWh.toFixed(2)} Wh against a{' '}
-          {load.whPerDay.toFixed(2)} Wh load, so the battery only ever drains and the node dies
-          once it is empty. You need at least {solar.panelW.toFixed(2)} W just to break even,
-          and realistically two to three times that so it can also recover from cloudy spells.
-        </Warning>
+        <Warning
+          text="The panel harvests {harvestWh} Wh against a {whPerDay} Wh load, so the battery only ever drains and the node dies once it is empty. You need at least {panelW} W just to break even, and realistically two to three times that so it can also recover from cloudy spells."
+          vars={{
+            harvestWh: solar.harvestWh.toFixed(2),
+            whPerDay: load.whPerDay.toFixed(2),
+            panelW: solar.panelW.toFixed(2),
+          }}
+        />
       )}
       {!solar.deficit && solar.daysToRecharge > autonomyDays && (
-        <Warning>
-          The surplus is positive but thin: refilling an empty battery takes{' '}
-          {solar.daysToRecharge.toFixed(1)} days, longer than the {autonomyDays} days of
-          autonomy it provides. After one bad week the node may never catch up. Oversize the
-          panel rather than the battery.
-        </Warning>
+        <Warning
+          text="The surplus is positive but thin: refilling an empty battery takes {daysToRecharge} days, longer than the {autonomyDays} days of autonomy it provides. After one bad week the node may never catch up. Oversize the panel rather than the battery."
+          vars={{ daysToRecharge: solar.daysToRecharge.toFixed(1), autonomyDays }}
+        />
       )}
       {peakSunHours > 4 && (
-        <Warning>
-          Over 4 peak sun hours is a summer or low-latitude figure. Size on the worst month you
-          expect to operate in, not the average: in northern Europe December can be under one
-          peak sun hour, a factor of five below midsummer.
-        </Warning>
+        <Warning
+          text="Over 4 peak sun hours is a summer or low-latitude figure. Size on the worst month you expect to operate in, not the average: in northern Europe December can be under one peak sun hour, a factor of five below midsummer."
+        />
       )}
 
-      <Theory>
-        <p>
-          Peak sun hours folds a whole day's irradiance curve into an equivalent number of
-          hours at the panel's full 1000 W/m² rating. So daily harvest is simply{' '}
-          <code>W · PSH · efficiency</code>, and the panel you need is{' '}
-          <code>Wh_day / (PSH · efficiency)</code>.
-        </p>
-        <p>
-          The efficiency term is not the cell efficiency, which is already in the watt rating.
-          It covers the charge controller, wiring, temperature derating (panels lose about
-          0.4% per kelvin above 25 °C), dust and imperfect angle. Seventy percent is a
-          reasonable planning figure for a small fixed installation.
-        </p>
-        <p>
-          Battery sizing is the opposite question: not the average day but the worst run of
-          bad ones. <code>Cbat = Wh_day · days / DoD</code>. Depth of discharge matters
-          enormously for cycle life: taking a lithium cell to 50% rather than 90% can multiply
-          its usable cycles several times over, so the bigger battery often outlives the saving.
-        </p>
-        <p>
-          The failure mode worth avoiding is a system that breaks even on paper. It has no
-          margin to refill the battery after a cloudy week, so it drifts down to empty and stays
-          there. Oversizing the panel is much cheaper than oversizing the battery.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "Peak sun hours folds a whole day's irradiance curve into an equivalent number of hours at the panel's full 1000 W/m² rating. So daily harvest is simply `W · PSH · efficiency`, and the panel you need is `Wh_day / (PSH · efficiency)`.",
+          "The efficiency term is not the cell efficiency, which is already in the watt rating. It covers the charge controller, wiring, temperature derating (panels lose about 0.4% per kelvin above 25 °C), dust and imperfect angle. Seventy percent is a reasonable planning figure for a small fixed installation.",
+          "Battery sizing is the opposite question: not the average day but the worst run of bad ones. `Cbat = Wh_day · days / DoD`. Depth of discharge matters enormously for cycle life: taking a lithium cell to 50% rather than 90% can multiply its usable cycles several times over, so the bigger battery often outlives the saving.",
+          "The failure mode worth avoiding is a system that breaks even on paper. It has no margin to refill the battery after a cloudy week, so it drifts down to empty and stays there. Oversizing the panel is much cheaper than oversizing the battery.",
+        ]}
+      />
     </SimPage>
   )
 }

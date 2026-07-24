@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { GPIO_MAX_MA, VCC } from '../engine/constants'
 import { LED_TYPES, VF_SPREAD_V, analyse } from '../engine/led'
 import { formatSI } from '../engine/units'
+import { T, useT } from '../i18n'
 import { Group, Select, Toggle } from '../ui/Controls'
 import Param from '../ui/Param'
 import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
@@ -24,8 +25,9 @@ const pct = (x: number) => `${(x * 100).toFixed(1)}%`
 const signedPct = (x: number) => `${x >= 0 ? '+' : ''}${(x * 100).toFixed(1)}%`
 
 function Schematic() {
+  const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 112" aria-label="LED with series resistor">
+    <svg className="schematic" viewBox="0 0 260 112" aria-label={t('LED with series resistor')}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         {/* battery on the left branch, long plate positive */}
         <path d="M24 30V52M12 52H36M17 60H31M24 60V90" />
@@ -168,26 +170,26 @@ export default function LedResistor() {
             note: !Number.isFinite(r.r)
               ? 'no value works'
               : r.rUp > r.r
-                ? `next step up ${formatSI(r.rUp, 'Ω')}`
+                ? <T k="next step up {rUp}" vars={{ rUp: formatSI(r.rUp, 'Ω') }} />
                 : 'exact E24 hit',
           },
           {
             label: 'Actual current',
             value: formatSI(r.current, 'A'),
-            note: `(${signedPct(r.currentError)} on target)`,
+            note: <T k="({currentError} on target)" vars={{ currentError: signedPct(r.currentError) }} />,
             warn: r.overGpio || r.overLedMax,
           },
           {
             label: 'Resistor power',
             value: formatSI(r.rPower, 'W'),
-            note: `I²R, ${ratingLabel} part`,
+            note: <T k="I²R, {ratingLabel} part" vars={{ ratingLabel }} />,
             warn: r.overRating,
           },
           { label: 'LED power', value: formatSI(r.ledPower, 'W'), note: 'Vf · I' },
           {
             label: 'Supply draw',
             value: formatSI(r.totalPower, 'W'),
-            note: `${pct(r.efficiency)} of it reaches the die`,
+            note: <T k="{efficiency} of it reaches the die" vars={{ efficiency: pct(r.efficiency) }} />,
           },
           {
             label: 'Resistor headroom',
@@ -196,7 +198,7 @@ export default function LedResistor() {
             warn: r.lowHeadroom || r.noConduction,
           },
           {
-            label: `Current shift per ${spread} of Vf`,
+            label: <T k="Current shift per {spread} of Vf" vars={{ spread }} />,
             value: formatSI(r.vfSensitivity, 'A'),
             note: r.current > 0 ? `(${pct(r.vfSensitivity / r.current)} of If)` : undefined,
             warn: r.lowHeadroom,
@@ -205,72 +207,52 @@ export default function LedResistor() {
       />
 
       {r.noConduction && (
-        <Warning>
-          Vf of {formatSI(vf, 'V')} is at or above the {formatSI(supply, 'V')} rail, so the
-          LED never turns on and no resistor value helps. Use a lower Vf part, or boost the
-          rail with a charge pump or a step-up converter.
-        </Warning>
+        <Warning
+          text="Vf of {vf} is at or above the {supply} rail, so the LED never turns on and no resistor value helps. Use a lower Vf part, or boost the rail with a charge pump or a step-up converter."
+          vars={{ vf: formatSI(vf, 'V'), supply: formatSI(supply, 'V') }}
+        />
       )}
 
       {r.lowHeadroom && (
-        <Warning>
-          Only {formatSI(r.headroom, 'V')} across the resistor. Normal part to part Vf spread
-          of {spread} then moves the current by {pct(r.vfSensitivity / r.current)}, so the
-          resistor is barely in control. Raise the rail or use a constant current driver.
-        </Warning>
+        <Warning
+          text="Only {headroom} across the resistor. Normal part to part Vf spread of {spread} then moves the current by {current}, so the resistor is barely in control. Raise the rail or use a constant current driver."
+          vars={{
+            headroom: formatSI(r.headroom, 'V'),
+            spread,
+            current: pct(r.vfSensitivity / r.current),
+          }}
+        />
       )}
 
       {r.overGpio && (
-        <Warning>
-          {formatSI(r.current, 'A')} is past the {GPIO_MAX_MA} mA an ESP32 pin should source
-          or sink. Drive the LED through a transistor, or raise the resistor. Real pin current
-          also comes in lower than this, because the output stage drops its own voltage under
-          load, which this ideal-source model does not include.
-        </Warning>
+        <Warning
+          text="{current} is past the {GPIO_MAX_MA} mA an ESP32 pin should source or sink. Drive the LED through a transistor, or raise the resistor. Real pin current also comes in lower than this, because the output stage drops its own voltage under load, which this ideal-source model does not include."
+          vars={{ current: formatSI(r.current, 'A'), GPIO_MAX_MA }}
+        />
       )}
 
       {r.overLedMax && (
-        <Warning>
-          {formatSI(r.current, 'A')} is over the {formatSI(maxCurrent, 'A')} absolute maximum
-          set for this LED. Continuous operation there shortens life or kills the die.
-        </Warning>
+        <Warning
+          text="{current} is over the {maxCurrent} absolute maximum set for this LED. Continuous operation there shortens life or kills the die."
+          vars={{ current: formatSI(r.current, 'A'), maxCurrent: formatSI(maxCurrent, 'A') }}
+        />
       )}
 
       {r.overRating && (
-        <Warning>
-          {formatSI(r.rPower, 'W')} in a {ratingLabel} resistor. Pick a bigger package, or
-          split the drop across two resistors in series.
-        </Warning>
+        <Warning
+          text="{rPower} in a {ratingLabel} resistor. Pick a bigger package, or split the drop across two resistors in series."
+          vars={{ rPower: formatSI(r.rPower, 'W'), ratingLabel }}
+        />
       )}
 
-      <Theory>
-        <p>
-          One loop, so Kirchhoff gives <code>Vs = Vf + I·R</code> and the resistor follows
-          from Ohm's law: <code>R = (Vs - Vf) / If</code>. The LED is modelled as a fixed
-          forward drop, the standard piecewise-linear diode approximation. Above the knee its
-          I-V curve is steep enough that Vf barely moves, so the resistor, not the diode, sets
-          the current.
-        </p>
-        <p>
-          Dissipation splits between the two parts: <code>P_R = I²R = (Vs - Vf)²/R</code> in
-          the resistor and <code>P_LED = Vf·I</code> in the die. The fraction that reaches the
-          LED is just <code>Vf / Vs</code>, which is why a 2 V red LED on a 12 V rail wastes
-          five sixths of its power as heat in a resistor.
-        </p>
-        <p>
-          E24 is the IEC 60063 preferred series, 24 values per decade for 5% parts, nominally{' '}
-          <code>10^(n/24)</code> rounded to two figures. The nearest value is picked on log
-          distance rather than on ohms, because tolerance is a ratio: 62 Ω is as far from 65 Ω
-          as 68 Ω is, in percent.
-        </p>
-        <p>
-          Headroom is the whole design question. Differentiating the loop equation gives{' '}
-          <code>dI/dVf = -1/R</code>, so a {spread} bin-to-bin Vf shift changes the current by{' '}
-          <code>0.1 / R</code> amps, i.e. by <code>0.1 / (Vs - Vf)</code> as a fraction.
-          With a 3.2 V white LED on 3.3 V that is 100% of the current, which is exactly why
-          white and blue parts want a driver rather than a resistor from 3.3 V.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "One loop, so Kirchhoff gives `Vs = Vf + I·R` and the resistor follows from Ohm's law: `R = (Vs - Vf) / If`. The LED is modelled as a fixed forward drop, the standard piecewise-linear diode approximation. Above the knee its I-V curve is steep enough that Vf barely moves, so the resistor, not the diode, sets the current.",
+          "Dissipation splits between the two parts: `P_R = I²R = (Vs - Vf)²/R` in the resistor and `P_LED = Vf·I` in the die. The fraction that reaches the LED is just `Vf / Vs`, which is why a 2 V red LED on a 12 V rail wastes five sixths of its power as heat in a resistor.",
+          "E24 is the IEC 60063 preferred series, 24 values per decade for 5% parts, nominally `10^(n/24)` rounded to two figures. The nearest value is picked on log distance rather than on ohms, because tolerance is a ratio: 62 Ω is as far from 65 Ω as 68 Ω is, in percent.",
+          "Headroom is the whole design question. Differentiating the loop equation gives `dI/dVf = -1/R`, so a {spread} bin-to-bin Vf shift changes the current by `0.1 / R` amps, i.e. by `0.1 / (Vs - Vf)` as a fraction. With a 3.2 V white LED on 3.3 V that is 100% of the current, which is exactly why white and blue parts want a driver rather than a resistor from 3.3 V.",
+        ]} vars={{ spread }}
+      />
     </SimPage>
   )
 }

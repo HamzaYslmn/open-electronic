@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { analyse, traceScale, waveforms } from '../engine/reactivePower'
 import type { LoadKind } from '../engine/reactivePower'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group, Segmented } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -86,9 +87,9 @@ export default function ReactivePower() {
           },
           { label: 'Bank reactance', value: formatSI(Math.abs(r.xq), 'Ω') },
           { label: 'Bank voltage rating', value: formatSI(r.capVoltageRating, 'V'), note: 'minimum' },
-          { label: 'Current after', value: formatSI(r.irmsAfter, 'A'), note: `${(r.currentReduction * 100).toFixed(1)}% lower` },
+          { label: 'Current after', value: formatSI(r.irmsAfter, 'A'), note: <T k="{currentReduction}% lower" vars={{ currentReduction: (r.currentReduction * 100).toFixed(1) }} /> },
           { label: 'Cable loss before', value: formatSI(r.lossBefore, 'W') },
-          { label: 'Cable loss after', value: formatSI(r.lossAfter, 'W'), note: `saves ${formatSI(r.lossSaved, 'W')}` },
+          { label: 'Cable loss after', value: formatSI(r.lossAfter, 'W'), note: <T k="saves {lossSaved}" vars={{ lossSaved: formatSI(r.lossSaved, 'W') }} /> },
           { label: 'Peak p(t)', value: formatSI(r.pPeak, 'W') },
           { label: 'Reverse flow peak', value: formatSI(r.pReverse, 'W'), note: 'handed back each cycle' },
           { label: 'Reactive energy / day', value: `${(r.qEnergyDay / 1000).toFixed(1)} kvarh` },
@@ -97,51 +98,31 @@ export default function ReactivePower() {
       />
 
       {r.targetTooLow && (
-        <Warning>
-          The target power factor is at or below the present one, so there is nothing to
-          correct. Raise the target above {pf.toFixed(2)}.
-        </Warning>
+        <Warning
+          text="The target power factor is at or below the present one, so there is nothing to correct. Raise the target above {pf}."
+          vars={{ pf: pf.toFixed(2) }}
+        />
       )}
       {r.needsInductor && !r.targetTooLow && (
-        <Warning>
-          This load already leads, so correcting it needs a shunt <em>inductor</em>, not a
-          capacitor. Capacitive loads at scale are unusual: long lightly loaded cables and
-          large filter banks are the usual causes.
-        </Warning>
+        <Warning
+          text="This load already leads, so correcting it needs a shunt *inductor*, not a capacitor. Capacitive loads at scale are unusual: long lightly loaded cables and large filter banks are the usual causes."
+        />
       )}
       {r.isMains && (
-        <Warning>
-          These are mains potentials. A correction capacitor stays charged after
-          disconnection and must carry bleed resistors, and it must be rated for at least{' '}
-          {formatSI(r.capVoltageRating, 'V')} RMS.
-        </Warning>
+        <Warning
+          text="These are mains potentials. A correction capacitor stays charged after disconnection and must carry bleed resistors, and it must be rated for at least {capVoltageRating} RMS."
+          vars={{ capVoltageRating: formatSI(r.capVoltageRating, 'V') }}
+        />
       )}
 
-      <Theory>
-        <p>
-          With a sinusoidal supply, <code>S = Vrms·Irms</code>, <code>P = S·cos(phi)</code> and{' '}
-          <code>Q = S·sin(phi)</code>. Only P does work. Q is energy shuttled into the load's
-          magnetic field and back out every half cycle, and the cable carries it both ways.
-        </p>
-        <p>
-          That is what the negative dip in p(t) on the trace is. Instantaneous power is{' '}
-          <code>P + S·cos(2wt - phi)</code>, so it swings <code>P ± S</code>. Once S exceeds
-          P, which is exactly when the power factor drops below 1, the trough goes below zero
-          and power flows backwards.
-        </p>
-        <p>
-          Correction adds a shunt reactance that supplies Q locally instead of dragging it
-          down the cable: <code>Qc = P·(tan(phi1) - tan(phi2))</code>, giving{' '}
-          <code>C = Qc / (2·pi·f·V²)</code>. The load still draws the same Q, it just comes
-          from a capacitor a metre away rather than a generator miles away.
-        </p>
-        <p>
-          The payoff is I²R. Cable loss falls with the square of current, so dragging power
-          factor from 0.75 to 0.95 cuts current by about 21% and cable loss by about 38%. That
-          is also why utilities bill industrial sites for reactive power: it occupies their
-          conductors without registering on an energy meter.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "With a sinusoidal supply, `S = Vrms·Irms`, `P = S·cos(phi)` and `Q = S·sin(phi)`. Only P does work. Q is energy shuttled into the load's magnetic field and back out every half cycle, and the cable carries it both ways.",
+          "That is what the negative dip in p(t) on the trace is. Instantaneous power is `P + S·cos(2wt - phi)`, so it swings `P ± S`. Once S exceeds P, which is exactly when the power factor drops below 1, the trough goes below zero and power flows backwards.",
+          "Correction adds a shunt reactance that supplies Q locally instead of dragging it down the cable: `Qc = P·(tan(phi1) - tan(phi2))`, giving `C = Qc / (2·pi·f·V²)`. The load still draws the same Q, it just comes from a capacitor a metre away rather than a generator miles away.",
+          "The payoff is I²R. Cable loss falls with the square of current, so dragging power factor from 0.75 to 0.95 cuts current by about 21% and cable loss by about 38%. That is also why utilities bill industrial sites for reactive power: it occupies their conductors without registering on an energy meter.",
+        ]}
+      />
     </SimPage>
   )
 }

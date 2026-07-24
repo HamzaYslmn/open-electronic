@@ -8,6 +8,7 @@ import {
 } from '../engine/boost'
 import { VCC, VCC_5V } from '../engine/constants'
 import { formatSI } from '../engine/units'
+import { T, useT } from '../i18n'
 import { Group } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -24,8 +25,9 @@ const pct = (x: number) => (Number.isFinite(x) ? `${(x * 100).toFixed(1)}%` : 'n
 const times = (x: number) => (Number.isFinite(x) ? `${x.toFixed(2)}x` : 'n/a')
 
 function Schematic() {
+  const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 116" aria-label="Boost converter power stage">
+    <svg className="schematic" viewBox="0 0 260 116" aria-label={t('Boost converter power stage')}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         {/* input source */}
         <circle cx="24" cy="34" r="10" />
@@ -237,181 +239,142 @@ export default function Boost() {
           {
             label: 'Duty D',
             value: pct(r.duty),
-            note: `ideal 1 - Vin/Vout = ${pct(r.dutyIdeal)}`,
+            note: <T k="ideal 1 - Vin/Vout = {dutyIdeal}" vars={{ dutyIdeal: pct(r.dutyIdeal) }} />,
             warn: r.extremeDuty || !r.achievable,
           },
           {
             label: 'Conduction mode',
             value: r.achievable ? r.mode : 'none',
             note: r.achievable
-              ? `DCM below ${formatSI(r.ioutBoundary, 'A')} of load`
+              ? <T k="DCM below {ioutBoundary} of load" vars={{ ioutBoundary: formatSI(r.ioutBoundary, 'A') }} />
               : 'no steady state',
             warn: r.mode === 'DCM' || !r.achievable,
           },
           {
             label: 'On time',
             value: formatSI(r.ton, 's'),
-            note: `off ${formatSI(r.toff, 's')}`,
+            note: <T k="off {toff}" vars={{ toff: formatSI(r.toff, 's') }} />,
           },
           {
             label: 'Input current Iin',
             value: formatSI(r.iin, 'A'),
-            note: `${times(r.iin / iout)} the load, avg inductor current`,
+            note: <T k="{iout} the load, avg inductor current" vars={{ iout: times(r.iin / iout) }} />,
           },
           {
             label: 'Inductor ripple',
             value: formatSI(r.ripple, 'A'),
-            note: `${pct(r.rippleRatio)} of Iin, aim for ${pct(RIPPLE_TARGET)}`,
+            note: <T k="{rippleRatio} of Iin, aim for {RIPPLE_TARGET}" vars={{ rippleRatio: pct(r.rippleRatio), RIPPLE_TARGET: pct(RIPPLE_TARGET) }} />,
             warn: r.highRipple,
           },
           {
             label: 'Peak inductor current',
             value: formatSI(r.ipeak, 'A'),
-            note: `valley ${formatSI(r.ivalley, 'A')}, Isat ${formatSI(isat, 'A')}`,
+            note: <T k="valley {ivalley}, Isat {isat}" vars={{ ivalley: formatSI(r.ivalley, 'A'), isat: formatSI(isat, 'A') }} />,
             warn: r.saturating,
           },
           {
             label: 'Inductor RMS',
             value: formatSI(r.ilRms, 'A'),
-            note: `switch ${formatSI(r.iswRms, 'A')} rms, diode ${formatSI(iout, 'A')} avg`,
+            note: <T k="switch {iswRms} rms, diode {iout} avg" vars={{ iswRms: formatSI(r.iswRms, 'A'), iout: formatSI(iout, 'A') }} />,
           },
           {
             label: 'Output ripple',
             value: formatSI(r.vRipple, 'V'),
-            note: `${formatSI(r.vRippleCap, 'V')} from C, ${formatSI(r.vRippleEsr, 'V')} from ESR`,
+            note: <T k="{vRippleCap} from C, {vRippleEsr} from ESR" vars={{ vRippleCap: formatSI(r.vRippleCap, 'V'), vRippleEsr: formatSI(r.vRippleEsr, 'V') }} />,
           },
           {
             label: 'Switch voltage stress',
             value: formatSI(r.vSwitchStress, 'V'),
-            note: `Vout + Vd, so rate it for ${formatSI(DERATE * r.vSwitchStress, 'V')}`,
+            note: <T k="Vout + Vd, so rate it for {vSwitchStress}" vars={{ vSwitchStress: formatSI(DERATE * r.vSwitchStress, 'V') }} />,
           },
           {
             label: 'Diode reverse stress',
             value: formatSI(r.vDiodeStress, 'V'),
-            note: `rate it for ${formatSI(DERATE * r.vDiodeStress, 'V')}`,
+            note: <T k="rate it for {vDiodeStress}" vars={{ vDiodeStress: formatSI(DERATE * r.vDiodeStress, 'V') }} />,
           },
           {
             label: 'Efficiency',
             value: pct(r.efficiency),
-            note: `${formatSI(r.pout, 'W')} out, ${formatSI(r.ploss, 'W')} conduction loss`,
+            note: <T k="{pout} out, {ploss} conduction loss" vars={{ pout: formatSI(r.pout, 'W'), ploss: formatSI(r.ploss, 'W') }} />,
           },
           {
             label: 'Highest Vout reachable',
             value: formatSI(r.voutMax, 'V'),
-            note: `at this load, with ${formatSI(dcr + ron, 'Ω')} in series`,
+            note: <T k="at this load, with {ron} in series" vars={{ ron: formatSI(dcr + ron, 'Ω') }} />,
             warn: !r.achievable && r.stepUp,
           },
           {
             label: 'L needed for CCM',
             value: formatSI(r.lBoundary, 'H'),
-            note: `you have ${formatSI(l, 'H')}`,
+            note: <T k="you have {l}" vars={{ l: formatSI(l, 'H') }} />,
             warn: r.mode === 'DCM',
           },
         ]}
       />
 
       {!r.stepUp && (
-        <Warning>
-          Vout of {formatSI(vout, 'V')} is not above the {formatSI(vin, 'V')} input, so there
-          is nothing for a boost to do. With the switch off the inductor and diode are just a
-          lossy wire and the output sits at Vin minus a diode drop. Use a buck stage below the
-          input, or a buck-boost if the input crosses the output.
-        </Warning>
+        <Warning
+          text="Vout of {vout} is not above the {vin} input, so there is nothing for a boost to do. With the switch off the inductor and diode are just a lossy wire and the output sits at Vin minus a diode drop. Use a buck stage below the input, or a buck-boost if the input crosses the output."
+          vars={{ vout: formatSI(vout, 'V'), vin: formatSI(vin, 'V') }}
+        />
       )}
 
       {r.stepUp && !r.achievable && (
-        <Warning>
-          {formatSI(dcr + ron, 'Ω')} of series resistance caps this stage at{' '}
-          {formatSI(r.voutMax, 'V')} into a {formatSI(iout, 'A')} load, so{' '}
-          {formatSI(vout, 'V')} is unreachable at any duty. Past the peak, more duty means less
-          output: the inductor spends so long disconnected from the load that the extra I²R
-          loss beats the extra energy stored. Lower the load, use a lower DCR inductor or a
-          better switch.
-        </Warning>
+        <Warning
+          text="{ron} of series resistance caps this stage at {voutMax} into a {iout} load, so {vout} is unreachable at any duty. Past the peak, more duty means less output: the inductor spends so long disconnected from the load that the extra I²R loss beats the extra energy stored. Lower the load, use a lower DCR inductor or a better switch."
+          vars={{
+            ron: formatSI(dcr + ron, 'Ω'),
+            voutMax: formatSI(r.voutMax, 'V'),
+            iout: formatSI(iout, 'A'),
+            vout: formatSI(vout, 'V'),
+          }}
+        />
       )}
 
       {r.extremeDuty && (
-        <Warning>
-          D = {pct(r.duty)} is past the {pct(MAX_PRACTICAL_DUTY)} where this model is worth
-          trusting. The
-          diode only conducts for {formatSI(r.toff, 's')} per cycle, so the peak currents and
-          the I²R losses climb fast, the right-half-plane zero drops to where the loop is hard
-          to compensate, and most controllers clamp the duty here anyway. Raise Vin, or use a
-          two-stage or transformer-coupled topology.
-        </Warning>
+        <Warning
+          text="D = {duty} is past the {MAX_PRACTICAL_DUTY} where this model is worth trusting. The diode only conducts for {toff} per cycle, so the peak currents and the I²R losses climb fast, the right-half-plane zero drops to where the loop is hard to compensate, and most controllers clamp the duty here anyway. Raise Vin, or use a two-stage or transformer-coupled topology."
+          vars={{
+            duty: pct(r.duty),
+            MAX_PRACTICAL_DUTY: pct(MAX_PRACTICAL_DUTY),
+            toff: formatSI(r.toff, 's'),
+          }}
+        />
       )}
 
       {r.saturating && (
-        <Warning>
-          Peak current {formatSI(r.ipeak, 'A')} is over the {formatSI(isat, 'A')} saturation
-          rating. A saturated core loses inductance, so the current ramp goes near vertical and
-          the switch sees a spike this linear model does not predict. Every number above is
-          optimistic. Use a bigger inductor, raise fsw or pick a higher Isat part.
-        </Warning>
+        <Warning
+          text="Peak current {ipeak} is over the {isat} saturation rating. A saturated core loses inductance, so the current ramp goes near vertical and the switch sees a spike this linear model does not predict. Every number above is optimistic. Use a bigger inductor, raise fsw or pick a higher Isat part."
+          vars={{ ipeak: formatSI(r.ipeak, 'A'), isat: formatSI(isat, 'A') }}
+        />
       )}
 
       {r.mode === 'DCM' && (
-        <Warning>
-          The inductor empties every cycle, so this is discontinuous conduction and D = 1 -
-          Vin/Vout no longer applies. The duty above is the DCM solution instead. Output ripple
-          and the peak current are both worse than the CCM formulas suggest, and the loop gain
-          changes shape. Above {formatSI(r.ioutBoundary, 'A')} of load, or above{' '}
-          {formatSI(r.lBoundary, 'H')} of inductance, it goes back to CCM.
-        </Warning>
+        <Warning
+          text="The inductor empties every cycle, so this is discontinuous conduction and D = 1 - Vin/Vout no longer applies. The duty above is the DCM solution instead. Output ripple and the peak current are both worse than the CCM formulas suggest, and the loop gain changes shape. Above {ioutBoundary} of load, or above {lBoundary} of inductance, it goes back to CCM."
+          vars={{
+            ioutBoundary: formatSI(r.ioutBoundary, 'A'),
+            lBoundary: formatSI(r.lBoundary, 'H'),
+          }}
+        />
       )}
 
       {r.highRipple && r.mode === 'CCM' && (
-        <Warning>
-          Ripple is {pct(r.rippleRatio)} of the average input current. The usual target is 30
-          to 40%: past that the peak current, the core loss and the output ripple all grow for
-          no benefit. Raise L or fsw.
-        </Warning>
+        <Warning
+          text="Ripple is {rippleRatio} of the average input current. The usual target is 30 to 40%: past that the peak current, the core loss and the output ripple all grow for no benefit. Raise L or fsw."
+          vars={{ rippleRatio: pct(r.rippleRatio) }}
+        />
       )}
 
-      <Theory>
-        <p>
-          In steady state the inductor has to reset every cycle, so the volt-seconds put in
-          must come back out: <code>Vin·D·T = (Vout - Vin)·(1-D)·T</code>, which rearranges to
-          <code> D = 1 - Vin/Vout</code>. The output cap has the matching constraint on charge:
-          the diode only conducts for <code>(1-D)</code> of the period, so the average inductor
-          current is <code>Iin = Iout/(1-D)</code>. Power in equals power out, so stepping the
-          voltage up steps the input current up by the same ratio. That current runs through
-          the inductor, the switch and the diode, which is why a boost stresses its parts far
-          harder than its output rating suggests.
-        </p>
-        <p>
-          Ripple is just the ramp: with <code>Vin</code> across the inductor for{' '}
-          <code>ton = D/fsw</code>, <code>dIL = Vin·D/(fsw·L)</code> peak to peak, sitting on
-          top of <code>Iin</code>. What matters for the inductor is the peak,{' '}
-          <code>Iin + dIL/2</code>, because that is what saturates the core. Output ripple is{' '}
-          <code>Iout·D/(fsw·Cout)</code> from the charge the cap gives up while the diode is
-          off, plus <code>Ipeak·ESR</code> from the current step, which in a real design is
-          usually the bigger of the two.
-        </p>
-        <p>
-          Once the valley current would go negative the diode has already turned off and the
-          converter is in discontinuous conduction. The duty then follows from{' '}
-          <code>Iout = Vin²·D²/(2·L·fsw·(Vout - Vin))</code>, i.e.{' '}
-          <code>D = sqrt(2·L·fsw·Iout·(Vout - Vin))/Vin</code>. The boundary sits at{' '}
-          <code>Iout = Vin·D(1-D)/(2·fsw·L)</code>.
-        </p>
-        <p>
-          The drops are folded in rather than bolted on. Volt-second balance with the diode
-          drop Vd, the switch drop Iin·Rds(on) and the winding drop Iin·DCR, substituting Iin =
-          Iout/(1-D), is a quadratic in <code>x = 1-D</code>:{' '}
-          <code>x²(Vout+Vd) - x(Vin + Iout·Ron) + Iout(DCR+Ron) = 0</code>. The larger root is
-          the real operating point. When the discriminant goes negative there is no solution at
-          all: that is the ceiling <code>Vout_max = (Vin + Iout·Ron)²/(4·Iout·(DCR+Ron)) - Vd</code>,
-          which with no switch drop is Erickson's <code>M_max = 0.5·sqrt(R/R_L)</code>. A boost
-          cannot give infinite gain, and real parts stop it long before D reaches 1.
-        </p>
-        <p>
-          The trace is not integrated. Inside a switching period the inductor current is
-          exactly two straight lines, so it is evaluated from the closed-form corner points at
-          whatever sample spacing the scope needs. Dragging fsw or L across decades changes the
-          detail on screen but nothing can accumulate or diverge.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "In steady state the inductor has to reset every cycle, so the volt-seconds put in must come back out: `Vin·D·T = (Vout - Vin)·(1-D)·T`, which rearranges to `D = 1 - Vin/Vout`. The output cap has the matching constraint on charge: the diode only conducts for `(1-D)` of the period, so the average inductor current is `Iin = Iout/(1-D)`. Power in equals power out, so stepping the voltage up steps the input current up by the same ratio. That current runs through the inductor, the switch and the diode, which is why a boost stresses its parts far harder than its output rating suggests.",
+          "Ripple is just the ramp: with `Vin` across the inductor for `ton = D/fsw`, `dIL = Vin·D/(fsw·L)` peak to peak, sitting on top of `Iin`. What matters for the inductor is the peak, `Iin + dIL/2`, because that is what saturates the core. Output ripple is `Iout·D/(fsw·Cout)` from the charge the cap gives up while the diode is off, plus `Ipeak·ESR` from the current step, which in a real design is usually the bigger of the two.",
+          "Once the valley current would go negative the diode has already turned off and the converter is in discontinuous conduction. The duty then follows from `Iout = Vin²·D²/(2·L·fsw·(Vout - Vin))`, i.e. `D = sqrt(2·L·fsw·Iout·(Vout - Vin))/Vin`. The boundary sits at `Iout = Vin·D(1-D)/(2·fsw·L)`.",
+          "The drops are folded in rather than bolted on. Volt-second balance with the diode drop Vd, the switch drop Iin·Rds(on) and the winding drop Iin·DCR, substituting Iin = Iout/(1-D), is a quadratic in `x = 1-D`: `x²(Vout+Vd) - x(Vin + Iout·Ron) + Iout(DCR+Ron) = 0`. The larger root is the real operating point. When the discriminant goes negative there is no solution at all: that is the ceiling `Vout_max = (Vin + Iout·Ron)²/(4·Iout·(DCR+Ron)) - Vd`, which with no switch drop is Erickson's `M_max = 0.5·sqrt(R/R_L)`. A boost cannot give infinite gain, and real parts stop it long before D reaches 1.",
+          "The trace is not integrated. Inside a switching period the inductor current is exactly two straight lines, so it is evaluated from the closed-form corner points at whatever sample spacing the scope needs. Dragging fsw or L across decades changes the detail on screen but nothing can accumulate or diverge.",
+        ]}
+      />
     </SimPage>
   )
 }

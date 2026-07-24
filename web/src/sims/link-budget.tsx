@@ -8,6 +8,7 @@ import {
   fspl,
 } from '../engine/rf'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group, Select } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -93,7 +94,7 @@ export default function LinkBudget() {
           },
           { label: 'Range at 0 dB margin', value: formatSI(r.maxRange, 'm') },
           {
-            label: `Range at ${MARGIN_MIN_DB} dB margin`,
+            label: <T k="Range at {MARGIN_MIN_DB} dB margin" vars={{ MARGIN_MIN_DB }} />,
             value: formatSI(r.reliableRange, 'm'),
             note: 'usable in practice',
           },
@@ -101,45 +102,26 @@ export default function LinkBudget() {
       />
 
       {r.linkFails && (
-        <Warning>
-          The link does not close: received power is {Math.abs(r.marginDb).toFixed(1)} dB below
-          the sensitivity floor. Halving the distance buys 6 dB, and so does doubling both
-          antenna gains. A slower LoRa spreading factor buys far more.
-        </Warning>
+        <Warning
+          text="The link does not close: received power is {marginDb} dB below the sensitivity floor. Halving the distance buys 6 dB, and so does doubling both antenna gains. A slower LoRa spreading factor buys far more."
+          vars={{ marginDb: Math.abs(r.marginDb).toFixed(1) }}
+        />
       )}
       {r.marginal && (
-        <Warning>
-          Only {r.marginDb.toFixed(1)} dB of margin. Free space loss is the best case: rain,
-          foliage, a wall, a hand near the antenna or simple multipath fading each eat several
-          dB. Aim for at least {MARGIN_MIN_DB} dB before calling a link dependable.
-        </Warning>
+        <Warning
+          text="Only {marginDb} dB of margin. Free space loss is the best case: rain, foliage, a wall, a hand near the antenna or simple multipath fading each eat several dB. Aim for at least {MARGIN_MIN_DB} dB before calling a link dependable."
+          vars={{ marginDb: r.marginDb.toFixed(1), MARGIN_MIN_DB }}
+        />
       )}
 
-      <Theory>
-        <p>
-          The whole budget is one line in dB:{' '}
-          <code>Prx = Ptx + Gtx + Grx - FSPL - losses</code>, and the link closes when Prx sits
-          above the receiver's sensitivity. Working in decibels turns every multiplication into
-          an addition, which is the only reason this is tractable by hand.
-        </p>
-        <p>
-          Free space path loss is <code>20·log10(d_km) + 20·log10(f_MHz) + 32.44</code>. Two
-          consequences worth internalising: doubling the distance costs 6 dB, and so does
-          doubling the frequency. That second one is why 868 MHz reaches so much further than
-          2.4 GHz at the same power, before you even consider that lower frequencies penetrate
-          obstacles better.
-        </p>
-        <p>
-          Sensitivity is where LoRa earns its keep. Spreading the signal over more time buys
-          processing gain: SF7 gets to about -123 dBm, SF12 to about -137 dBm. That 14 dB is a
-          factor of five in range, paid for in data rate and airtime.
-        </p>
-        <p>
-          Never design to zero margin. This model assumes clear line of sight with nothing in
-          the first Fresnel zone, which almost never holds. Ten dB is a working minimum, and
-          twenty is sensible for anything you cannot easily go and fix.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "The whole budget is one line in dB: `Prx = Ptx + Gtx + Grx - FSPL - losses`, and the link closes when Prx sits above the receiver's sensitivity. Working in decibels turns every multiplication into an addition, which is the only reason this is tractable by hand.",
+          "Free space path loss is `20·log10(d_km) + 20·log10(f_MHz) + 32.44`. Two consequences worth internalising: doubling the distance costs 6 dB, and so does doubling the frequency. That second one is why 868 MHz reaches so much further than 2.4 GHz at the same power, before you even consider that lower frequencies penetrate obstacles better.",
+          "Sensitivity is where LoRa earns its keep. Spreading the signal over more time buys processing gain: SF7 gets to about -123 dBm, SF12 to about -137 dBm. That 14 dB is a factor of five in range, paid for in data rate and airtime.",
+          "Never design to zero margin. This model assumes clear line of sight with nothing in the first Fresnel zone, which almost never holds. Ten dB is a working minimum, and twenty is sensible for anything you cannot easily go and fix.",
+        ]}
+      />
     </SimPage>
   )
 }

@@ -8,6 +8,7 @@ import {
 } from '../engine/photovoltaic'
 import type { PanelSpec } from '../engine/photovoltaic'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -86,7 +87,7 @@ export default function Photovoltaic() {
             note: r.poorFill ? '(poor)' : '(healthy)',
             warn: r.poorFill,
           },
-          { label: 'Efficiency', value: `${(r.efficiency * 100).toFixed(1)}%`, note: `over ${r.area.toFixed(2)} m²` },
+          { label: 'Efficiency', value: `${(r.efficiency * 100).toFixed(1)}%`, note: <T k="over {area} m²" vars={{ area: r.area.toFixed(2) }} /> },
           { label: 'Pmp at STC', value: formatSI(r.stc.pmp, 'W'), note: '1000 W/m², 25 °C' },
           {
             label: 'Voc temp coeff',
@@ -104,45 +105,27 @@ export default function Photovoltaic() {
       />
 
       {r.shuntLimited && (
-        <Warning>
-          Shunt resistance is too low to support the stated Voc, so the model collapses Voc
-          toward Iph·Rsh. Raise Rsh or lower Voc: a real panel this shunted would be faulty.
-        </Warning>
+        <Warning
+          text="Shunt resistance is too low to support the stated Voc, so the model collapses Voc toward Iph·Rsh. Raise Rsh or lower Voc: a real panel this shunted would be faulty."
+        />
       )}
       {r.lowLight && (
-        <Warning>
-          Below 100 W/m² the single diode model gets optimistic. Real panels lose fill factor
-          faster than this in low light because the shunt path dominates.
-        </Warning>
+        <Warning
+          text="Below 100 W/m² the single diode model gets optimistic. Real panels lose fill factor faster than this in low light because the shunt path dominates."
+        />
       )}
       {r.tempOutOfRange && (
-        <Warning>Cell temperature is outside the range this model was fitted over.</Warning>
+        <Warning text="Cell temperature is outside the range this model was fitted over." />
       )}
 
-      <Theory>
-        <p>
-          The single diode model is{' '}
-          <code>I = Iph - I0·(e^((V + I·Rs)/a) - 1) - (V + I·Rs)/Rsh</code>, where{' '}
-          <code>a = Ns·n·k·T/q</code> is the modified thermal voltage of the whole series
-          string. It is implicit in I, so the solver iterates rather than evaluating a formula.
-        </p>
-        <p>
-          Photocurrent scales almost exactly with irradiance, which is why Isc tracks sunlight
-          linearly. Voc only moves with the logarithm of irradiance, so a panel in cloud keeps
-          most of its voltage and loses current.
-        </p>
-        <p>
-          Temperature works the other way. Isc creeps up a little, but I0 climbs steeply with
-          T, so Voc falls about 0.3% per kelvin and takes Pmp with it. This is why a cold
-          bright day outperforms a hot one, and why panel Vmp must be checked at the lowest
-          expected temperature when sizing a string against an MPPT input.
-        </p>
-        <p>
-          Fill factor <code>Pmp / (Voc·Isc)</code> measures how square the knee is. Series
-          resistance flattens the top of the curve and shunt resistance tilts the flat current
-          region, both dragging FF down from the 0.75 to 0.82 a healthy c-Si module shows.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "The single diode model is `I = Iph - I0·(e^((V + I·Rs)/a) - 1) - (V + I·Rs)/Rsh`, where `a = Ns·n·k·T/q` is the modified thermal voltage of the whole series string. It is implicit in I, so the solver iterates rather than evaluating a formula.",
+          "Photocurrent scales almost exactly with irradiance, which is why Isc tracks sunlight linearly. Voc only moves with the logarithm of irradiance, so a panel in cloud keeps most of its voltage and loses current.",
+          "Temperature works the other way. Isc creeps up a little, but I0 climbs steeply with T, so Voc falls about 0.3% per kelvin and takes Pmp with it. This is why a cold bright day outperforms a hot one, and why panel Vmp must be checked at the lowest expected temperature when sizing a string against an MPPT input.",
+          "Fill factor `Pmp / (Voc·Isc)` measures how square the knee is. Series resistance flattens the top of the curve and shunt resistance tilts the flat current region, both dragging FF down from the 0.75 to 0.82 a healthy c-Si module shows.",
+        ]}
+      />
     </SimPage>
   )
 }

@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { VCC } from '../engine/constants'
 import { VIH_FRAC, VIL_FRAC, analyseDebounce, voltageAt } from '../engine/logic'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -93,20 +94,20 @@ export default function Debounce() {
           {
             label: 'Rise to VIH',
             value: formatSI(readout.tRise, 's'),
-            note: `${(VIH_FRAC * 100).toFixed(0)}% of Vcc`,
+            note: <T k="{VIH_FRAC}% of Vcc" vars={{ VIH_FRAC: (VIH_FRAC * 100).toFixed(0) }} />,
             warn: readout.tooFast,
           },
-          { label: 'Fall to VIL', value: formatSI(readout.tFall, 's'), note: `${(VIL_FRAC * 100).toFixed(0)}% of Vcc` },
+          { label: 'Fall to VIL', value: formatSI(readout.tFall, 's'), note: <T k="{VIL_FRAC}% of Vcc" vars={{ VIL_FRAC: (VIL_FRAC * 100).toFixed(0) }} /> },
           {
             label: 'Glitches rejected up to',
             value: formatSI(readout.rejected, 's'),
-            note: `bounce is ${formatSI(bounceMs / 1000, 's')}`,
+            note: <T k="bounce is {bounceMs}" vars={{ bounceMs: formatSI(bounceMs / 1000, 's') }} />,
             warn: readout.tooFast,
           },
           {
             label: 'Maximum press rate',
             value: formatSI(readout.maxRate, 'Hz'),
-            note: `you want ${pressRate} Hz`,
+            note: <T k="you want {pressRate} Hz" vars={{ pressRate }} />,
             warn: readout.tooSlow,
           },
           { label: 'Contact current', value: formatSI(readout.contactCurrent, 'A'), note: 'wets the contact' },
@@ -114,52 +115,35 @@ export default function Debounce() {
       />
 
       {readout.tooFast && (
-        <Warning>
-          The filter settles in {formatSI(readout.tRise, 's')}, faster than the{' '}
-          {formatSI(bounceMs / 1000, 's')} of bounce, so chatter still reaches the pin. Raise
-          R or C until the rise time comfortably exceeds the bounce duration.
-        </Warning>
+        <Warning
+          text="The filter settles in {tRise}, faster than the {bounceMs} of bounce, so chatter still reaches the pin. Raise R or C until the rise time comfortably exceeds the bounce duration."
+          vars={{
+            tRise: formatSI(readout.tRise, 's'),
+            bounceMs: formatSI(bounceMs / 1000, 's'),
+          }}
+        />
       )}
       {readout.tooSlow && (
-        <Warning>
-          At {formatSI(readout.maxRate, 'Hz')} the filter cannot follow {pressRate} presses per
-          second. Real presses will be merged or missed entirely.
-        </Warning>
+        <Warning
+          text="At {maxRate} the filter cannot follow {pressRate} presses per second. Real presses will be merged or missed entirely."
+          vars={{ maxRate: formatSI(readout.maxRate, 'Hz'), pressRate }}
+        />
       )}
       {readout.contactCurrent < 1e-4 && (
-        <Warning>
-          Only {formatSI(readout.contactCurrent, 'A')} flows through the contact. Dry switching
-          below about 100 µA lets oxide build up on the contact faces, which eventually stops
-          the switch working at all. Lower R if the switch is a mechanical one.
-        </Warning>
+        <Warning
+          text="Only {contactCurrent} flows through the contact. Dry switching below about 100 µA lets oxide build up on the contact faces, which eventually stops the switch working at all. Lower R if the switch is a mechanical one."
+          vars={{ contactCurrent: formatSI(readout.contactCurrent, 'A') }}
+        />
       )}
 
-      <Theory>
-        <p>
-          Contacts bounce because they are springs. The moving contact strikes the fixed one
-          and rebounds, making and breaking several times over roughly 1 to 10 ms for a
-          typical tactile switch, longer for larger levers and relays.
-        </p>
-        <p>
-          The RC filter turns each brief opening into a small exponential wobble instead of a
-          full rail-to-rail transition. The node only registers as high once it crosses VIH,
-          which for an ESP32 is about {(VIH_FRAC * 100).toFixed(0)}% of the supply, and that
-          takes <code>t = -R·C·ln(1 - VIH/Vcc)</code>, i.e. 1.386 time constants.
-        </p>
-        <p>
-          The design has two sides. Too fast and the chatter gets through. Too slow and you
-          cannot press the button quickly, and the slow edge spends a long time in the
-          forbidden zone between VIL and VIH, where an input without a Schmitt trigger can
-          oscillate. This is exactly why you want a Schmitt input here, and the ESP32 GPIOs
-          have one.
-        </p>
-        <p>
-          Note the asymmetry on the trace: closing the switch shorts the capacitor straight to
-          ground so the fall is almost instant, while opening it has to charge C through R.
-          Only the rising edge is actually filtered, which is why a debounce that looks fine
-          on press can still bounce on release.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "Contacts bounce because they are springs. The moving contact strikes the fixed one and rebounds, making and breaking several times over roughly 1 to 10 ms for a typical tactile switch, longer for larger levers and relays.",
+          "The RC filter turns each brief opening into a small exponential wobble instead of a full rail-to-rail transition. The node only registers as high once it crosses VIH, which for an ESP32 is about {VIH_FRAC}% of the supply, and that takes `t = -R·C·ln(1 - VIH/Vcc)`, i.e. 1.386 time constants.",
+          "The design has two sides. Too fast and the chatter gets through. Too slow and you cannot press the button quickly, and the slow edge spends a long time in the forbidden zone between VIL and VIH, where an input without a Schmitt trigger can oscillate. This is exactly why you want a Schmitt input here, and the ESP32 GPIOs have one.",
+          "Note the asymmetry on the trace: closing the switch shorts the capacitor straight to ground so the fall is almost instant, while opening it has to charge C through R. Only the rising edge is actually filtered, which is why a debounce that looks fine on press can still bounce on release.",
+        ]} vars={{ VIH_FRAC: (VIH_FRAC * 100).toFixed(0) }}
+      />
     </SimPage>
   )
 }

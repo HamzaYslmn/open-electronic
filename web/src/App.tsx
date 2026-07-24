@@ -3,7 +3,7 @@ import { Link, Route, Routes, useLocation } from 'react-router-dom'
 import Sidebar from './ui/Sidebar'
 import { READY, simPath } from './catalog'
 import Home from './ui/Home'
-import { LANGS, LangContext, STORAGE_KEY, translate } from './i18n'
+import { LANGS, LangContext, STORAGE_KEY, loadLang, translate } from './i18n'
 import type { Lang } from './i18n'
 
 export default function App() {
@@ -11,12 +11,18 @@ export default function App() {
   const [lang, setLang] = useState<Lang>(
     () => (localStorage.getItem(STORAGE_KEY) as Lang) || 'en',
   )
+  // Bumped once the language pack has arrived, purely to hand consumers a fresh
+  // context object so they re-render against the newly loaded dictionary.
+  const [loaded, setLoaded] = useState(0)
   const { pathname } = useLocation()
 
   useEffect(() => setMenuOpen(false), [pathname])
-  useEffect(() => localStorage.setItem(STORAGE_KEY, lang), [lang])
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, lang)
+    loadLang(lang).then(() => setLoaded((n) => n + 1))
+  }, [lang])
 
-  const ctx = useMemo(() => ({ lang, setLang }), [lang])
+  const ctx = useMemo(() => ({ lang, setLang }), [lang, loaded])
   const t = (key: string) => translate(lang, key)
 
   return (

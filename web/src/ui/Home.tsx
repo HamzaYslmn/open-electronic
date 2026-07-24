@@ -10,8 +10,10 @@ export default function Home() {
   return (
     <div className="home">
       <p className="intro">
-        {ready} of {SIMULATORS.length} simulators built. Every one runs the real formulas
-        in the browser and drives the same live oscilloscope.
+        {t(
+          '{ready} of {total} simulators built. Every one runs the real formulas in the browser and drives the same live oscilloscope.',
+          { ready, total: SIMULATORS.length },
+        )}
       </p>
 
       {CATEGORIES.map((category) => {
@@ -26,16 +28,16 @@ export default function Home() {
               {sims.map((sim) =>
                 sim.status === 'ready' ? (
                   <Link key={sim.id} to={simPath(sim)} className="card ready">
-                    <h3>{sim.title}</h3>
-                    <p>{sim.blurb}</p>
+                    <h3>{t(sim.title)}</h3>
+                    <p>{t(sim.blurb)}</p>
                     <code>{sim.formula}</code>
                   </Link>
                 ) : (
                   <div key={sim.id} className="card planned" aria-disabled="true">
                     <h3>
-                      {sim.title} <span className="badge">{t('planned')}</span>
+                      {t(sim.title)} <span className="badge">{t('planned')}</span>
                     </h3>
-                    <p>{sim.blurb}</p>
+                    <p>{t(sim.blurb)}</p>
                     <code>{sim.formula}</code>
                   </div>
                 ),

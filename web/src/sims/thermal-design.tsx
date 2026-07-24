@@ -9,6 +9,7 @@ import {
 } from '../engine/thermal'
 import type { ThermalChain } from '../engine/thermal'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group, Segmented, Select } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -242,7 +243,7 @@ export default function ThermalDesign() {
           {
             label: 'Junction Tj',
             value: degC(r.tj),
-            note: `(${r.rise.toFixed(1)} K over ambient)`,
+            note: <T k="({rise} K over ambient)" vars={{ rise: r.rise.toFixed(1) }} />,
             warn: r.overTemp,
           },
           { label: 'Case Tc', value: degC(r.tc) },
@@ -255,25 +256,25 @@ export default function ThermalDesign() {
           {
             label: 'Dissipation',
             value: formatSI(power, 'W'),
-            note: mode === 'ldo' ? `(${(efficiency * 100).toFixed(0)}% efficient)` : undefined,
+            note: mode === 'ldo' ? <T k="({efficiency}% efficient)" vars={{ efficiency: (efficiency * 100).toFixed(0) }} /> : undefined,
           },
           { label: 'Rth junction to air', value: formatSI(r.rTotal, 'K/W') },
           {
             label: 'Margin to Tj max',
             value: `${r.margin.toFixed(1)} K`,
-            note: r.margin >= MARGIN_TARGET_K ? undefined : `(aim for ${MARGIN_TARGET_K} K)`,
+            note: r.margin >= MARGIN_TARGET_K ? undefined : <T k="(aim for {MARGIN_TARGET_K} K)" vars={{ MARGIN_TARGET_K }} />,
             warn: r.margin < MARGIN_TARGET_K,
           },
           {
             label: 'Rsa required',
             value: r.sinkImpossible ? 'none exists' : formatSI(r.requiredRsa, 'K/W'),
-            note: `(to sit on ${tjMaxC.toFixed(0)} °C)`,
+            note: <T k="(to sit on {tjMaxC} °C)" vars={{ tjMaxC: tjMaxC.toFixed(0) }} />,
             warn: r.sinkImpossible,
           },
           {
             label: 'Power ceiling',
             value: formatSI(r.maxPower, 'W'),
-            note: `(at ${ambientC.toFixed(0)} °C ambient)`,
+            note: <T k="(at {ambientC} °C ambient)" vars={{ ambientC: ambientC.toFixed(0) }} />,
           },
           {
             label: 'Budget used',
@@ -290,70 +291,50 @@ export default function ThermalDesign() {
       />
 
       {r.overTemp && r.sinkImpossible && (
-        <Warning>
-          {degC(r.tj)} junction against a {tjMaxC.toFixed(0)} °C limit, and Rjc + Rcs alone
-          already spend the whole budget at {formatSI(power, 'W')}. No heatsink can fix this:
-          cut the dissipation below {formatSI(r.maxPower, 'W')}, improve the mounting, or move
-          to a package with a lower Rjc.
-        </Warning>
+        <Warning
+          text="{tj} junction against a {tjMaxC} °C limit, and Rjc + Rcs alone already spend the whole budget at {power}. No heatsink can fix this: cut the dissipation below {maxPower}, improve the mounting, or move to a package with a lower Rjc."
+          vars={{
+            tj: degC(r.tj),
+            tjMaxC: tjMaxC.toFixed(0),
+            power: formatSI(power, 'W'),
+            maxPower: formatSI(r.maxPower, 'W'),
+          }}
+        />
       )}
       {r.overTemp && !r.sinkImpossible && (
-        <Warning>
-          {degC(r.tj)} junction against a {tjMaxC.toFixed(0)} °C limit. Needs a sink of{' '}
-          {formatSI(r.requiredRsa, 'K/W')} or better just to reach the limit, so target roughly{' '}
-          {formatSI(Math.max(0, r.requiredRsa - MARGIN_TARGET_K / Math.max(power, 1e-9)), 'K/W')}{' '}
-          for {MARGIN_TARGET_K} K of margin, or drop the power below{' '}
-          {formatSI(r.maxPower, 'W')}.
-        </Warning>
+        <Warning
+          text="{tj} junction against a {tjMaxC} °C limit. Needs a sink of {requiredRsa} or better just to reach the limit, so target roughly {e} for {MARGIN_TARGET_K} K of margin, or drop the power below {maxPower}."
+          vars={{
+            tj: degC(r.tj),
+            tjMaxC: tjMaxC.toFixed(0),
+            requiredRsa: formatSI(r.requiredRsa, 'K/W'),
+            e: formatSI(Math.max(0, r.requiredRsa - MARGIN_TARGET_K / Math.max(power, 1e-9)), 'K/W'),
+            MARGIN_TARGET_K,
+            maxPower: formatSI(r.maxPower, 'W'),
+          }}
+        />
       )}
       {!r.overTemp && r.margin < MARGIN_TARGET_K && (
-        <Warning>
-          Only {r.margin.toFixed(1)} K of margin. Tj max is an absolute maximum, not an
-          operating point: leave {MARGIN_TARGET_K} K or more for part spread, a hot enclosure
-          and a blocked airflow path.
-        </Warning>
+        <Warning
+          text="Only {margin} K of margin. Tj max is an absolute maximum, not an operating point: leave {MARGIN_TARGET_K} K or more for part spread, a hot enclosure and a blocked airflow path."
+          vars={{ margin: r.margin.toFixed(1), MARGIN_TARGET_K }}
+        />
       )}
       {mode === 'ldo' && vout > vin && (
-        <Warning>
-          Output is above the input, so this regulator is in dropout and the model does not
-          apply. A linear regulator can only step down.
-        </Warning>
+        <Warning
+          text="Output is above the input, so this regulator is in dropout and the model does not apply. A linear regulator can only step down."
+        />
       )}
 
-      <Theory>
-        <p>
-          Heat flow is the electrical analogy: power is current, temperature rise is voltage,
-          thermal resistance in K/W is resistance. The three legs sit in series, so
-          <code> Tj = Ta + P·(Rjc + Rcs + Rsa)</code>. Rjc comes from the package, Rcs from the
-          mounting interface, Rsa from the heatsink and the air moving over it.
-        </p>
-        <p>
-          Turn it round to size the sink:
-          <code> Rsa_required = (Tjmax - Ta)/P - Rjc - Rcs</code>. If that is zero or negative
-          the package and the interface have already used the whole budget, and no heatsink
-          helps. The matching power ceiling is <code>Pmax = (Tjmax - Ta)/Rth(j-a)</code>.
-        </p>
-        <p>
-          A kelvin and a degree Celsius are the same size, so every resistance, rise and margin
-          on this page is identical in either scale. Only the absolute temperatures differ.
-        </p>
-        <p>
-          The trace is a transient, not a waveform. The sink carries essentially all the heat
-          capacity, so it is the single pole: <code>tau = Rsa·Cth</code> and
-          <code> Ts(t) = Ts(∞) + (Ta - Ts(∞))·e^(-t/tau)</code>, integrated with the same exact
-          zero-order-hold step the RC page uses so it stays stable at any dt. The die and the
-          interface hold almost no heat next to a lump of aluminium, so on this time base the
-          junction just sits <code>P·(Rjc + Rcs)</code> above the sink, which is why it jumps at
-          t = 0 and then crawls. Real sinks are multi-pole, so treat the early part of the
-          curve as indicative and the endpoint as the answer.
-        </p>
-        <p>
-          A linear regulator throws the whole voltage difference away as heat:
-          <code> P = (Vin - Vout)·Iout + Vin·Iq</code>. Dropping 5 V to 3.3 V at 500 mA burns
-          0.85 W, which is why a bare SOT-223 AMS1117 runs hot on an ESP32 board and a
-          switching regulator does not.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "Heat flow is the electrical analogy: power is current, temperature rise is voltage, thermal resistance in K/W is resistance. The three legs sit in series, so `Tj = Ta + P·(Rjc + Rcs + Rsa)`. Rjc comes from the package, Rcs from the mounting interface, Rsa from the heatsink and the air moving over it.",
+          "Turn it round to size the sink: `Rsa_required = (Tjmax - Ta)/P - Rjc - Rcs`. If that is zero or negative the package and the interface have already used the whole budget, and no heatsink helps. The matching power ceiling is `Pmax = (Tjmax - Ta)/Rth(j-a)`.",
+          "A kelvin and a degree Celsius are the same size, so every resistance, rise and margin on this page is identical in either scale. Only the absolute temperatures differ.",
+          "The trace is a transient, not a waveform. The sink carries essentially all the heat capacity, so it is the single pole: `tau = Rsa·Cth` and `Ts(t) = Ts(∞) + (Ta - Ts(∞))·e^(-t/tau)`, integrated with the same exact zero-order-hold step the RC page uses so it stays stable at any dt. The die and the interface hold almost no heat next to a lump of aluminium, so on this time base the junction just sits `P·(Rjc + Rcs)` above the sink, which is why it jumps at t = 0 and then crawls. Real sinks are multi-pole, so treat the early part of the curve as indicative and the endpoint as the answer.",
+          "A linear regulator throws the whole voltage difference away as heat: `P = (Vin - Vout)·Iout + Vin·Iq`. Dropping 5 V to 3.3 V at 500 mA burns 0.85 W, which is why a bare SOT-223 AMS1117 runs hot on an ESP32 board and a switching regulator does not.",
+        ]}
+      />
     </SimPage>
   )
 }

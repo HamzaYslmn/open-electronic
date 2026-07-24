@@ -13,7 +13,7 @@ import { Group, Segmented, Select, Toggle } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
 import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import type { ReadoutItem } from '../ui/Readout'
+import type { ReadoutItem, WarnMsg } from '../ui/Readout'
 import SimPage from '../ui/SimPage'
 
 const N = 8192
@@ -70,15 +70,30 @@ export default function Timer555() {
           },
         ] as ReadoutItem[],
         warnings: [
-          r.supplyOutOfRange &&
-            `${r.spec.label} wants ${r.spec.minSupply} to ${r.spec.maxSupply} V. At ${formatSI(vcc, 'V')} the timing is not trustworthy.`,
-          r.tooFast &&
-            `Past the practical ceiling of about ${formatSI(r.spec.maxFrequency, 'Hz')} for this variant. Propagation delay starts to dominate the RC timing.`,
-          r.dischargeOverload &&
-            `Discharge pin is asked to sink ${formatSI(r.dischargePeak, 'A')}, over its ${formatSI(r.spec.maxDischargeA, 'A')} rating. Raise R1.`,
-          r.biasSuspect &&
-            'Timing resistance is high enough that threshold bias current shifts the result. Use larger C and smaller R.',
-        ].filter(Boolean) as string[],
+          r.supplyOutOfRange && {
+            text: '{part} wants {min} to {max} V. At {vcc} the timing is not trustworthy.',
+            vars: {
+              part: r.spec.label,
+              min: r.spec.minSupply,
+              max: r.spec.maxSupply,
+              vcc: formatSI(vcc, 'V'),
+            },
+          },
+          r.tooFast && {
+            text: 'Past the practical ceiling of about {ceiling} for this variant. Propagation delay starts to dominate the RC timing.',
+            vars: { ceiling: formatSI(r.spec.maxFrequency, 'Hz') },
+          },
+          r.dischargeOverload && {
+            text: 'Discharge pin is asked to sink {peak}, over its {rating} rating. Raise R1.',
+            vars: {
+              peak: formatSI(r.dischargePeak, 'A'),
+              rating: formatSI(r.spec.maxDischargeA, 'A'),
+            },
+          },
+          r.biasSuspect && {
+            text: 'Timing resistance is high enough that threshold bias current shifts the result. Use larger C and smaller R.',
+          },
+        ].filter(Boolean) as WarnMsg[],
       }
     }
 
@@ -118,13 +133,15 @@ export default function Timer555() {
         },
       ] as ReadoutItem[],
       warnings: [
-        r.supplyOutOfRange &&
-          `${r.spec.label} wants ${r.spec.minSupply} to ${r.spec.maxSupply} V.`,
-        r.dischargeOverload &&
-          'Discharge pin is over its sink rating. Raise R.',
-        r.biasSuspect &&
-          'Timing resistance is high enough that threshold bias current shifts the result.',
-      ].filter(Boolean) as string[],
+        r.supplyOutOfRange && {
+          text: '{part} wants {min} to {max} V.',
+          vars: { part: r.spec.label, min: r.spec.minSupply, max: r.spec.maxSupply },
+        },
+        r.dischargeOverload && { text: 'Discharge pin is over its sink rating. Raise R.' },
+        r.biasSuspect && {
+          text: 'Timing resistance is high enough that threshold bias current shifts the result.',
+        },
+      ].filter(Boolean) as WarnMsg[],
     }
   }, [mode, variant, vcc, r1, r2, c, rMono, cMono, fromPowerOn, cycles])
 
@@ -185,33 +202,18 @@ export default function Timer555() {
     >
       <Oscilloscope traces={traces} dt={dt} unit="V" />
       <ReadoutGrid items={items} />
-      {warnings.map((w) => (
-        <Warning key={w}>{w}</Warning>
+      {warnings.map((w, i) => (
+        <Warning key={i} text={w.text} vars={w.vars} />
       ))}
 
-      <Theory>
-        <p>
-          The capacitor charges through R1+R2 toward Vcc and discharges through R2 alone, so
-          the high time <code>0.693·(R1+R2)·C</code> is always longer than the low time{' '}
-          <code>0.693·R2·C</code>. That is why a plain astable can never reach 50% duty: you
-          need a diode across R2 to let it charge through R1 only.
-        </p>
-        <p>
-          Frequency is <code>1.44 / ((R1 + 2·R2)·C)</code>. The 0.693 is ln2, from the
-          capacitor crossing between the 1/3 and 2/3 Vcc comparator trip points, which is a
-          factor of two in the remaining distance to the rail.
-        </p>
-        <p>
-          Monostable timing is <code>1.1·R·C</code>, where 1.1 is ln3: the capacitor starts
-          at 0 V rather than 1/3 Vcc, so it covers more of the exponential.
-        </p>
-        <p>
-          Both trip points scale with Vcc, which is why the timing is supply independent to
-          first order. The trace is simulated with the same exact zero-order-hold relaxation
-          used elsewhere in this app, not drawn from the formula, so the power-on first cycle
-          really does run ln3 long instead of ln2.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "The capacitor charges through R1+R2 toward Vcc and discharges through R2 alone, so the high time `0.693·(R1+R2)·C` is always longer than the low time `0.693·R2·C`. That is why a plain astable can never reach 50% duty: you need a diode across R2 to let it charge through R1 only.",
+          "Frequency is `1.44 / ((R1 + 2·R2)·C)`. The 0.693 is ln2, from the capacitor crossing between the 1/3 and 2/3 Vcc comparator trip points, which is a factor of two in the remaining distance to the rail.",
+          "Monostable timing is `1.1·R·C`, where 1.1 is ln3: the capacitor starts at 0 V rather than 1/3 Vcc, so it covers more of the exponential.",
+          "Both trip points scale with Vcc, which is why the timing is supply independent to first order. The trace is simulated with the same exact zero-order-hold relaxation used elsewhere in this app, not drawn from the formula, so the power-on first cycle really does run ln3 long instead of ln2.",
+        ]}
+      />
     </SimPage>
   )
 }

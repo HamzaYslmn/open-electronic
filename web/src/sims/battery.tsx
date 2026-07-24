@@ -8,6 +8,7 @@ import {
 } from '../engine/battery'
 import type { Chemistry, LoadMode } from '../engine/battery'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group, Segmented, Select } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -104,7 +105,7 @@ export default function Battery() {
             warn: r.deadOnArrival,
           },
           { label: 'Mean current', value: formatSI(r.meanCurrent, 'A') },
-          { label: 'C rate', value: `${r.cRate.toFixed(2)} C`, note: `max ${spec.maxCRate} C`, warn: r.overCRate },
+          { label: 'C rate', value: `${r.cRate.toFixed(2)} C`, note: <T k="max {maxCRate} C" vars={{ maxCRate: spec.maxCRate }} />, warn: r.overCRate },
           { label: 'Energy delivered', value: `${(r.energy / JOULES_PER_WH).toFixed(2)} Wh` },
           { label: 'Charge delivered', value: `${(r.delivered / COULOMBS_PER_AH).toFixed(3)} Ah` },
           { label: 'Rated capacity', value: `${(r.rated / COULOMBS_PER_AH).toFixed(3)} Ah` },
@@ -119,52 +120,34 @@ export default function Battery() {
           { label: 'Start voltage', value: formatSI(r.startVoltage, 'V') },
           { label: 'Cutoff voltage', value: formatSI(r.cutoff, 'V') },
           { label: 'Worst sag', value: formatSI(r.maxSag, 'V') },
-          { label: 'Nominal voltage', value: formatSI(r.nominal, 'V'), note: `${series}S${parallel}P` },
+          { label: 'Nominal voltage', value: formatSI(r.nominal, 'V'), note: <T k="{series}S{parallel}P" vars={{ series, parallel }} /> },
         ]}
       />
 
       {r.overPower && (
-        <Warning>
-          The load asks for more power than this pack can ever deliver. Maximum power transfer
-          caps it at <code>OCV² / (4·Rint)</code>, and past that no operating point exists at
-          any voltage. Reduce the load or add cells in parallel to drop Rint.
-        </Warning>
+        <Warning
+          text="The load asks for more power than this pack can ever deliver. Maximum power transfer caps it at `OCV² / (4·Rint)`, and past that no operating point exists at any voltage. Reduce the load or add cells in parallel to drop Rint."
+        />
       )}
       {r.overCRate && !r.overPower && (
-        <Warning>
-          Drawing {r.cRate.toFixed(2)} C, past the {spec.maxCRate} C continuous rating for{' '}
-          {spec.label}. Real cells overheat and age fast here, which this model does not
-          simulate: it will happily show you a runtime you should not use.
-        </Warning>
+        <Warning
+          text="Drawing {cRate} C, past the {maxCRate} C continuous rating for {label}. Real cells overheat and age fast here, which this model does not simulate: it will happily show you a runtime you should not use."
+          vars={{ cRate: r.cRate.toFixed(2), maxCRate: spec.maxCRate, label: spec.label }}
+        />
       )}
       {r.deadOnArrival && (
-        <Warning>
-          The pack is already below its cutoff at the first sample, so there is no usable
-          runtime. The load is too heavy for this pack size.
-        </Warning>
+        <Warning
+          text="The pack is already below its cutoff at the first sample, so there is no usable runtime. The load is too heavy for this pack size."
+        />
       )}
 
-      <Theory>
-        <p>
-          Terminal voltage is <code>V = OCV(depth) - I·Rint</code>. The open-circuit curve
-          falls with depth of discharge, and the internal resistance subtracts a further drop
-          proportional to current. That is the whole reason a battery reads 4.2 V at rest and
-          3.7 V the moment you load it.
-        </p>
-        <p>
-          Peukert's law captures the fact that capacity is not a constant:{' '}
-          <code>t = H·(C/(I·H))^k</code>. With k above 1, heavy discharge extracts less total
-          charge. Lead acid is the worst offender at k around 1.2 to 1.3; lithium is close to
-          1.05, which is why a LiPo holds its rating far better under load.
-        </p>
-        <p>
-          Resistive and constant-power loads behave differently as the pack drains. A resistor
-          draws less current as voltage falls, so it tails off gently. A constant-power load
-          draws <em>more</em> current as voltage falls, which accelerates the collapse at the
-          end: this is exactly the behaviour of a switching regulator feeding an ESP32, and it
-          is why the last few percent of a pack disappears so suddenly.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "Terminal voltage is `V = OCV(depth) - I·Rint`. The open-circuit curve falls with depth of discharge, and the internal resistance subtracts a further drop proportional to current. That is the whole reason a battery reads 4.2 V at rest and 3.7 V the moment you load it.",
+          "Peukert's law captures the fact that capacity is not a constant: `t = H·(C/(I·H))^k`. With k above 1, heavy discharge extracts less total charge. Lead acid is the worst offender at k around 1.2 to 1.3; lithium is close to 1.05, which is why a LiPo holds its rating far better under load.",
+          "Resistive and constant-power loads behave differently as the pack drains. A resistor draws less current as voltage falls, so it tails off gently. A constant-power load draws *more* current as voltage falls, which accelerates the collapse at the end: this is exactly the behaviour of a switching regulator feeding an ESP32, and it is why the last few percent of a pack disappears so suddenly.",
+        ]}
+      />
     </SimPage>
   )
 }

@@ -12,6 +12,7 @@ import {
 import { SERIES_NAMES } from '../engine/eseries'
 import type { SeriesName } from '../engine/eseries'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group, Select } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -89,18 +90,18 @@ export default function Lm2596() {
       <ReadoutGrid
         items={[
           { label: 'R2 ideal', value: formatSI(r.r2Ideal, 'Ω') },
-          { label: `R2 from ${series}`, value: formatSI(r.r2, 'Ω') },
+          { label: <T k="R2 from {series}" vars={{ series }} />, value: formatSI(r.r2, 'Ω') },
           {
             label: 'Actual Vout',
             value: formatSI(r.vout, 'V'),
-            note: `${(r.voutError * 100).toFixed(2)}% off target`,
+            note: <T k="{voutError}% off target" vars={{ voutError: (r.voutError * 100).toFixed(2) }} />,
             warn: Math.abs(r.voutError) > 0.05,
           },
           { label: 'Divider current', value: formatSI(r.dividerCurrent, 'A') },
-          { label: 'Duty', value: `${(r.op.duty * 100).toFixed(1)}%`, note: `ideal ${(r.op.dutyIdeal * 100).toFixed(1)}%` },
+          { label: 'Duty', value: `${(r.op.duty * 100).toFixed(1)}%`, note: <T k="ideal {dutyIdeal}%" vars={{ dutyIdeal: (r.op.dutyIdeal * 100).toFixed(1) }} /> },
           { label: 'Inductor ripple', value: formatSI(r.op.ripple, 'A') },
           { label: 'Peak current', value: formatSI(r.op.ipk, 'A'), warn: r.overLimit },
-          { label: 'Output ripple', value: formatSI(r.vripple, 'V'), note: `esr ${formatSI(r.vrippleEsr, 'V')} + cap ${formatSI(r.vrippleCap, 'V')}` },
+          { label: 'Output ripple', value: formatSI(r.vripple, 'V'), note: <T k="esr {vrippleEsr} + cap {vrippleCap}" vars={{ vrippleEsr: formatSI(r.vrippleEsr, 'V'), vrippleCap: formatSI(r.vrippleCap, 'V') }} /> },
           { label: 'Input current', value: formatSI(r.iin, 'A') },
           { label: 'Output power', value: formatSI(r.pOut, 'W') },
           { label: 'Total loss', value: formatSI(r.pLoss, 'W') },
@@ -110,13 +111,13 @@ export default function Lm2596() {
           {
             label: 'Junction temp',
             value: `${r.tj.toFixed(0)} °C`,
-            note: `max ${TJ_MAX} °C`,
+            note: <T k="max {TJ_MAX} °C" vars={{ TJ_MAX }} />,
             warn: r.overTemp,
           },
           {
             label: 'Minimum Vin',
             value: formatSI(r.vinMinimum, 'V'),
-            note: `headroom ${formatSI(r.headroom, 'V')}`,
+            note: <T k="headroom {headroom}" vars={{ headroom: formatSI(r.headroom, 'V') }} />,
             warn: r.dropout,
           },
           { label: 'Conduction', value: r.dcm ? 'DCM' : 'CCM', warn: r.dcm },
@@ -125,69 +126,55 @@ export default function Lm2596() {
       />
 
       {r.dropout && (
-        <Warning>
-          Input is below the {formatSI(r.vinMinimum, 'V')} needed to hold this output at this
-          load. The regulator runs at maximum duty and the output simply follows the input
-          down, minus the switch drop.
-        </Warning>
+        <Warning
+          text="Input is below the {vinMinimum} needed to hold this output at this load. The regulator runs at maximum duty and the output simply follows the input down, minus the switch drop."
+          vars={{ vinMinimum: formatSI(r.vinMinimum, 'V') }}
+        />
       )}
       {r.vinLow && (
-        <Warning>Below the {VIN_MIN} V datasheet minimum. The internal reference is not guaranteed here.</Warning>
+        <Warning
+          text="Below the {VIN_MIN} V datasheet minimum. The internal reference is not guaranteed here."
+          vars={{ VIN_MIN }}
+        />
       )}
       {r.vinHigh && (
-        <Warning>Above the {VIN_MAX} V absolute maximum. This destroys the part.</Warning>
+        <Warning
+          text="Above the {VIN_MAX} V absolute maximum. This destroys the part."
+          vars={{ VIN_MAX }}
+        />
       )}
       {r.overCurrent && (
-        <Warning>
-          Past the {IOUT_MAX} A rating. These modules are commonly sold claiming 3 A but with
-          a heatsink barely adequate above 1.5 A.
-        </Warning>
+        <Warning
+          text="Past the {IOUT_MAX} A rating. These modules are commonly sold claiming 3 A but with a heatsink barely adequate above 1.5 A."
+          vars={{ IOUT_MAX }}
+        />
       )}
       {r.overLimit && (
-        <Warning>
-          Peak inductor current is above the guaranteed current limit, so the part will trip
-          into cycle-by-cycle limiting before reaching this load. Use a larger inductor.
-        </Warning>
+        <Warning
+          text="Peak inductor current is above the guaranteed current limit, so the part will trip into cycle-by-cycle limiting before reaching this load. Use a larger inductor."
+        />
       )}
       {r.overTemp && (
-        <Warning>
-          Junction at {r.tj.toFixed(0)} °C, past the {TJ_MAX} °C limit. It will shut down
-          thermally. Improve airflow, add a heatsink, or reduce the load.
-        </Warning>
+        <Warning
+          text="Junction at {tj} °C, past the {TJ_MAX} °C limit. It will shut down thermally. Improve airflow, add a heatsink, or reduce the load."
+          vars={{ tj: r.tj.toFixed(0), TJ_MAX }}
+        />
       )}
       {r.voutBelowRef && (
-        <Warning>
-          The target is below the {VREF} V feedback reference, which this topology cannot
-          produce at all.
-        </Warning>
+        <Warning
+          text="The target is below the {VREF} V feedback reference, which this topology cannot produce at all."
+          vars={{ VREF }}
+        />
       )}
 
-      <Theory>
-        <p>
-          Output is set by the feedback divider: <code>Vout = Vref·(1 + R2/R1)</code> with{' '}
-          <code>Vref = {VREF} V</code>. Keep R1 in the 1k to 5k range the datasheet suggests:
-          too high and the FB pin's own bias current shifts the output, too low and the
-          divider wastes current continuously.
-        </p>
-        <p>
-          The switching frequency is fixed at 150 kHz internally, which is the module's main
-          limitation. Low frequency means a physically large inductor and capacitor for a
-          given ripple, since <code>dIL = Vout·(1-D)/(fsw·L)</code> and{' '}
-          <code>dV = dIL/(8·fsw·C)</code> both scale inversely with fsw.
-        </p>
-        <p>
-          Efficiency is dominated by two terms: the internal switch dropping about 1.16 V at
-          3 A, and the catch diode burning <code>Vf·Idiode</code> for the whole off-time. At
-          low output voltages the diode conducts most of the period, which is why a 12 V to
-          3.3 V conversion is markedly less efficient than 12 V to 5 V.
-        </p>
-        <p>
-          The thermal check is usually the real limit, not the current rating. Only the loss
-          inside the IC heats the junction, so <code>Tj = Tamb + Pic·ThetaJA</code>. On a bare
-          module with no airflow ThetaJA is poor, and 1 to 2 W of internal loss is enough to
-          reach thermal shutdown.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "Output is set by the feedback divider: `Vout = Vref·(1 + R2/R1)` with `Vref = {VREF} V`. Keep R1 in the 1k to 5k range the datasheet suggests: too high and the FB pin's own bias current shifts the output, too low and the divider wastes current continuously.",
+          "The switching frequency is fixed at 150 kHz internally, which is the module's main limitation. Low frequency means a physically large inductor and capacitor for a given ripple, since `dIL = Vout·(1-D)/(fsw·L)` and `dV = dIL/(8·fsw·C)` both scale inversely with fsw.",
+          "Efficiency is dominated by two terms: the internal switch dropping about 1.16 V at 3 A, and the catch diode burning `Vf·Idiode` for the whole off-time. At low output voltages the diode conducts most of the period, which is why a 12 V to 3.3 V conversion is markedly less efficient than 12 V to 5 V.",
+          "The thermal check is usually the real limit, not the current rating. Only the loss inside the IC heats the junction, so `Tj = Tamb + Pic·ThetaJA`. On a bare module with no airflow ThetaJA is poor, and 1 to 2 W of internal loss is enough to reach thermal shutdown.",
+        ]} vars={{ VREF }}
+      />
     </SimPage>
   )
 }

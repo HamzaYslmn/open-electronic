@@ -32,15 +32,19 @@ export default function SimPage({ id, lede, controls, children }: SimPageProps) 
   return (
     <div className="sim">
       <nav className="crumbs">
-        <Link to="/">{t('Catalogue')}</Link> / {t(sim?.category ?? '')} / {sim?.title}
+        <Link to="/">{t('Catalogue')}</Link> / {t(sim?.category ?? '')} /{' '}
+        {t(sim?.title ?? '')}
       </nav>
-      <h1>{sim?.title ?? id}</h1>
-      <p className="lede">{lede ?? sim?.blurb}</p>
+      <h1>{sim ? t(sim.title) : id}</h1>
+      {/* A string lede goes through the dictionary; a ReactNode is passed as is. */}
+      <p className="lede">
+        {typeof lede === 'string' ? t(lede) : (lede ?? t(sim?.blurb ?? ''))}
+      </p>
 
       {useCase && (
         <details className="usecase" open>
           <summary>{t('Where is it used?')}</summary>
-          <p>{useCase}</p>
+          <p>{t(useCase)}</p>
         </details>
       )}
 

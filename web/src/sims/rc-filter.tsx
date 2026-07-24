@@ -3,6 +3,7 @@ import { analyse, simulate, timeConstant } from '../engine/rc'
 import type { RCMode } from '../engine/rc'
 import { sweep } from '../engine/signal'
 import { formatSI } from '../engine/units'
+import { T, useT } from '../i18n'
 import { Group, Segmented } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -15,8 +16,9 @@ const N = 8192
 
 function Schematic({ mode }: { mode: RCMode }) {
   const [first, second] = mode === 'lowpass' ? ['R', 'C'] : ['C', 'R']
+  const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 110" aria-label={`${mode} RC network`}>
+    <svg className="schematic" viewBox="0 0 260 110" aria-label={t('{mode} RC network', { mode })}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         <circle cx="24" cy="34" r="10" />
         <path d="M18 34a6 6 0 0 1 12 0M24 24V14M24 44v36h212M34 34h36" />
@@ -78,14 +80,16 @@ export default function RCFilter() {
 
   const ratio = readout.fc > 0 ? source.frequency / readout.fc : 0
   const pass = mode === 'lowpass' ? ratio < 1 : ratio > 1
+  // Parenthesised here rather than in the note, so the whole phrase is one
+  // dictionary key instead of a fragment glued to punctuation.
   const band =
     source.kind === 'dc'
-      ? 'step response'
+      ? '(step response)'
       : ratio < 0.1 || ratio > 10
         ? pass
-          ? 'deep in the passband'
-          : 'deep in the stopband'
-        : 'near the corner'
+          ? '(deep in the passband)'
+          : '(deep in the stopband)'
+        : '(near the corner)'
 
   return (
     <SimPage
@@ -128,7 +132,7 @@ export default function RCFilter() {
           { label: 'Time constant', value: formatSI(readout.tau, 's') },
           { label: 'Rise time (10-90%)', value: formatSI(2.197 * readout.tau, 's') },
           {
-            label: `Gain at ${formatSI(source.frequency, 'Hz')}`,
+            label: <T k="Gain at {frequency}" vars={{ frequency: formatSI(source.frequency, 'Hz') }} />,
             value: `${readout.gainDb.toFixed(2)} dB`,
             note: `(${readout.gain.toFixed(4)}x)`,
           },
@@ -136,31 +140,20 @@ export default function RCFilter() {
           {
             label: 'f / fc',
             value: ratio < 0.01 ? ratio.toExponential(1) : ratio.toFixed(2),
-            note: `(${band})`,
+            note: band,
           },
           { label: 'Reactance Xc', value: formatSI(readout.xc, 'Ω') },
           { label: 'Source load |Z|', value: formatSI(readout.z, 'Ω') },
         ]}
       />
 
-      <Theory>
-        <p>
-          Cutoff is where the capacitor's reactance equals the resistance, so
-          <code> fc = 1 / (2·pi·R·C)</code> and the output is down 3 dB.
-        </p>
-        <p>
-          Magnitude is <code>|H| = 1 / sqrt(1 + (f/fc)²)</code> for the low pass and
-          <code> (f/fc) / sqrt(1 + (f/fc)²)</code> for the high pass. Phase is
-          <code> -atan(f/fc)</code> and <code>90° - atan(f/fc)</code> respectively.
-        </p>
-        <p>
-          The scope trace is not that formula. It is a sample-by-sample simulation using
-          exact zero-order-hold discretisation,{' '}
-          <code>y[n] = x[n] + (y[n-1] - x[n])·e^(-dt/tau)</code>, which stays stable at any
-          step size and reproduces clipping, ringing and PWM edges that a frequency-domain
-          answer cannot show.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "Cutoff is where the capacitor's reactance equals the resistance, so `fc = 1 / (2·pi·R·C)` and the output is down 3 dB.",
+          "Magnitude is `|H| = 1 / sqrt(1 + (f/fc)²)` for the low pass and `(f/fc) / sqrt(1 + (f/fc)²)` for the high pass. Phase is `-atan(f/fc)` and `90° - atan(f/fc)` respectively.",
+          "The scope trace is not that formula. It is a sample-by-sample simulation using exact zero-order-hold discretisation, `y[n] = x[n] + (y[n-1] - x[n])·e^(-dt/tau)`, which stays stable at any step size and reproduces clipping, ringing and PWM edges that a frequency-domain answer cannot show.",
+        ]}
+      />
     </SimPage>
   )
 }

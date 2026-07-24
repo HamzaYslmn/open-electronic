@@ -11,6 +11,7 @@ import {
 import type { Harmonic, PresetKind } from '../engine/harmonics'
 import { timeBase } from '../engine/signal'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group, Segmented, Toggle } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import type { Trace } from '../ui/Oscilloscope'
@@ -160,7 +161,7 @@ export default function Harmonics() {
               ? `${(readout.thd * 100).toFixed(2)} %`
               : 'undefined',
             note: Number.isFinite(readout.thd)
-              ? `(${formatSI(readout.distortion, 'V')} of harmonics 2 to 10)`
+              ? <T k="({distortion} of harmonics 2 to 10)" vars={{ distortion: formatSI(readout.distortion, 'V') }} />
               : '(no fundamental to compare against)',
             warn: !Number.isFinite(readout.thd),
           },
@@ -178,70 +179,52 @@ export default function Harmonics() {
           {
             label: 'RMS, with DC',
             value: formatSI(readout.rmsTotal, 'V'),
-            note: `(DC ${formatSI(dc, 'V')})`,
+            note: <T k="(DC {dc})" vars={{ dc: formatSI(dc, 'V') }} />,
           },
           {
             label: 'Peak to peak',
             value: formatSI(readout.vmax - readout.vmin, 'V'),
-            note: `(peak ${formatSI(readout.peakAc, 'V')})`,
+            note: <T k="(peak {peakAc})" vars={{ peakAc: formatSI(readout.peakAc, 'V') }} />,
           },
           {
             label: 'Swing',
             value: `${formatSI(readout.vmin, 'V')} to ${formatSI(readout.vmax, 'V')}`,
-            note: `(rail headroom ${formatSI(readout.headroom, 'V')})`,
+            note: <T k="(rail headroom {headroom})" vars={{ headroom: formatSI(readout.headroom, 'V') }} />,
             warn: clips,
           },
           {
             label: 'Occupied bandwidth',
             value: formatSI(readout.top * freq, 'Hz'),
-            note: `(${readout.active} active, top is H${readout.top})`,
+            note: <T k="({active} active, top is H{top})" vars={{ active: readout.active, top: readout.top }} />,
           },
         ]}
       />
 
       {clips && (
-        <Warning>
-          The sum swings {readout.clipsLow && 'below 0 V'}
-          {readout.clipsLow && readout.clipsHigh && ' and '}
-          {readout.clipsHigh && `above the ${VCC} V rail`}. A single-supply DAC or a
-          filtered PWM pin cannot produce that, the real output would flat-top and add
-          distortion this model does not include. Trim the amplitudes or move the DC
-          offset.
-        </Warning>
+        <Warning
+          text="The sum swings {swing}. A single-supply DAC or a filtered PWM pin cannot produce that, the real output would flat-top and add distortion this model does not include. Trim the amplitudes or move the DC offset."
+          vars={{
+            // Whole phrases rather than glued fragments, so each one is a key a
+            // translation can put wherever its own grammar needs it.
+            swing:
+              readout.clipsLow && readout.clipsHigh
+                ? 'below 0 V and above the supply rail'
+                : readout.clipsLow
+                  ? 'below 0 V'
+                  : 'above the supply rail',
+          }}
+        />
       )}
 
-      <Theory>
-        <p>
-          Every periodic waveform is a sum of sines at integer multiples of one
-          fundamental: <code>v(t) = Vdc + sum Vn·sin(2·pi·n·f0·t + phi_n)</code>. Each
-          slider sets one Vn. The scope evaluates that sum directly, so there is no
-          solver and no step-size limit.
-        </p>
-        <p>
-          The presets are the classic series. Square is odd harmonics at{' '}
-          <code>1/n</code> all in phase, sawtooth is every harmonic at <code>1/n</code>{' '}
-          with alternating sign, triangle is odd harmonics at <code>1/n²</code> with
-          alternating sign. Their ideal peaks are <code>V1·pi/4</code>,{' '}
-          <code>V1·pi/2</code> and <code>V1·pi²/8</code>, which is the amber trace.
-        </p>
-        <p>
-          Distortion is the energy that is not the fundamental:{' '}
-          <code>THD = sqrt(V2² + V3² + ... ) / V1</code>. An ideal square is 48.3%, a
-          triangle 12.1%. Ten terms only get part of the way there. THD-R divides by the
-          total rms instead, so it can never exceed 100%, which is what a meter reads.
-        </p>
-        <p>
-          By Parseval the rms is <code>sqrt(sum Vn² / 2)</code> and depends only on the
-          amplitudes, never on phase. The peak does depend on phase, so crest factor
-          does too: flip the phase toggle on a sawtooth and the rms will not move.
-        </p>
-        <p>
-          Truncating at a step leaves ringing that never goes away. The overshoot
-          converges to 8.95% of the jump, i.e. 1.179 times the flat top, which is why a
-          square built from harmonics reads a crest factor near 1.18 instead of the
-          ideal 1.0. Adding terms narrows the ripple, it does not shrink it.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "Every periodic waveform is a sum of sines at integer multiples of one fundamental: `v(t) = Vdc + sum Vn·sin(2·pi·n·f0·t + phi_n)`. Each slider sets one Vn. The scope evaluates that sum directly, so there is no solver and no step-size limit.",
+          "The presets are the classic series. Square is odd harmonics at `1/n` all in phase, sawtooth is every harmonic at `1/n` with alternating sign, triangle is odd harmonics at `1/n²` with alternating sign. Their ideal peaks are `V1·pi/4`, `V1·pi/2` and `V1·pi²/8`, which is the amber trace.",
+          "Distortion is the energy that is not the fundamental: `THD = sqrt(V2² + V3² + ... ) / V1`. An ideal square is 48.3%, a triangle 12.1%. Ten terms only get part of the way there. THD-R divides by the total rms instead, so it can never exceed 100%, which is what a meter reads.",
+          "By Parseval the rms is `sqrt(sum Vn² / 2)` and depends only on the amplitudes, never on phase. The peak does depend on phase, so crest factor does too: flip the phase toggle on a sawtooth and the rms will not move.",
+          "Truncating at a step leaves ringing that never goes away. The overshoot converges to 8.95% of the jump, i.e. 1.179 times the flat top, which is why a square built from harmonics reads a crest factor near 1.18 instead of the ideal 1.0. Adding terms narrows the ripple, it does not shrink it.",
+        ]}
+      />
     </SimPage>
   )
 }

@@ -2,14 +2,16 @@ import { useMemo, useState } from 'react'
 import { VCC, VCC_5V } from '../engine/constants'
 import { POWER_DERATING, analyse } from '../engine/zener'
 import { formatSI } from '../engine/units'
+import { T, useT } from '../i18n'
 import { Group } from '../ui/Controls'
 import Param from '../ui/Param'
 import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
 import SimPage from '../ui/SimPage'
 
 function Schematic() {
+  const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 120" aria-label="Zener shunt regulator">
+    <svg className="schematic" viewBox="0 0 260 120" aria-label={t('Zener shunt regulator')}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         {/* input node, series resistor, output rail */}
         <circle cx="20" cy="30" r="3" />
@@ -165,7 +167,7 @@ export default function Zener() {
             {suggestion !== null && (
               <div className="seg">
                 <button onClick={() => setRs(suggestion)}>
-                  Use {formatSI(suggestion, 'Ω')} (E24)
+                  <T k="Use {value} (E24)" vars={{ value: formatSI(suggestion, 'Ω') }} />
                 </button>
               </div>
             )}
@@ -186,31 +188,31 @@ export default function Zener() {
           {
             label: 'Rs fitted',
             value: formatSI(rs, 'Ω'),
-            note: suggestion !== null ? `(E24 pick ${formatSI(suggestion, 'Ω')})` : undefined,
+            note: suggestion !== null ? <T k="(E24 pick {suggestion})" vars={{ suggestion: formatSI(suggestion, 'Ω') }} /> : undefined,
             warn: r.windowValid && (rs < r.rsMin || rs > r.rsMax),
           },
           {
             label: 'Iz worst case max',
             value: formatSI(r.hot.iz, 'A'),
-            note: `(Vin max, IL min; budget ${formatSI(r.izMaxAllowed, 'A')})`,
+            note: <T k="(Vin max, IL min; budget {izMaxAllowed})" vars={{ izMaxAllowed: formatSI(r.izMaxAllowed, 'A') }} />,
             warn: r.hot.iz > r.izMaxAllowed,
           },
           {
             label: 'Iz worst case min',
             value: formatSI(r.cold.iz, 'A'),
-            note: `(Vin min, IL max; knee ${formatSI(izMin, 'A')})`,
+            note: <T k="(Vin min, IL max; knee {izMin})" vars={{ izMin: formatSI(izMin, 'A') }} />,
             warn: r.dropout,
           },
           {
             label: 'Zener dissipation',
             value: formatSI(r.hot.pz, 'W'),
-            note: `(${(100 * r.pzFraction).toFixed(0)}% of rating)`,
+            note: <T k="({pzFraction}% of rating)" vars={{ pzFraction: (100 * r.pzFraction).toFixed(0) }} />,
             warn: r.overPower || r.overDerated,
           },
           {
             label: 'Rs dissipation',
             value: formatSI(r.hot.prs, 'W'),
-            note: `(fit a ${formatSI(r.rsWattage, 'W')} part)`,
+            note: <T k="(fit a {rsWattage} part)" vars={{ rsWattage: formatSI(r.rsWattage, 'W') }} />,
           },
           {
             label: 'Regulating input range',
@@ -227,17 +229,17 @@ export default function Zener() {
           {
             label: 'Output impedance',
             value: formatSI(r.zout, 'Ω'),
-            note: `(load swing ${formatSI(r.loadSwing, 'V')})`,
+            note: <T k="(load swing {loadSwing})" vars={{ loadSwing: formatSI(r.loadSwing, 'V') }} />,
           },
           {
             label: 'Ripple rejection',
             value: `${r.rippleDb.toFixed(1)} dB`,
-            note: `(line swing ${formatSI(r.lineSwing, 'V')})`,
+            note: <T k="(line swing {lineSwing})" vars={{ lineSwing: formatSI(r.lineSwing, 'V') }} />,
           },
           {
             label: 'Supply current',
             value: formatSI(r.supplyMax, 'A'),
-            note: `(constant, total loss ${formatSI(r.pTotal, 'W')})`,
+            note: <T k="(constant, total loss {pTotal})" vars={{ pTotal: formatSI(r.pTotal, 'W') }} />,
           },
           {
             label: 'Efficiency at full load',
@@ -249,79 +251,70 @@ export default function Zener() {
       />
 
       {noHeadroom && (
-        <Warning>
-          Vin min ({formatSI(vinMin, 'V')}) is not above Vz ({formatSI(vz, 'V')}). A shunt
-          regulator can only drop voltage, so there is no resistor that works. Lower Vz or
-          raise the input.
-        </Warning>
+        <Warning
+          text="Vin min ({vinMin}) is not above Vz ({vz}). A shunt regulator can only drop voltage, so there is no resistor that works. Lower Vz or raise the input."
+          vars={{ vinMin: formatSI(vinMin, 'V'), vz: formatSI(vz, 'V') }}
+        />
       )}
 
       {!noHeadroom && !r.windowValid && (
-        <Warning>
-          No single resistor satisfies both extremes: Rs must be at least{' '}
-          {formatSI(r.rsMin, 'Ω')} to keep the zener inside its power budget at{' '}
-          {formatSI(vinMax, 'V')} with no load, but at most {formatSI(r.rsMax, 'Ω')} to hold
-          the knee at {formatSI(vinMin, 'V')} with {formatSI(ilMax, 'A')}. Use a
-          higher-wattage zener, narrow the input range, or move to a series pass regulator.
-        </Warning>
+        <Warning
+          text="No single resistor satisfies both extremes: Rs must be at least {rsMin} to keep the zener inside its power budget at {vinMax} with no load, but at most {rsMax} to hold the knee at {vinMin} with {ilMax}. Use a higher-wattage zener, narrow the input range, or move to a series pass regulator."
+          vars={{
+            rsMin: formatSI(r.rsMin, 'Ω'),
+            vinMax: formatSI(vinMax, 'V'),
+            rsMax: formatSI(r.rsMax, 'Ω'),
+            vinMin: formatSI(vinMin, 'V'),
+            ilMax: formatSI(ilMax, 'A'),
+          }}
+        />
       )}
 
       {r.dropout && (
-        <Warning>
-          Out of regulation at the low corner: Rs only delivers{' '}
-          {formatSI(r.cold.irs, 'A')} at {formatSI(vinMin, 'V')}, so the zener is left with{' '}
-          {formatSI(r.cold.iz, 'A')}, under the {formatSI(izMin, 'A')} knee. Output sags to{' '}
-          {formatSI(r.cold.vout, 'V')} and tracks the load. Reduce Rs below{' '}
-          {formatSI(r.rsMax, 'Ω')}.
-        </Warning>
+        <Warning
+          text="Out of regulation at the low corner: Rs only delivers {irs} at {vinMin}, so the zener is left with {iz}, under the {izMin} knee. Output sags to {vout} and tracks the load. Reduce Rs below {rsMax}."
+          vars={{
+            irs: formatSI(r.cold.irs, 'A'),
+            vinMin: formatSI(vinMin, 'V'),
+            iz: formatSI(r.cold.iz, 'A'),
+            izMin: formatSI(izMin, 'A'),
+            vout: formatSI(r.cold.vout, 'V'),
+            rsMax: formatSI(r.rsMax, 'Ω'),
+          }}
+        />
       )}
 
       {r.overPower && (
-        <Warning>
-          Zener over its rating: {formatSI(r.hot.pz, 'W')} in a {formatSI(pzMax, 'W')} part
-          at {formatSI(vinMax, 'V')} with the load disconnected. It will fail, usually
-          shorted, which then dumps {formatSI(r.hot.irs, 'A')} into Rs. Raise Rs above{' '}
-          {formatSI(r.rsMin, 'Ω')}.
-        </Warning>
+        <Warning
+          text="Zener over its rating: {pz} in a {pzMax} part at {vinMax} with the load disconnected. It will fail, usually shorted, which then dumps {irs} into Rs. Raise Rs above {rsMin}."
+          vars={{
+            pz: formatSI(r.hot.pz, 'W'),
+            pzMax: formatSI(pzMax, 'W'),
+            vinMax: formatSI(vinMax, 'V'),
+            irs: formatSI(r.hot.irs, 'A'),
+            rsMin: formatSI(r.rsMin, 'Ω'),
+          }}
+        />
       )}
 
       {!r.overPower && r.overDerated && (
-        <Warning>
-          Zener at {(100 * r.pzFraction).toFixed(0)}% of its rating. Inside the absolute
-          limit but past the {(100 * POWER_DERATING).toFixed(0)}% budget this page uses:
-          ratings are quoted at 25 C and the part will run hot in still air.
-        </Warning>
+        <Warning
+          text="Zener at {pzFraction}% of its rating. Inside the absolute limit but past the {POWER_DERATING}% budget this page uses: ratings are quoted at 25 C and the part will run hot in still air."
+          vars={{
+            pzFraction: (100 * r.pzFraction).toFixed(0),
+            POWER_DERATING: (100 * POWER_DERATING).toFixed(0),
+          }}
+        />
       )}
 
-      <Theory>
-        <p>
-          The zener is a shunt: it takes whatever current the load does not.
-          <code> Rs = (Vin - Vz) / (Iz + IL)</code> is the whole design, evaluated at the two
-          corners that bite. Lowest input with the heaviest load leaves the least current for
-          the zener, which sets the largest usable Rs. Highest input with the lightest load
-          pushes everything through the zener, which sets the smallest.
-        </p>
-        <p>
-          Power follows directly: <code>Pz = Vz·Iz</code> at the hot corner and
-          <code> Prs = Irs²·Rs</code>. The current budget is
-          <code> Iz_max = {POWER_DERATING} · Pz_max / Vz</code>, half the rating because
-          datasheet numbers assume 25 C.
-        </p>
-        <p>
-          Regulation quality comes from the dynamic impedance Zz, not the DC clamp. Rs and Zz
-          form a divider for anything riding on the input, so
-          <code> dVout/dVin = Zz / (Rs + Zz)</code>, and the output impedance seen by the
-          load is <code>Rs ∥ Zz</code>. Note the trade: a large Rs is efficient but a poor
-          regulator.
-        </p>
-        <p>
-          The DC model treats the zener as an ideal Vz clamp above the knee and as an open
-          circuit below it, which is why the low corner reports a plain series drop instead
-          of a regulated output. Extrapolating the Zz tangent line down to zero current would
-          look more sophisticated and be badly wrong: a 1N4728A is 10 Ω at 76 mA but 400 Ω at
-          1 mA.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "The zener is a shunt: it takes whatever current the load does not. `Rs = (Vin - Vz) / (Iz + IL)` is the whole design, evaluated at the two corners that bite. Lowest input with the heaviest load leaves the least current for the zener, which sets the largest usable Rs. Highest input with the lightest load pushes everything through the zener, which sets the smallest.",
+          "Power follows directly: `Pz = Vz·Iz` at the hot corner and `Prs = Irs²·Rs`. The current budget is `Iz_max = {POWER_DERATING} · Pz_max / Vz`, half the rating because datasheet numbers assume 25 C.",
+          "Regulation quality comes from the dynamic impedance Zz, not the DC clamp. Rs and Zz form a divider for anything riding on the input, so `dVout/dVin = Zz / (Rs + Zz)`, and the output impedance seen by the load is `Rs ∥ Zz`. Note the trade: a large Rs is efficient but a poor regulator.",
+          "The DC model treats the zener as an ideal Vz clamp above the knee and as an open circuit below it, which is why the low corner reports a plain series drop instead of a regulated output. Extrapolating the Zz tangent line down to zero current would look more sophisticated and be badly wrong: a 1N4728A is 10 Ω at 76 mA but 400 Ω at 1 mA.",
+        ]} vars={{ POWER_DERATING }}
+      />
     </SimPage>
   )
 }

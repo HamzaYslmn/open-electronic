@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { FAB_MIN_WIDTH, analyseTrace } from '../engine/conductor'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group, Segmented } from '../ui/Controls'
 import Param from '../ui/Param'
 import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
@@ -52,11 +53,11 @@ export default function TraceWidth() {
           {
             label: 'Required width',
             value: `${(r.width * 1000).toFixed(3)} mm`,
-            note: `${r.widthMils.toFixed(1)} mil`,
+            note: <T k="{widthMils} mil" vars={{ widthMils: r.widthMils.toFixed(1) }} />,
             warn: r.belowFabLimit,
           },
           { label: 'Cross-section', value: `${(r.area * 1e6).toFixed(4)} mm²` },
-          { label: 'Copper thickness', value: `${(r.thickness * 1e6).toFixed(1)} µm`, note: `${ozCopper} oz` },
+          { label: 'Copper thickness', value: `${(r.thickness * 1e6).toFixed(1)} µm`, note: <T k="{ozCopper} oz" vars={{ ozCopper }} /> },
           { label: 'Trace resistance', value: formatSI(r.resistanceOhms, 'Ω') },
           { label: 'Voltage drop', value: formatSI(r.vDrop, 'V') },
           { label: 'Power dissipated', value: formatSI(r.lossW, 'W') },
@@ -66,52 +67,34 @@ export default function TraceWidth() {
       />
 
       {r.belowFabLimit && (
-        <Warning>
-          {(r.width * 1000).toFixed(3)} mm is below the {(FAB_MIN_WIDTH * 1000).toFixed(2)} mm
-          that low-cost fabricators reliably etch. Use their minimum instead: it costs nothing
-          and the trace will simply run cooler than required.
-        </Warning>
+        <Warning
+          text="{width} mm is below the {FAB_MIN_WIDTH} mm that low-cost fabricators reliably etch. Use their minimum instead: it costs nothing and the trace will simply run cooler than required."
+          vars={{
+            width: (r.width * 1000).toFixed(3),
+            FAB_MIN_WIDTH: (FAB_MIN_WIDTH * 1000).toFixed(2),
+          }}
+        />
       )}
       {!external && (
-        <Warning>
-          Internal layers have no air on either side, so IPC halves the constant and the trace
-          needs about 2.7 times the cross-section for the same rise. Route high-current nets on
-          outer layers where you can.
-        </Warning>
+        <Warning
+          text="Internal layers have no air on either side, so IPC halves the constant and the trace needs about 2.7 times the cross-section for the same rise. Route high-current nets on outer layers where you can."
+        />
       )}
       {riseK > 40 && (
-        <Warning>
-          A {riseK} K rise is aggressive. FR-4 is fine thermally but the trace is heating
-          everything near it, including components whose ratings assume ambient. Most designs
-          allow 10 to 20 K.
-        </Warning>
+        <Warning
+          text="A {riseK} K rise is aggressive. FR-4 is fine thermally but the trace is heating everything near it, including components whose ratings assume ambient. Most designs allow 10 to 20 K."
+          vars={{ riseK }}
+        />
       )}
 
-      <Theory>
-        <p>
-          IPC-2221 is a curve fit to measured data, not a derivation:{' '}
-          <code>I = k · dT^0.44 · A^0.725</code> with A in square mils. Inverted, the
-          cross-section you need is <code>A = (I / (k·dT^0.44))^(1/0.725)</code>. The constant
-          k is 0.048 for external traces and 0.024 for internal ones, because an inner layer is
-          buried in laminate and can only shed heat sideways.
-        </p>
-        <p>
-          Width follows from cross-section and copper weight: <code>w = A / thickness</code>,
-          where 1 oz copper is about 35 µm. So doubling to 2 oz halves the width you need,
-          which is often cheaper than widening a congested board.
-        </p>
-        <p>
-          The exponent on current, 1/0.725 ≈ 1.38, means width grows faster than current.
-          Doubling the current needs about 2.6 times the copper, not twice. This is why
-          high-current nets get out of hand quickly and end up as pours rather than traces.
-        </p>
-        <p>
-          Two things this does not tell you. It is a steady-state thermal limit, so a brief
-          surge can far exceed it safely. And it says nothing about voltage drop, which for
-          long thin traces in low-voltage rails is usually the binding constraint: a trace can
-          be thermally fine while dropping enough to upset a 3.3 V regulator's feedback.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "IPC-2221 is a curve fit to measured data, not a derivation: `I = k · dT^0.44 · A^0.725` with A in square mils. Inverted, the cross-section you need is `A = (I / (k·dT^0.44))^(1/0.725)`. The constant k is 0.048 for external traces and 0.024 for internal ones, because an inner layer is buried in laminate and can only shed heat sideways.",
+          "Width follows from cross-section and copper weight: `w = A / thickness`, where 1 oz copper is about 35 µm. So doubling to 2 oz halves the width you need, which is often cheaper than widening a congested board.",
+          "The exponent on current, 1/0.725 ≈ 1.38, means width grows faster than current. Doubling the current needs about 2.6 times the copper, not twice. This is why high-current nets get out of hand quickly and end up as pours rather than traces.",
+          "Two things this does not tell you. It is a steady-state thermal limit, so a brief surge can far exceed it safely. And it says nothing about voltage drop, which for long thin traces in low-voltage rails is usually the binding constraint: a trace can be thermally fine while dropping enough to upset a 3.3 V regulator's feedback.",
+        ]}
+      />
     </SimPage>
   )
 }

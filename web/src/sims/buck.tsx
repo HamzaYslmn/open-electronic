@@ -3,6 +3,7 @@ import { analyse, inductorWaveform, operatingPoint } from '../engine/buck'
 import type { BuckSpec, Rectifier } from '../engine/buck'
 import { VCC, VCC_5V } from '../engine/constants'
 import { formatSI } from '../engine/units'
+import { T, useT } from '../i18n'
 import { Group, Segmented } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -19,11 +20,12 @@ const RIPPLE_LIMIT = 0.6
 const VOUT_RIPPLE_LIMIT = 0.01
 
 function Schematic({ rectifier }: { rectifier: Rectifier }) {
+  const t = useT()
   return (
     <svg
       className="schematic"
       viewBox="0 0 260 110"
-      aria-label={`buck converter with a ${rectifier === 'sync' ? 'synchronous FET' : 'catch diode'}`}
+      aria-label={t('buck converter with a {rectifier}', { rectifier: rectifier === 'sync' ? 'synchronous FET' : 'catch diode' })}
     >
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         <circle cx="18" cy="30" r="8" />
@@ -184,19 +186,19 @@ export default function Buck() {
           {
             label: 'Duty cycle D',
             value: `${(op.duty * 100).toFixed(1)} %`,
-            note: `(ideal Vout/Vin ${(op.dutyIdeal * 100).toFixed(1)} %)`,
+            note: <T k="(ideal Vout/Vin {dutyIdeal} %)" vars={{ dutyIdeal: (op.dutyIdeal * 100).toFixed(1) }} />,
             warn: op.dropout,
           },
           {
             label: 'Conduction mode',
             value: op.mode === 'ccm' ? 'CCM' : 'DCM',
-            note: `(boundary at ${formatSI(op.boundary, 'A')})`,
+            note: <T k="(boundary at {boundary})" vars={{ boundary: formatSI(op.boundary, 'A') }} />,
             warn: op.mode === 'dcm',
           },
           {
             label: 'Inductor ripple ΔIL',
             value: formatSI(op.ripple, 'A'),
-            note: `(${(rippleRatio * 100).toFixed(0)}% of load)`,
+            note: <T k="({rippleRatio}% of load)" vars={{ rippleRatio: (rippleRatio * 100).toFixed(0) }} />,
             warn: op.mode === 'ccm' && rippleRatio > RIPPLE_LIMIT,
           },
           {
@@ -208,7 +210,7 @@ export default function Buck() {
           {
             label: 'Output ripple ΔVout',
             value: formatSI(ripple.total, 'V'),
-            note: `(${(voutRatio * 100).toFixed(2)}% of Vout)`,
+            note: <T k="({voutRatio}% of Vout)" vars={{ voutRatio: (voutRatio * 100).toFixed(2) }} />,
             warn: voutRatio > VOUT_RIPPLE_LIMIT,
           },
           {
@@ -218,18 +220,18 @@ export default function Buck() {
           {
             label: 'Efficiency',
             value: `${(efficiency * 100).toFixed(1)} %`,
-            note: `(${formatSI(loss.total, 'W')} lost)`,
+            note: <T k="({total} lost)" vars={{ total: formatSI(loss.total, 'W') }} />,
             warn: efficiency < 0.8,
           },
           {
             label: 'Input current',
             value: formatSI(iin, 'A'),
-            note: `(${formatSI(pin, 'W')} in, ${formatSI(pout, 'W')} out)`,
+            note: <T k="({pin} in, {pout} out)" vars={{ pin: formatSI(pin, 'W'), pout: formatSI(pout, 'W') }} />,
           },
           {
             label: 'On time',
             value: formatSI(op.duty / fsw, 's'),
-            note: `(period ${formatSI(1 / fsw, 's')})`,
+            note: <T k="(period {fsw})" vars={{ fsw: formatSI(1 / fsw, 's') }} />,
           },
           { label: 'Loss: inductor DCR', value: formatSI(loss.inductor, 'W') },
           { label: 'Loss: high side FET', value: formatSI(loss.switchCond, 'W') },
@@ -246,66 +248,34 @@ export default function Buck() {
       />
 
       {op.dropout && (
-        <Warning>
-          Dropout: Vin is at or below Vout plus the switch and winding drops. The high side
-          switch sits at 100% duty, there is no switching left to model, and the output just
-          follows the input.
-        </Warning>
+        <Warning
+          text="Dropout: Vin is at or below Vout plus the switch and winding drops. The high side switch sits at 100% duty, there is no switching left to model, and the output just follows the input."
+        />
       )}
 
       {op.mode === 'dcm' && !op.dropout && (
-        <Warning>
-          Discontinuous conduction: the load is below {formatSI(op.boundary, 'A')}, so the
-          inductor current hits zero every cycle. Duty no longer tracks Vout/Vin, the loop gain
-          changes, and a diode version will ring on the switch node once the current stops.
-          Raise L or fsw to push the boundary down.
-        </Warning>
+        <Warning
+          text="Discontinuous conduction: the load is below {boundary}, so the inductor current hits zero every cycle. Duty no longer tracks Vout/Vin, the loop gain changes, and a diode version will ring on the switch node once the current stops. Raise L or fsw to push the boundary down."
+          vars={{ boundary: formatSI(op.boundary, 'A') }}
+        />
       )}
 
       {op.mode === 'ccm' && rippleRatio > RIPPLE_LIMIT && (
-        <Warning>
-          Ripple is {(rippleRatio * 100).toFixed(0)}% of the load current. The usual design
-          target is 20 to 40%: more than that wastes inductor headroom and pushes the peak
-          toward saturation.
-        </Warning>
+        <Warning
+          text="Ripple is {rippleRatio}% of the load current. The usual design target is 20 to 40%: more than that wastes inductor headroom and pushes the peak toward saturation."
+          vars={{ rippleRatio: (rippleRatio * 100).toFixed(0) }}
+        />
       )}
 
-      <Theory>
-        <p>
-          Volt-second balance says the inductor must gain as much current in the on time as it
-          loses in the off time, so <code>Von·D = Voff·(1-D)</code> and{' '}
-          <code>D = Voff / (Von + Voff)</code>. With no losses that is the familiar{' '}
-          <code>D = Vout / Vin</code>. This page keeps the switch, diode and winding drops
-          inside Von and Voff, which is why the reported duty sits slightly above the ideal
-          ratio.
-        </p>
-        <p>
-          The ramp gives the ripple directly: <code>ΔIL = Voff·(1-D) / (fsw·L)</code>, i.e.{' '}
-          <code>Vout·(1-D)/(fsw·L)</code> in the ideal case. The capacitor swallows the
-          triangular part of that current, and integrating half a triangle of charge gives{' '}
-          <code>ΔVout = ΔIL / (8·fsw·C)</code>. Real ESR adds <code>ΔIL·ESR</code> on top,
-          which on an electrolytic is usually the larger of the two.
-        </p>
-        <p>
-          The valley current is <code>Iout - ΔIL/2</code>, so at{' '}
-          <code>Iout = ΔIL/2</code> the current just touches zero. Below that boundary the
-          converter is discontinuous and the duty collapses to{' '}
-          <code>D = sqrt(2·L·fsw·Iout·Voff / (Von·(Von+Voff)))</code>.
-        </p>
-        <p>
-          Efficiency is a first-order budget, not a simulation: <code>Irms²·DCR</code> in the
-          winding, <code>Irms²·Rds(on)</code> in each FET weighted by its conduction time or{' '}
-          <code>Vf·Iout·(1-D)</code> for a catch diode, plus hard switching loss{' '}
-          <code>0.5·Vin·I·(tr+tf)·fsw</code> and the controller quiescent draw. Gate charge,
-          core loss, dead time and layout parasitics are not modelled, so expect the real board
-          to land a couple of points lower.
-        </p>
-        <p>
-          The trace is the closed-form piecewise-linear solution of{' '}
-          <code>di/dt = v/L</code> evaluated per sample, so it stays exact and periodic at any
-          switching frequency the sliders reach.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "Volt-second balance says the inductor must gain as much current in the on time as it loses in the off time, so `Von·D = Voff·(1-D)` and `D = Voff / (Von + Voff)`. With no losses that is the familiar `D = Vout / Vin`. This page keeps the switch, diode and winding drops inside Von and Voff, which is why the reported duty sits slightly above the ideal ratio.",
+          "The ramp gives the ripple directly: `ΔIL = Voff·(1-D) / (fsw·L)`, i.e. `Vout·(1-D)/(fsw·L)` in the ideal case. The capacitor swallows the triangular part of that current, and integrating half a triangle of charge gives `ΔVout = ΔIL / (8·fsw·C)`. Real ESR adds `ΔIL·ESR` on top, which on an electrolytic is usually the larger of the two.",
+          "The valley current is `Iout - ΔIL/2`, so at `Iout = ΔIL/2` the current just touches zero. Below that boundary the converter is discontinuous and the duty collapses to `D = sqrt(2·L·fsw·Iout·Voff / (Von·(Von+Voff)))`.",
+          "Efficiency is a first-order budget, not a simulation: `Irms²·DCR` in the winding, `Irms²·Rds(on)` in each FET weighted by its conduction time or `Vf·Iout·(1-D)` for a catch diode, plus hard switching loss `0.5·Vin·I·(tr+tf)·fsw` and the controller quiescent draw. Gate charge, core loss, dead time and layout parasitics are not modelled, so expect the real board to land a couple of points lower.",
+          "The trace is the closed-form piecewise-linear solution of `di/dt = v/L` evaluated per sample, so it stays exact and periodic at any switching frequency the sliders reach.",
+        ]}
+      />
     </SimPage>
   )
 }

@@ -84,60 +84,37 @@ export default function CurrentSense() {
       />
 
       {r.clipping && (
-        <Warning>
-          {formatSI(r.vOut, 'V')} is past the {formatSI(FULL_SCALE, 'V')} ADC full scale, so the
-          reading pins at maximum and you lose the top of the range entirely. Reduce the gain
-          or the shunt.
-        </Warning>
+        <Warning
+          text="{vOut} is past the {FULL_SCALE} ADC full scale, so the reading pins at maximum and you lose the top of the range entirely. Reduce the gain or the shunt."
+          vars={{ vOut: formatSI(r.vOut, 'V'), FULL_SCALE: formatSI(FULL_SCALE, 'V') }}
+        />
       )}
       {r.underusingRange && !r.clipping && (
-        <Warning>
-          Only {(r.rangeUsed * 100).toFixed(0)}% of the ADC range is in use, so most of the
-          converter's resolution is wasted. Raise the gain until full-scale current lands near
-          the top of the range.
-        </Warning>
+        <Warning
+          text="Only {rangeUsed}% of the ADC range is in use, so most of the converter's resolution is wasted. Raise the gain until full-scale current lands near the top of the range."
+          vars={{ rangeUsed: (r.rangeUsed * 100).toFixed(0) }}
+        />
       )}
       {r.wastefulShunt && (
-        <Warning>
-          {formatSI(r.pShunt, 'W')} in the shunt is significant heat, and the resistor's own
-          temperature coefficient will then shift the reading. Use a lower value with more
-          gain, or a proper 4-wire sense resistor.
-        </Warning>
+        <Warning
+          text="{pShunt} in the shunt is significant heat, and the resistor's own temperature coefficient will then shift the reading. Use a lower value with more gain, or a proper 4-wire sense resistor."
+          vars={{ pShunt: formatSI(r.pShunt, 'W') }}
+        />
       )}
       {method.startsWith('acs712') && (
-        <Warning>
-          The ACS712 is a 5 V part with a mid-rail zero point, so its quiescent output is about
-          2.5 V, well above what an ESP32 pin tolerates. It needs a divider or a 3.3 V-friendly
-          alternative. Its noise floor also makes it poor below a few hundred milliamps.
-        </Warning>
+        <Warning
+          text="The ACS712 is a 5 V part with a mid-rail zero point, so its quiescent output is about 2.5 V, well above what an ESP32 pin tolerates. It needs a divider or a 3.3 V-friendly alternative. Its noise floor also makes it poor below a few hundred milliamps."
+        />
       )}
 
-      <Theory>
-        <p>
-          A shunt turns current into voltage by Ohm's law, <code>Vshunt = I·R</code>. That
-          voltage is subtracted from the supply reaching the load, which is the burden. Keep it
-          under a percent or two of the rail, so a 5 V supply wants a burden well under 50 mV.
-        </p>
-        <p>
-          Dissipation is <code>I²·R</code> and it rises with the square of current, so a shunt
-          sized for convenience at 1 A becomes a heater at 10 A. Worse, the heat changes the
-          resistance, so the measurement drifts as the load increases: the reason precision
-          shunts use low-tempco alloys and four-wire connections.
-        </p>
-        <p>
-          The resolution you actually get is one ADC step referred back to the input,{' '}
-          <code>Vlsb / (R·gain)</code>. Gain is what rescues you from the burden-versus-
-          resolution trap: a small shunt keeps the burden low, and the amplifier recovers the
-          signal. That is exactly what a dedicated current-sense amplifier does, and it also
-          handles the common-mode problem of high-side sensing, where the shunt sits at supply
-          potential rather than near ground.
-        </p>
-        <p>
-          Hall-effect parts like the ACS712 avoid the burden entirely by measuring the magnetic
-          field, giving full isolation. The price is offset drift, noise, and a zero point that
-          sits at half the supply, so they are good for amps and poor for milliamps.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "A shunt turns current into voltage by Ohm's law, `Vshunt = I·R`. That voltage is subtracted from the supply reaching the load, which is the burden. Keep it under a percent or two of the rail, so a 5 V supply wants a burden well under 50 mV.",
+          "Dissipation is `I²·R` and it rises with the square of current, so a shunt sized for convenience at 1 A becomes a heater at 10 A. Worse, the heat changes the resistance, so the measurement drifts as the load increases: the reason precision shunts use low-tempco alloys and four-wire connections.",
+          "The resolution you actually get is one ADC step referred back to the input, `Vlsb / (R·gain)`. Gain is what rescues you from the burden-versus- resolution trap: a small shunt keeps the burden low, and the amplifier recovers the signal. That is exactly what a dedicated current-sense amplifier does, and it also handles the common-mode problem of high-side sensing, where the shunt sits at supply potential rather than near ground.",
+          "Hall-effect parts like the ACS712 avoid the burden entirely by measuring the magnetic field, giving full isolation. The price is offset drift, noise, and a zero point that sits at half the supply, so they are good for amps and poor for milliamps.",
+        ]}
+      />
     </SimPage>
   )
 }

@@ -17,6 +17,7 @@ import {
 } from '../engine/lm317'
 import type { PackageId } from '../engine/lm317'
 import { formatSI } from '../engine/units'
+import { T, useT } from '../i18n'
 import { Group, Select, Toggle } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -30,8 +31,9 @@ const N = 2048
 const degC = (k: number) => `${(k - ZERO_C_K).toFixed(1)} °C`
 
 function Schematic() {
+  const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 120" aria-label="LM317 adjustable regulator">
+    <svg className="schematic" viewBox="0 0 260 120" aria-label={t('LM317 adjustable regulator')}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         {/* input node and ground return */}
         <circle cx="16" cy="32" r="3" />
@@ -81,6 +83,7 @@ function Schematic() {
 }
 
 export default function LM317() {
+  const t = useT()
   // Defaults: a 9 V wall wart down to the 3.3 V ESP32 rail with the classic
   // 240/390 divider, on a TO-220 with a small clip-on sink.
   const [vin, setVin] = useState(9)
@@ -132,7 +135,10 @@ export default function LM317() {
   return (
     <SimPage
       id="lm317"
-      lede={`Pick R1 and R2 for the rail you want, then check the part survives it. The scope is not a waveform: the horizontal axis is load current from 0 to ${I_OUT_MAX} A, so read the per-division figure in milliamps, and the vertical axis is junction temperature in kelvin against the 398 K (125 C) limit.`}
+      lede={t(
+        'Pick R1 and R2 for the rail you want, then check the part survives it. The scope is not a waveform: the horizontal axis is load current from 0 to {max} A, so read the per-division figure in milliamps, and the vertical axis is junction temperature in kelvin against the 398 K (125 C) limit.',
+        { max: I_OUT_MAX },
+      )}
       controls={
         <>
           <Schematic />
@@ -178,7 +184,7 @@ export default function LM317() {
               onChange={setR1}
               min={100}
               max={2000}
-              hint={`240 Ω is standard: ${formatSI(V_REF / 240, 'A')} keeps the part in regulation unloaded.`}
+              hint={<T k="240 Ω is standard: {V_REF} keeps the part in regulation unloaded." vars={{ V_REF: formatSI(V_REF / 240, 'A') }} />}
             />
             <Param
               label="R2 (ADJ to GND)"
@@ -191,7 +197,7 @@ export default function LM317() {
             {Number.isFinite(tip.r2E24) && (
               <div className="seg">
                 <button onClick={() => setR2(tip.r2E24)}>
-                  Use {formatSI(tip.r2E24, 'Ω')} (E24)
+                  <T k="Use {value} (E24)" vars={{ value: formatSI(tip.r2E24, 'Ω') }} />
                 </button>
               </div>
             )}
@@ -251,41 +257,41 @@ export default function LM317() {
           {
             label: 'Vout',
             value: formatSI(r.vout, 'V'),
-            note: `(${targetErr >= 0 ? '+' : ''}${formatSI(targetErr, 'V')} against target)`,
+            note: <T k="({targetErr}{targetErr2} against target)" vars={{ targetErr: targetErr >= 0 ? '+' : '', targetErr2: formatSI(targetErr, 'V') }} />,
             warn: r.dropout,
           },
           {
             label: 'R2 for target',
             value: formatSI(tip.r2Exact, 'Ω'),
-            note: `(E24 ${formatSI(tip.r2E24, 'Ω')} gives ${formatSI(tip.voutE24, 'V')})`,
+            note: <T k="(E24 {r2E24} gives {voutE24})" vars={{ r2E24: formatSI(tip.r2E24, 'Ω'), voutE24: formatSI(tip.voutE24, 'V') }} />,
           },
           {
             label: 'Vout worst case',
             value: `${formatSI(r.voutMin, 'V')} to ${formatSI(r.voutMax, 'V')}`,
-            note: `(Vref spread ${V_REF_MIN} to ${V_REF_MAX} V, resistors exact)`,
+            note: <T k="(Vref spread {V_REF_MIN} to {V_REF_MAX} V, resistors exact)" vars={{ V_REF_MIN, V_REF_MAX }} />,
           },
           {
             label: 'Adjust pin term',
             value: formatSI(r.iadjTerm, 'V'),
-            note: `(${((100 * r.iadjTerm) / r.vout).toFixed(2)}% of Vout)`,
+            note: <T k="({vout}% of Vout)" vars={{ vout: ((100 * r.iadjTerm) / r.vout).toFixed(2) }} />,
             warn: r.iadjTerm > 0.02 * r.vout,
           },
           {
             label: 'Program current',
             value: formatSI(r.iProgram, 'A'),
-            note: `(min load ${formatSI(I_LOAD_MIN, 'A')}, so R1 ≤ ${formatSI(r.r1Max, 'Ω')})`,
+            note: <T k="(min load {I_LOAD_MIN}, so R1 ≤ {r1Max})" vars={{ I_LOAD_MIN: formatSI(I_LOAD_MIN, 'A'), r1Max: formatSI(r.r1Max, 'Ω') }} />,
             warn: !r.minLoadOk,
           },
           {
             label: 'Headroom',
             value: formatSI(r.headroom, 'V'),
-            note: `(needs ${formatSI(DROPOUT_V, 'V')}, so Vin ≥ ${formatSI(r.vinMin, 'V')})`,
+            note: <T k="(needs {DROPOUT_V}, so Vin ≥ {vinMin})" vars={{ DROPOUT_V: formatSI(DROPOUT_V, 'V'), vinMin: formatSI(r.vinMin, 'V') }} />,
             warn: r.dropout || r.overDifferential,
           },
           {
             label: 'Dissipation',
             value: formatSI(r.pd, 'W'),
-            note: `(load takes ${formatSI(r.pLoad, 'W')}, device draws ${formatSI(r.iDevice, 'A')})`,
+            note: <T k="(load takes {pLoad}, device draws {iDevice})" vars={{ pLoad: formatSI(r.pLoad, 'W'), iDevice: formatSI(r.iDevice, 'A') }} />,
             warn: r.overTemp,
           },
           {
@@ -299,12 +305,12 @@ export default function LM317() {
             value: `${r.rthTotal.toFixed(1)} K/W`,
             note: heatsink
               ? `(${thermal.rthJC} JC + ${rthCS} CS + ${rthSA.toFixed(1)} SA)`
-              : `(${thermal.label} in free air)`,
+              : <T k="({thermal} in free air)" vars={{ thermal: thermal.label }} />,
           },
           {
             label: 'Junction temp',
             value: degC(r.tjK),
-            note: `(${r.riseK.toFixed(0)} K rise, limit ${degC(TJ_MAX_K)})`,
+            note: <T k="({riseK} K rise, limit {TJ_MAX_K})" vars={{ riseK: r.riseK.toFixed(0), TJ_MAX_K: degC(TJ_MAX_K) }} />,
             warn: r.overTemp,
           },
           {
@@ -317,11 +323,11 @@ export default function LM317() {
             label: 'Heatsink needed',
             value:
               r.rthSinkNeeded > 0 && Number.isFinite(r.rthSinkNeeded)
-                ? `${r.rthSinkNeeded.toFixed(1)} K/W or better`
+                ? <T k="{rthSinkNeeded} K/W or better" vars={{ rthSinkNeeded: r.rthSinkNeeded.toFixed(1) }} />
                 : r.needsHeatsink
                   ? 'none is enough'
                   : 'none',
-            note: `(at ${formatSI(r.pd, 'W')} and ${degC(ambientK)} ambient)`,
+            note: <T k="(at {pd} and {ambientK} ambient)" vars={{ pd: formatSI(r.pd, 'W'), ambientK: degC(ambientK) }} />,
             warn: r.heatsinkImpossible,
           },
           {
@@ -329,7 +335,7 @@ export default function LM317() {
             value: formatSI(r.ioutCeiling, 'A'),
             note:
               r.ioutThermal < I_OUT_MAX
-                ? `(thermal, ${formatSI(r.pdMax, 'W')} budget)`
+                ? <T k="(thermal, {pdMax} budget)" vars={{ pdMax: formatSI(r.pdMax, 'W') }} />
                 : '(the part rating, thermals have room)',
             warn: iout > r.ioutCeiling,
           },
@@ -337,111 +343,97 @@ export default function LM317() {
       />
 
       {r.dropout && (
-        <Warning>
-          Below dropout: {formatSI(r.headroom, 'V')} of headroom where the LM317 needs{' '}
-          {formatSI(DROPOUT_V, 'V')}. The pass element is saturated, so the output follows the
-          input down and every figure above is meaningless. Raise Vin above{' '}
-          {formatSI(r.vinMin, 'V')} or drop the target.
-        </Warning>
+        <Warning
+          text="Below dropout: {headroom} of headroom where the LM317 needs {DROPOUT_V}. The pass element is saturated, so the output follows the input down and every figure above is meaningless. Raise Vin above {vinMin} or drop the target."
+          vars={{
+            headroom: formatSI(r.headroom, 'V'),
+            DROPOUT_V: formatSI(DROPOUT_V, 'V'),
+            vinMin: formatSI(r.vinMin, 'V'),
+          }}
+        />
       )}
 
       {r.overDifferential && (
-        <Warning>
-          Input-to-output differential is {formatSI(r.headroom, 'V')}, past the{' '}
-          {formatSI(V_IO_MAX, 'V')} absolute maximum. The part fails regardless of how cool
-          you keep it.
-        </Warning>
+        <Warning
+          text="Input-to-output differential is {headroom}, past the {V_IO_MAX} absolute maximum. The part fails regardless of how cool you keep it."
+          vars={{ headroom: formatSI(r.headroom, 'V'), V_IO_MAX: formatSI(V_IO_MAX, 'V') }}
+        />
       )}
 
       {r.shutdown && (
-        <Warning>
-          Junction at {degC(r.tjK)}, past the internal thermal shutdown near 175 C. The
-          regulator will fold the output back and oscillate in and out of shutdown rather than
-          sit there. Shed {formatSI(r.pd - r.pdMax, 'W')} or fit a better sink.
-        </Warning>
+        <Warning
+          text="Junction at {tjK}, past the internal thermal shutdown near 175 C. The regulator will fold the output back and oscillate in and out of shutdown rather than sit there. Shed {pdMax} or fit a better sink."
+          vars={{ tjK: degC(r.tjK), pdMax: formatSI(r.pd - r.pdMax, 'W') }}
+        />
       )}
 
       {r.overTemp && !r.shutdown && (
-        <Warning>
-          Junction at {degC(r.tjK)}, over the {degC(TJ_MAX_K)} limit. It may keep regulating
-          but it is out of spec and its life is being spent fast. Needs{' '}
-          {r.rthSinkNeeded > 0
-            ? `a ${r.rthSinkNeeded.toFixed(1)} K/W sink`
-            : 'a different topology'}
-          , a lower Vin, or under {formatSI(r.ioutCeiling, 'A')} of load.
-        </Warning>
+        <Warning
+          text="Junction at {tjK}, over the {TJ_MAX_K} limit. It may keep regulating but it is out of spec and its life is being spent fast. Needs {topology} , a lower Vin, or under {ioutCeiling} of load."
+          vars={{
+            tjK: degC(r.tjK),
+            TJ_MAX_K: degC(TJ_MAX_K),
+            rthSinkNeeded: r.rthSinkNeeded.toFixed(1),
+            topology:
+              r.rthSinkNeeded > 0 ? 'a {rthSinkNeeded} K/W sink' : 'a different topology',
+            ioutCeiling: formatSI(r.ioutCeiling, 'A'),
+          }}
+        />
       )}
 
       {r.heatsinkImpossible && (
-        <Warning>
-          No heatsink is enough: {formatSI(r.pd, 'W')} through the{' '}
-          {thermal.rthJC.toFixed(1)} K/W junction-to-case path alone already exceeds the
-          budget at {degC(ambientK)} ambient. Drop Vin closer to Vout, or use a switching
-          regulator and stop converting the difference into heat.
-        </Warning>
+        <Warning
+          text="No heatsink is enough: {pd} through the {rthJC} K/W junction-to-case path alone already exceeds the budget at {ambientK} ambient. Drop Vin closer to Vout, or use a switching regulator and stop converting the difference into heat."
+          vars={{
+            pd: formatSI(r.pd, 'W'),
+            rthJC: thermal.rthJC.toFixed(1),
+            ambientK: degC(ambientK),
+          }}
+        />
       )}
 
       {r.overCurrent && (
-        <Warning>
-          {formatSI(iout, 'A')} is past the {formatSI(I_OUT_MAX, 'A')} guaranteed output. The
-          internal limiter takes over near 2.2 A typical, but that is a typical, not a
-          promise.
-        </Warning>
+        <Warning
+          text="{iout} is past the {I_OUT_MAX} guaranteed output. The internal limiter takes over near 2.2 A typical, but that is a typical, not a promise."
+          vars={{ iout: formatSI(iout, 'A'), I_OUT_MAX: formatSI(I_OUT_MAX, 'A') }}
+        />
       )}
 
       {!r.minLoadOk && (
-        <Warning>
-          R1 draws only {formatSI(r.iProgram, 'A')}, under the {formatSI(I_LOAD_MIN, 'A')}
-          minimum load. With the real load disconnected the output drifts up. Use R1 no larger
-          than {formatSI(r.r1Max, 'Ω')}, or fit a permanent bleeder.
-        </Warning>
+        <Warning
+          text="R1 draws only {iProgram}, under the {I_LOAD_MIN} minimum load. With the real load disconnected the output drifts up. Use R1 no larger than {r1Max}, or fit a permanent bleeder."
+          vars={{
+            iProgram: formatSI(r.iProgram, 'A'),
+            I_LOAD_MIN: formatSI(I_LOAD_MIN, 'A'),
+            r1Max: formatSI(r.r1Max, 'Ω'),
+          }}
+        />
       )}
 
       {r.iadjTerm > 0.02 * r.vout && (
-        <Warning>
-          The 50 µA adjust current adds {formatSI(r.iadjTerm, 'V')} through R2, which is{' '}
-          {((100 * r.iadjTerm) / r.vout).toFixed(1)}% of the output and drifts with
-          temperature. Scale both resistors down so the program current dominates.
-        </Warning>
+        <Warning
+          text="The 50 µA adjust current adds {iadjTerm} through R2, which is {vout}% of the output and drifts with temperature. Scale both resistors down so the program current dominates."
+          vars={{
+            iadjTerm: formatSI(r.iadjTerm, 'V'),
+            vout: ((100 * r.iadjTerm) / r.vout).toFixed(1),
+          }}
+        />
       )}
 
-      <Theory>
-        <p>
-          The LM317 is a floating regulator: it does nothing but hold{' '}
-          <code>Vref = {V_REF} V</code> between OUT and ADJ. R1 sits across that reference, so
-          it carries a fixed <code>Iprog = Vref/R1</code> whatever the load does. That current
-          plus the adjust pin current runs to ground through R2, so{' '}
-          <code>Vout = Vref·(1 + R2/R1) + Iadj·R2</code>.
-        </p>
-        <p>
-          Iadj is 50 µA typical. With R1 at 240 Ω the program current is 5.2 mA, a hundred
-          times larger, so the Iadj term is a rounding error. Scale the divider into the tens
-          of kilohms to save power and Iadj becomes a first-order term that also drifts with
-          temperature: 10 k over 10 k reads 3.0 V, not the 2.5 V the ratio promises.
-        </p>
-        <p>
-          R1 has an upper bound the ratio does not show. The part needs{' '}
-          {formatSI(I_LOAD_MIN, 'A')} of load to regulate, so the divider is normally sized to
-          supply it on its own: <code>R1 ≤ Vref/Imin = {formatSI(V_REF / I_LOAD_MIN, 'Ω')}</code>
-          . That is where the 240 Ω on every reference schematic comes from.
-        </p>
-        <p>
-          Everything left over is heat. <code>Pd = (Vin - Vout)·I</code> with no switching and
-          nowhere to hide, so efficiency is just Vout/Vin. The junction sits at{' '}
-          <code>Tj = Ta + Pd·Rth</code> where Rth is the series path from junction to ambient:
-          junction to case, case to heatsink through grease or a pad, then heatsink to air.
-          Invert it to size the sink,{' '}
-          <code>Rsa = (Tj_max - Ta)/Pd - Rjc - Rcs</code>. A negative answer means the package
-          itself is the bottleneck and no heatsink will save it.
-        </p>
-        <p>
-          The trace is that equation swept over load current, not a time-domain simulation:
-          Tj is linear in Iout at fixed headroom, offset at zero load by the divider current
-          the regulator still has to pass. Where it crosses the flat 398 K line is the honest
-          current limit of the design, which is usually well below the 1.5 A the datasheet
-          front page advertises.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "The LM317 is a floating regulator: it does nothing but hold `Vref = {V_REF} V` between OUT and ADJ. R1 sits across that reference, so it carries a fixed `Iprog = Vref/R1` whatever the load does. That current plus the adjust pin current runs to ground through R2, so `Vout = Vref·(1 + R2/R1) + Iadj·R2`.",
+          "Iadj is 50 µA typical. With R1 at 240 Ω the program current is 5.2 mA, a hundred times larger, so the Iadj term is a rounding error. Scale the divider into the tens of kilohms to save power and Iadj becomes a first-order term that also drifts with temperature: 10 k over 10 k reads 3.0 V, not the 2.5 V the ratio promises.",
+          "R1 has an upper bound the ratio does not show. The part needs {I_LOAD_MIN} of load to regulate, so the divider is normally sized to supply it on its own: `R1 ≤ Vref/Imin = {I_LOAD_MIN2}` . That is where the 240 Ω on every reference schematic comes from.",
+          "Everything left over is heat. `Pd = (Vin - Vout)·I` with no switching and nowhere to hide, so efficiency is just Vout/Vin. The junction sits at `Tj = Ta + Pd·Rth` where Rth is the series path from junction to ambient: junction to case, case to heatsink through grease or a pad, then heatsink to air. Invert it to size the sink, `Rsa = (Tj_max - Ta)/Pd - Rjc - Rcs`. A negative answer means the package itself is the bottleneck and no heatsink will save it.",
+          "The trace is that equation swept over load current, not a time-domain simulation: Tj is linear in Iout at fixed headroom, offset at zero load by the divider current the regulator still has to pass. Where it crosses the flat 398 K line is the honest current limit of the design, which is usually well below the 1.5 A the datasheet front page advertises.",
+        ]}
+        vars={{
+          V_REF,
+          I_LOAD_MIN: formatSI(I_LOAD_MIN, 'A'),
+          I_LOAD_MIN2: formatSI(V_REF / I_LOAD_MIN, 'Ω'),
+        }}
+      />
     </SimPage>
   )
 }

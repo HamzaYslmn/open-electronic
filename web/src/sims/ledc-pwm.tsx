@@ -3,6 +3,7 @@ import { VCC } from '../engine/constants'
 import { APB_CLOCK, BITS_MAX, analyseLedc, maxFrequency } from '../engine/ledc'
 import { generate } from '../engine/signal'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -76,13 +77,13 @@ export default function LedcPwm() {
           {
             label: 'Usable resolution',
             value: `${r.bits} bits`,
-            note: r.clamped ? `clamped from ${requestedBits}` : 'as requested',
+            note: r.clamped ? <T k="clamped from {requestedBits}" vars={{ requestedBits }} /> : 'as requested',
             warn: r.clamped,
           },
           { label: 'Duty steps', value: r.stepCount.toLocaleString() },
           { label: 'Max freq at this res', value: formatSI(r.fMax, 'Hz') },
           { label: 'Duty register', value: `${r.count} / ${r.stepCount}` },
-          { label: 'Actual duty', value: `${(r.actualDuty * 100).toFixed(3)}%`, note: `asked ${(duty * 100).toFixed(3)}%` },
+          { label: 'Actual duty', value: `${(r.actualDuty * 100).toFixed(3)}%`, note: <T k="asked {duty}%" vars={{ duty: (duty * 100).toFixed(3) }} /> },
           { label: 'Quantisation error', value: `${(r.dutyError * 100).toFixed(4)}%` },
           { label: 'Step size', value: `${(r.stepFraction * 100).toFixed(4)}%`, note: formatSI(r.stepVolts, 'V') },
           { label: 'Period', value: formatSI(r.period, 's') },
@@ -91,53 +92,37 @@ export default function LedcPwm() {
       />
 
       {r.unreachable && (
-        <Warning>
-          {formatSI(frequency, 'Hz')} is not reachable at any resolution: even 1 bit needs the
-          clock to be at least twice the output frequency, and the LEDC source is{' '}
-          {formatSI(APB_CLOCK, 'Hz')}.
-        </Warning>
+        <Warning
+          text="{frequency} is not reachable at any resolution: even 1 bit needs the clock to be at least twice the output frequency, and the LEDC source is {APB_CLOCK}."
+          vars={{ frequency: formatSI(frequency, 'Hz'), APB_CLOCK: formatSI(APB_CLOCK, 'Hz') }}
+        />
       )}
       {r.clamped && !r.unreachable && (
-        <Warning>
-          {requestedBits} bits is impossible at {formatSI(frequency, 'Hz')}. The timer silently
-          uses {r.bits} bits, which is {r.stepCount} steps rather than the{' '}
-          {Math.pow(2, requestedBits).toLocaleString()} you asked for. Calling
-          ledcSetup with an unsupported pair does not error, it just gives you less than you
-          expect, which is a common source of banding on dimmed LEDs.
-        </Warning>
+        <Warning
+          text="{requestedBits} bits is impossible at {frequency}. The timer silently uses {bits} bits, which is {stepCount} steps rather than the {requestedBits2} you asked for. Calling ledcSetup with an unsupported pair does not error, it just gives you less than you expect, which is a common source of banding on dimmed LEDs."
+          vars={{
+            requestedBits,
+            frequency: formatSI(frequency, 'Hz'),
+            bits: r.bits,
+            stepCount: r.stepCount,
+            requestedBits2: Math.pow(2, requestedBits).toLocaleString(),
+          }}
+        />
       )}
       {r.bits > 0 && r.bits < 8 && !r.unreachable && (
-        <Warning>
-          Under 8 bits the steps are visible on an LED. For smooth dimming keep the frequency
-          low enough for 10 bits or more, and remember perceived brightness is roughly the
-          square of duty, so the low end needs the finest steps.
-        </Warning>
+        <Warning
+          text="Under 8 bits the steps are visible on an LED. For smooth dimming keep the frequency low enough for 10 bits or more, and remember perceived brightness is roughly the square of duty, so the low end needs the finest steps."
+        />
       )}
 
-      <Theory>
-        <p>
-          The LEDC timer counts to <code>2^bits</code> once per PWM period from an 80 MHz
-          source, so the fastest it can run at a given resolution is{' '}
-          <code>f_max = 80 MHz / 2^bits</code>. Rearranged, the best resolution at a given
-          frequency is <code>floor(log2(80e6 / f))</code>.
-        </p>
-        <p>
-          That is a hard trade. 13 bits, the Arduino default, caps out at{' '}
-          {formatSI(maxFrequency(13), 'Hz')}. Wanting 100 kHz for a buck converter leaves only
-          9 bits. Wanting 1 MHz leaves 6, which is 64 steps and useless for anything analogue.
-        </p>
-        <p>
-          The duty register is an integer, so the achievable duty is quantised to{' '}
-          <code>1/2^bits</code>. Filtered into an analogue voltage that step is{' '}
-          <code>Vcc/2^bits</code>, which is the real resolution of a PWM DAC: at 3.3 V and 10
-          bits it is about 3.2 mV, and no amount of filtering recovers anything finer.
-        </p>
-        <p>
-          For LEDs pick frequency above about 200 Hz to avoid visible flicker, and well above
-          that if the light will ever be filmed. For motors, above 20 kHz puts the switching
-          whine out of hearing, but check the resolution you have left at that frequency.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "The LEDC timer counts to `2^bits` once per PWM period from an 80 MHz source, so the fastest it can run at a given resolution is `f_max = 80 MHz / 2^bits`. Rearranged, the best resolution at a given frequency is `floor(log2(80e6 / f))`.",
+          "That is a hard trade. 13 bits, the Arduino default, caps out at {maxFrequency}. Wanting 100 kHz for a buck converter leaves only 9 bits. Wanting 1 MHz leaves 6, which is 64 steps and useless for anything analogue.",
+          "The duty register is an integer, so the achievable duty is quantised to `1/2^bits`. Filtered into an analogue voltage that step is `Vcc/2^bits`, which is the real resolution of a PWM DAC: at 3.3 V and 10 bits it is about 3.2 mV, and no amount of filtering recovers anything finer.",
+          "For LEDs pick frequency above about 200 Hz to avoid visible flicker, and well above that if the light will ever be filmed. For motors, above 20 kHz puts the switching whine out of hearing, but check the resolution you have left at that frequency.",
+        ]} vars={{ maxFrequency: formatSI(maxFrequency(13), 'Hz') }}
+      />
     </SimPage>
   )
 }

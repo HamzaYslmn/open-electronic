@@ -10,6 +10,7 @@ import {
 } from '../engine/eseries'
 import type { Combo, SeriesName } from '../engine/eseries'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group, Segmented } from '../ui/Controls'
 import Param from '../ui/Param'
 import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
@@ -108,7 +109,7 @@ export default function ESeries() {
             note: `(${pct(r.below / target - 1, 1)} / ${pct(r.above / target - 1, 1)})`,
           },
           {
-            label: `Tolerance band at ${span(r.tolerance)}`,
+            label: <T k="Tolerance band at {tolerance}" vars={{ tolerance: span(r.tolerance) }} />,
             value: `${formatSI(r.bandLow, 'Ω')} to ${formatSI(r.bandHigh, 'Ω')}`,
             note: r.inBand ? '(target covered)' : '(target outside)',
           },
@@ -129,77 +130,60 @@ export default function ESeries() {
             value: best && Math.abs(best.error) < Math.abs(r.singleError) ? 'pair' : 'single part',
             note:
               best && Math.abs(best.error) < Math.abs(r.singleError)
-                ? `${pct(best.error)} against ${pct(r.singleError)}`
+                ? <T k="{error} against {singleError}" vars={{ error: pct(best.error), singleError: pct(r.singleError) }} />
                 : 'no pair beats the single value',
           },
           {
-            label: `Worst case for ${series}`,
+            label: <T k="Worst case for {series}" vars={{ series }} />,
             value: span(r.worstCase, 1),
             note:
               r.worstCase > r.tolerance
-                ? `(widest gap, past the ${span(r.tolerance)} grade)`
-                : `(widest gap, inside the ${span(r.tolerance)} grade)`,
+                ? <T k="(widest gap, past the {tolerance} grade)" vars={{ tolerance: span(r.tolerance) }} />
+                : <T k="(widest gap, inside the {tolerance} grade)" vars={{ tolerance: span(r.tolerance) }} />,
           },
           {
             label: 'Step ratio',
             value: `${(10 ** (1 / r.steps)).toFixed(4)}x`,
-            note: `(10^(1/${r.steps}), half step ${span(r.halfStep, 2)})`,
+            note: <T k="(10^(1/{steps}), half step {halfStep})" vars={{ steps: r.steps, halfStep: span(r.halfStep, 2) }} />,
           },
         ]}
       />
 
       {r.outOfRange && (
-        <Warning>
-          {formatSI(target, 'Ω')} is outside the 1 Ω to 10 MΩ range searched here, so the
-          answers above are clamped to the end of the table rather than extrapolated.
-          Real stock does go further, but not in a form you would put in a divider.
-        </Warning>
+        <Warning
+          text="{target} is outside the 1 Ω to 10 MΩ range searched here, so the answers above are clamped to the end of the table rather than extrapolated. Real stock does go further, but not in a form you would put in a divider."
+          vars={{ target: formatSI(target, 'Ω') }}
+        />
       )}
 
       {!r.inBand && !r.outOfRange && (
-        <Warning>
-          No {series} part covers {formatSI(target, 'Ω')}: even at its {span(r.tolerance)} grade,{' '}
-          {formatSI(r.single, 'Ω')} only reaches {formatSI(r.bandLow, 'Ω')} to{' '}
-          {formatSI(r.bandHigh, 'Ω')}. Use a pair, move to a finer series, or redesign
-          around a value the series actually has.
-        </Warning>
+        <Warning
+          text="No {series} part covers {target}: even at its {tolerance} grade, {single} only reaches {bandLow} to {bandHigh}. Use a pair, move to a finer series, or redesign around a value the series actually has."
+          vars={{
+            series,
+            target: formatSI(target, 'Ω'),
+            tolerance: span(r.tolerance),
+            single: formatSI(r.single, 'Ω'),
+            bandLow: formatSI(r.bandLow, 'Ω'),
+            bandHigh: formatSI(r.bandHigh, 'Ω'),
+          }}
+        />
       )}
 
-      <Theory>
-        <p>
-          A preferred series splits each decade into N logarithmic steps, so
-          <code> value = 10^(k/N)</code> for <code>k = 0..N-1</code>, rounded to two
-          significant figures for E6, E12 and E24 and three for E48 and E96. Each step is
-          a fixed ratio of <code>10^(1/N)</code>, which is why the same mantissas repeat
-          from ohms to megohms. Error against a target is
-          <code> (Rstd - Rtarget) / Rtarget</code>.
-        </p>
-        <p>
-          E48 and E96 are exactly that rounding. E6, E12 and E24 are not: IEC 60063 keeps
-          the historical 27, 33, 39, 47 and 82 where the arithmetic gives 26.1, 31.6,
-          38.3, 46.4 and 82.5. That is why E24 has a 13 to 15 gap worth 7.1% while its
-          grade is only 5%.
-        </p>
-        <p>
-          The tolerance grades exist to close those gaps. The worst target sits at the
-          midpoint of a gap <code>[a, b]</code>, an error of <code>(b - a) / (b + a)</code>
-          away from either neighbour: exactly 20% for E6, so a 20% part always covers it.
-          Every finer grade leaves a sliver open, E24 worst at 7.1% against a 5% part, so
-          some targets sit between two parts whichever one you buy. That is what the
-          tolerance band readout is checking.
-        </p>
-        <p>
-          Pairs are searched over the whole 1 Ω to 10 MΩ table. Both{' '}
-          <code>a + b</code> and <code>a·b / (a + b)</code> rise monotonically with b, so
-          for each a the best partner is the table entry nearest the exact one, which
-          makes the search a binary search per candidate rather than every pair. Parts are
-          kept within {r.maxRatio}x of each other: past that the smaller one trims the
-          result by less than the larger one's own tolerance, so the pair is a fiction.
-        </p>
-        <p>
-          {series} mantissas: <code>{mantissas.map((m) => m.toFixed(2)).join(', ')}</code>
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "A preferred series splits each decade into N logarithmic steps, so `value = 10^(k/N)` for `k = 0..N-1`, rounded to two significant figures for E6, E12 and E24 and three for E48 and E96. Each step is a fixed ratio of `10^(1/N)`, which is why the same mantissas repeat from ohms to megohms. Error against a target is `(Rstd - Rtarget) / Rtarget`.",
+          "E48 and E96 are exactly that rounding. E6, E12 and E24 are not: IEC 60063 keeps the historical 27, 33, 39, 47 and 82 where the arithmetic gives 26.1, 31.6, 38.3, 46.4 and 82.5. That is why E24 has a 13 to 15 gap worth 7.1% while its grade is only 5%.",
+          "The tolerance grades exist to close those gaps. The worst target sits at the midpoint of a gap `[a, b]`, an error of `(b - a) / (b + a)` away from either neighbour: exactly 20% for E6, so a 20% part always covers it. Every finer grade leaves a sliver open, E24 worst at 7.1% against a 5% part, so some targets sit between two parts whichever one you buy. That is what the tolerance band readout is checking.",
+          "Pairs are searched over the whole 1 Ω to 10 MΩ table. Both `a + b` and `a·b / (a + b)` rise monotonically with b, so for each a the best partner is the table entry nearest the exact one, which makes the search a binary search per candidate rather than every pair. Parts are kept within {maxRatio}x of each other: past that the smaller one trims the result by less than the larger one's own tolerance, so the pair is a fiction.",
+          "{series} mantissas: `{mantissas}`",
+        ]}
+        vars={{
+          maxRatio: r.maxRatio,
+          series,
+          mantissas: mantissas.map((m) => m.toFixed(2)).join(', '),
+        }}
+      />
     </SimPage>
   )
 }

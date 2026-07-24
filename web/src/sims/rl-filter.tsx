@@ -4,6 +4,7 @@ import { analyse, peakMagnitude, simulate, timeConstant } from '../engine/rl'
 import type { RLMode } from '../engine/rl'
 import { sweep } from '../engine/signal'
 import { formatSI } from '../engine/units'
+import { T, useT } from '../i18n'
 import { Group, Segmented } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -20,8 +21,9 @@ const RISE_TIME_TAUS = 2.197
 function Schematic({ mode }: { mode: RLMode }) {
   const series = mode === 'lowpass' ? 'L' : 'R'
   const shunt = mode === 'lowpass' ? 'R' : 'L'
+  const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 110" aria-label={`${mode} RL network`}>
+    <svg className="schematic" viewBox="0 0 260 110" aria-label={t('{mode} RL network', { mode })}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         <circle cx="24" cy="34" r="10" />
         <path d="M18 34a6 6 0 0 1 12 0M24 24V14M24 44v36h212M34 34h36" />
@@ -96,12 +98,12 @@ export default function RLFilter() {
   const pass = mode === 'lowpass' ? ratio < 1 : ratio > 1
   const band =
     source.kind === 'dc'
-      ? 'step response'
+      ? '(step response)'
       : ratio < 0.1 || ratio > 10
         ? pass
-          ? 'deep in the passband'
-          : 'deep in the stopband'
-        : 'near the corner'
+          ? '(deep in the passband)'
+          : '(deep in the stopband)'
+        : '(near the corner)'
 
   const saturating = ipk > isat
   const overGpio = ipk * 1000 > GPIO_MAX_MA
@@ -153,17 +155,16 @@ export default function RLFilter() {
       <Oscilloscope traces={traces} dt={dt} unit="V" />
 
       {saturating && (
-        <Warning>
-          Peak coil current {formatSI(ipk, 'A')} is past the {formatSI(isat, 'A')} saturation
-          rating. A saturated core loses inductance, so the real corner climbs and this trace
-          is no longer valid. Raise R, pick a bigger core, or cut the drive.
-        </Warning>
+        <Warning
+          text="Peak coil current {ipk} is past the {isat} saturation rating. A saturated core loses inductance, so the real corner climbs and this trace is no longer valid. Raise R, pick a bigger core, or cut the drive."
+          vars={{ ipk: formatSI(ipk, 'A'), isat: formatSI(isat, 'A') }}
+        />
       )}
       {overGpio && (
-        <Warning>
-          Peak current {formatSI(ipk, 'A')} exceeds the {GPIO_MAX_MA} mA an ESP32 pin can
-          source. Drive this network from a buffer or a MOSFET, not straight off a GPIO.
-        </Warning>
+        <Warning
+          text="Peak current {ipk} exceeds the {GPIO_MAX_MA} mA an ESP32 pin can source. Drive this network from a buffer or a MOSFET, not straight off a GPIO."
+          vars={{ ipk: formatSI(ipk, 'A'), GPIO_MAX_MA }}
+        />
       )}
 
       <ReadoutGrid
@@ -171,7 +172,7 @@ export default function RLFilter() {
           {
             label: 'Cutoff fc',
             value: formatSI(readout.fc, 'Hz'),
-            note: `(R total ${formatSI(readout.rTotal, 'Ω')})`,
+            note: <T k="(R total {rTotal})" vars={{ rTotal: formatSI(readout.rTotal, 'Ω') }} />,
           },
           { label: 'Time constant', value: formatSI(readout.tau, 's') },
           {
@@ -179,7 +180,7 @@ export default function RLFilter() {
             value: formatSI(RISE_TIME_TAUS * readout.tau, 's'),
           },
           {
-            label: `Gain at ${formatSI(source.frequency, 'Hz')}`,
+            label: <T k="Gain at {frequency}" vars={{ frequency: formatSI(source.frequency, 'Hz') }} />,
             value: `${readout.gainDb.toFixed(2)} dB`,
             note: `(${readout.gain.toFixed(4)}x)`,
           },
@@ -187,14 +188,14 @@ export default function RLFilter() {
           {
             label: 'f / fc',
             value: ratio < 0.01 ? ratio.toExponential(1) : ratio.toFixed(2),
-            note: `(${band})`,
+            note: band,
           },
           { label: 'Reactance XL', value: formatSI(readout.xl, 'Ω') },
           { label: 'Source load |Z|', value: formatSI(readout.z, 'Ω') },
           {
             label: 'Peak coil current',
             value: formatSI(ipk, 'A'),
-            note: `(Isat ${formatSI(isat, 'A')})`,
+            note: <T k="(Isat {isat})" vars={{ isat: formatSI(isat, 'A') }} />,
             warn: saturating || overGpio,
           },
           {
@@ -207,38 +208,14 @@ export default function RLFilter() {
         ]}
       />
 
-      <Theory>
-        <p>
-          An inductor opposes a change in current the way a capacitor opposes a change in
-          voltage, so the whole RC page maps across: <code>tau = L / R</code> instead of
-          <code> R·C</code>, and <code>fc = R / (2·pi·L)</code> instead of{' '}
-          <code>1 / (2·pi·R·C)</code>. Reactance runs the other way,{' '}
-          <code>XL = 2·pi·f·L</code> rises with frequency while <code>Xc</code> falls, which
-          is why the output across the resistor is the low pass here and the high pass there.
-        </p>
-        <p>
-          Magnitude is <code>|H| = R / |Z|</code> for the low pass and{' '}
-          <code>sqrt(Rw² + XL²) / |Z|</code> for the high pass, with{' '}
-          <code>|Z| = sqrt((R + Rw)² + XL²)</code>. With a lossless winding those collapse to
-          the familiar <code>1 / sqrt(1 + (f/fc)²)</code> and{' '}
-          <code>(f/fc) / sqrt(1 + (f/fc)²)</code>, and phase to <code>-atan(f/fc)</code> and{' '}
-          <code>90° - atan(f/fc)</code>.
-        </p>
-        <p>
-          Winding resistance is in series with everything, so it never drops out. It raises
-          the corner (fc uses R + Rw), costs the low pass some passband, and leaves the high
-          pass a DC feedthrough floor of <code>Rw / (R + Rw)</code>. That, plus core
-          saturation and self-resonance, is why filters at signal level are built from
-          capacitors and inductors are kept for power work.
-        </p>
-        <p>
-          The scope trace is not the transfer function. The solver integrates the loop
-          current, <code>L·di/dt = v - i·(R + Rw)</code>, with exact zero-order-hold
-          discretisation, <code>i[n] = i∞ + (i[n-1] - i∞)·e^(-dt/tau)</code>. That is stable
-          at any step size, and the two element voltages come straight out of KVL, so{' '}
-          <code>V(R) + V(L)</code> equals Vin sample for sample.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "An inductor opposes a change in current the way a capacitor opposes a change in voltage, so the whole RC page maps across: `tau = L / R` instead of `R·C`, and `fc = R / (2·pi·L)` instead of `1 / (2·pi·R·C)`. Reactance runs the other way, `XL = 2·pi·f·L` rises with frequency while `Xc` falls, which is why the output across the resistor is the low pass here and the high pass there.",
+          "Magnitude is `|H| = R / |Z|` for the low pass and `sqrt(Rw² + XL²) / |Z|` for the high pass, with `|Z| = sqrt((R + Rw)² + XL²)`. With a lossless winding those collapse to the familiar `1 / sqrt(1 + (f/fc)²)` and `(f/fc) / sqrt(1 + (f/fc)²)`, and phase to `-atan(f/fc)` and `90° - atan(f/fc)`.",
+          "Winding resistance is in series with everything, so it never drops out. It raises the corner (fc uses R + Rw), costs the low pass some passband, and leaves the high pass a DC feedthrough floor of `Rw / (R + Rw)`. That, plus core saturation and self-resonance, is why filters at signal level are built from capacitors and inductors are kept for power work.",
+          "The scope trace is not the transfer function. The solver integrates the loop current, `L·di/dt = v - i·(R + Rw)`, with exact zero-order-hold discretisation, `i[n] = i∞ + (i[n-1] - i∞)·e^(-dt/tau)`. That is stable at any step size, and the two element voltages come straight out of KVL, so `V(R) + V(L)` equals Vin sample for sample.",
+        ]}
+      />
     </SimPage>
   )
 }

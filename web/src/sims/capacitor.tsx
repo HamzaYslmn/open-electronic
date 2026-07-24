@@ -3,6 +3,7 @@ import { analyse, curve, memberVoltages } from '../engine/capacitor'
 import type { CapMode, CurveMode } from '../engine/capacitor'
 import { GPIO_MAX_MA, VCC } from '../engine/constants'
 import { formatSI } from '../engine/units'
+import { T, useT } from '../i18n'
 import { Group, Segmented, Toggle } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -13,8 +14,9 @@ import SimPage from '../ui/SimPage'
 const N = 8192
 
 function Schematic({ mode }: { mode: CapMode }) {
+  const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 110" aria-label={`capacitors in ${mode}`}>
+    <svg className="schematic" viewBox="0 0 260 110" aria-label={t('capacitors in {mode}', { mode })}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         <circle cx="24" cy="34" r="10" />
         <path d="M18 34a6 6 0 0 1 12 0M24 24V14M24 44v36h212M34 34h36" />
@@ -165,7 +167,7 @@ export default function Capacitor() {
           {
             label: 'Bank capacitance',
             value: formatSI(readout.total, 'F'),
-            note: `(${values.length} in ${mode})`,
+            note: <T k="({values} in {mode})" vars={{ values: values.length, mode }} />,
           },
           { label: 'Time constant', value: formatSI(readout.tau, 's'), note: '(R·C)' },
           {
@@ -179,12 +181,12 @@ export default function Capacitor() {
           {
             label: 'Stored energy',
             value: formatSI(readout.e, 'J'),
-            note: `at ${formatSI(supply, 'V')}`,
+            note: <T k="at {supply}" vars={{ supply: formatSI(supply, 'V') }} />,
           },
           {
             label: 'Energy at target',
             value: formatSI(readout.eTarget, 'J'),
-            note: `(${((readout.eTarget / readout.e) * 100 || 0).toFixed(1)}% of full)`,
+            note: <T k="({e}% of full)" vars={{ e: ((readout.eTarget / readout.e) * 100 || 0).toFixed(1) }} />,
           },
           { label: 'Stored charge', value: formatSI(readout.q, 'C') },
           {
@@ -211,62 +213,39 @@ export default function Capacitor() {
       />
 
       {gpioOver && (
-        <Warning>
-          Inrush is {formatSI(readout.peakCurrent, 'A')}, over the {GPIO_MAX_MA} mA an ESP32
-          GPIO is rated for. An uncharged capacitor is a short circuit at t = 0, so drive it
-          through a bigger resistor or a transistor.
-        </Warning>
+        <Warning
+          text="Inrush is {peakCurrent}, over the {GPIO_MAX_MA} mA an ESP32 GPIO is rated for. An uncharged capacitor is a short circuit at t = 0, so drive it through a bigger resistor or a transistor."
+          vars={{ peakCurrent: formatSI(readout.peakCurrent, 'A'), GPIO_MAX_MA }}
+        />
       )}
 
       {overRail && curveMode === 'charge' && (
-        <Warning>
-          The target is above the supply, so the curve never reaches it. Nothing above the rail
-          is reachable through a passive RC.
-        </Warning>
+        <Warning
+          text="The target is above the supply, so the curve never reaches it. Nothing above the rail is reachable through a passive RC."
+        />
       )}
 
       {unevenSplit && (
-        <Warning>
-          The string is unbalanced. Series capacitors share charge, not voltage, so the smallest
-          member sits at {formatSI(readout.maxMemberVoltage, 'V')} of the applied{' '}
-          {formatSI(supply, 'V')} instead of an even{' '}
-          {formatSI(supply / values.length, 'V')}. Check it against its voltage rating, or add
-          balancing resistors across each cap.
-        </Warning>
+        <Warning
+          text="The string is unbalanced. Series capacitors share charge, not voltage, so the smallest member sits at {maxMemberVoltage} of the applied {supply} instead of an even {values}. Check it against its voltage rating, or add balancing resistors across each cap."
+          vars={{
+            maxMemberVoltage: formatSI(readout.maxMemberVoltage, 'V'),
+            supply: formatSI(supply, 'V'),
+            values: formatSI(supply / values.length, 'V'),
+          }}
+        />
       )}
 
-      <Theory>
-        <p>
-          Parallel capacitors add plate area, so <code>C = C1 + C2 + ...</code>. In series every
-          capacitor carries the same charge and the voltages add, so{' '}
-          <code>1/C = 1/C1 + 1/C2 + ...</code> and the total is smaller than the smallest member.
-        </p>
-        <p>
-          Stored energy is <code>E = 0.5·C·V²</code> and stored charge is <code>Q = C·V</code>.
-          Energy is quadratic in voltage, so half the rail holds a quarter of the energy.
-        </p>
-        <p>
-          Charging through R follows <code>v(t) = V·(1 - e^(-t/RC))</code> and discharging follows{' '}
-          <code>v(t) = V0·e^(-t/RC)</code>. Inverting the first gives{' '}
-          <code>t = -R·C·ln(1 - v/V)</code>, which is where the time-to-target figure comes from.
-          One tau is 63.2%, two is 86.5%, five is 99.3%, and the rail itself is an asymptote the
-          curve never actually touches.
-        </p>
-        <p>
-          The scope samples those closed forms directly rather than integrating, so the trace is
-          exact at any zoom and cannot go unstable when dt exceeds tau.
-        </p>
-        <p>
-          Charging a capacitor through a resistor always dissipates <code>0.5·C·V²</code> in that
-          resistor, exactly as much as ends up stored, no matter how large or small R is. That is
-          why linear charging tops out at 50% efficient and why switchers exist.
-        </p>
-        <p>
-          In a series string the voltage divides inversely with capacitance,{' '}
-          <code>Vi = V·Ctotal/Ci</code>, so the smallest capacitor takes the most volts. That is
-          the usual failure mode when caps are stacked for a higher working voltage.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "Parallel capacitors add plate area, so `C = C1 + C2 + ...`. In series every capacitor carries the same charge and the voltages add, so `1/C = 1/C1 + 1/C2 + ...` and the total is smaller than the smallest member.",
+          "Stored energy is `E = 0.5·C·V²` and stored charge is `Q = C·V`. Energy is quadratic in voltage, so half the rail holds a quarter of the energy.",
+          "Charging through R follows `v(t) = V·(1 - e^(-t/RC))` and discharging follows `v(t) = V0·e^(-t/RC)`. Inverting the first gives `t = -R·C·ln(1 - v/V)`, which is where the time-to-target figure comes from. One tau is 63.2%, two is 86.5%, five is 99.3%, and the rail itself is an asymptote the curve never actually touches.",
+          "The scope samples those closed forms directly rather than integrating, so the trace is exact at any zoom and cannot go unstable when dt exceeds tau.",
+          "Charging a capacitor through a resistor always dissipates `0.5·C·V²` in that resistor, exactly as much as ends up stored, no matter how large or small R is. That is why linear charging tops out at 50% efficient and why switchers exist.",
+          "In a series string the voltage divides inversely with capacitance, `Vi = V·Ctotal/Ci`, so the smallest capacitor takes the most volts. That is the usual failure mode when caps are stacked for a higher working voltage.",
+        ]}
+      />
     </SimPage>
   )
 }

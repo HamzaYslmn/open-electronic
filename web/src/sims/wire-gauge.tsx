@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import { VCC_5V } from '../engine/constants'
 import { analyseWire } from '../engine/conductor'
 import { formatSI } from '../engine/units'
+import { T } from '../i18n'
 import { Group, Toggle } from '../ui/Controls'
 import Param from '../ui/Param'
 import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
@@ -53,7 +54,7 @@ export default function WireGauge() {
           {
             label: 'Voltage drop',
             value: formatSI(r.vDrop, 'V'),
-            note: `${(r.dropFraction * 100).toFixed(2)}% of supply`,
+            note: <T k="{dropFraction}% of supply" vars={{ dropFraction: (r.dropFraction * 100).toFixed(2) }} />,
             warn: r.excessiveDrop,
           },
           { label: 'Voltage at load', value: formatSI(r.vLoad, 'V') },
@@ -69,47 +70,33 @@ export default function WireGauge() {
       />
 
       {r.overAmpacity && (
-        <Warning>
-          {formatSI(current, 'A')} through {awg} AWG exceeds the bundled-wiring guidance of{' '}
-          {formatSI(r.ampacityBundled, 'A')}. In free air on its own it may be acceptable, but
-          inside a loom or a conduit the heat has nowhere to go. Drop three gauges to double
-          the copper.
-        </Warning>
+        <Warning
+          text="{current} through {awg} AWG exceeds the bundled-wiring guidance of {ampacityBundled}. In free air on its own it may be acceptable, but inside a loom or a conduit the heat has nowhere to go. Drop three gauges to double the copper."
+          vars={{
+            current: formatSI(current, 'A'),
+            awg,
+            ampacityBundled: formatSI(r.ampacityBundled, 'A'),
+          }}
+        />
       )}
       {r.excessiveDrop && (
-        <Warning>
-          Losing {formatSI(r.vDrop, 'V')}, which is {(r.dropFraction * 100).toFixed(1)}% of the
-          supply. Above about 3% most loads misbehave: regulators drop out, motors lose torque,
-          and LED strips visibly dim toward the far end.
-        </Warning>
+        <Warning
+          text="Losing {vDrop}, which is {dropFraction}% of the supply. Above about 3% most loads misbehave: regulators drop out, motors lose torque, and LED strips visibly dim toward the far end."
+          vars={{
+            vDrop: formatSI(r.vDrop, 'V'),
+            dropFraction: (r.dropFraction * 100).toFixed(1),
+          }}
+        />
       )}
 
-      <Theory>
-        <p>
-          The AWG series is geometric: <code>d = 0.127 mm · 92^((36-n)/39)</code>. That ratio
-          is chosen so six gauge steps is almost exactly a factor of four in area, three steps
-          is a factor of two, and ten steps is a factor of ten. Handy for mental arithmetic:
-          going from 22 AWG to 12 AWG gives ten times the copper.
-        </p>
-        <p>
-          Resistance is <code>R = rho·L/A</code> with copper at 1.68e-8 Ω·m. The drop is{' '}
-          <code>V = I·R</code> over <em>both</em> conductors, since the current has to come
-          back. Halving that by only counting one leg is the single most common error in
-          cable sizing.
-        </p>
-        <p>
-          Copper gains about 0.39% resistance per kelvin, so a wire that is already running
-          warm gets worse: more resistance means more loss means more heat. That feedback is
-          weak enough to be stable in copper, but it is why ampacity figures assume a
-          temperature rise and why bundling wires derates them so heavily.
-        </p>
-        <p>
-          Ampacity here is rule-of-thumb guidance, roughly 7.5 A/mm² for a single chassis run
-          in free air and 3.5 A/mm² bundled. Real installations are governed by wiring
-          regulations that account for insulation rating, grouping and ambient temperature.
-          Use this to choose a starting point, not to certify an installation.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "The AWG series is geometric: `d = 0.127 mm · 92^((36-n)/39)`. That ratio is chosen so six gauge steps is almost exactly a factor of four in area, three steps is a factor of two, and ten steps is a factor of ten. Handy for mental arithmetic: going from 22 AWG to 12 AWG gives ten times the copper.",
+          "Resistance is `R = rho·L/A` with copper at 1.68e-8 Ω·m. The drop is `V = I·R` over *both* conductors, since the current has to come back. Halving that by only counting one leg is the single most common error in cable sizing.",
+          "Copper gains about 0.39% resistance per kelvin, so a wire that is already running warm gets worse: more resistance means more loss means more heat. That feedback is weak enough to be stable in copper, but it is why ampacity figures assume a temperature rise and why bundling wires derates them so heavily.",
+          "Ampacity here is rule-of-thumb guidance, roughly 7.5 A/mm² for a single chassis run in free air and 3.5 A/mm² bundled. Real installations are governed by wiring regulations that account for insulation rating, grouping and ambient temperature. Use this to choose a starting point, not to certify an installation.",
+        ]}
+      />
     </SimPage>
   )
 }

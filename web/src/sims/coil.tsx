@@ -3,6 +3,7 @@ import { PROTECTION_OPTIONS, analyse, simulate } from '../engine/coil'
 import type { CoilParams, Protection } from '../engine/coil'
 import { GPIO_MAX_MA, VCC } from '../engine/constants'
 import { formatSI } from '../engine/units'
+import { T, useT } from '../i18n'
 import { Group, Segmented } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import type { Trace } from '../ui/Oscilloscope'
@@ -14,8 +15,9 @@ import SimPage from '../ui/SimPage'
 const N = 8192
 
 function Schematic({ protection }: { protection: Protection }) {
+  const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 130" aria-label="Low side switched coil">
+    <svg className="schematic" viewBox="0 0 260 130" aria-label={t('Low side switched coil')}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         {/* supply rail */}
         <path d="M40 16h180M150 16v14" />
@@ -214,20 +216,20 @@ export default function Coil() {
           {
             label: 'Reactance XL',
             value: formatSI(readout.xl, 'Ω'),
-            note: `at ${formatSI(frequency, 'Hz')}`,
+            note: <T k="at {frequency}" vars={{ frequency: formatSI(frequency, 'Hz') }} />,
           },
           { label: 'Coil impedance |Z|', value: formatSI(readout.z, 'Ω') },
           {
             label: 'Kick, unclamped',
             value: formatSI(readout.kick, 'V'),
-            note: `switch sees ${formatSI(readout.vSwitchOpen, 'V')}`,
+            note: <T k="switch sees {vSwitchOpen}" vars={{ vSwitchOpen: formatSI(readout.vSwitchOpen, 'V') }} />,
             warn: !readout.hasClamp && readout.overBreakdown,
           },
           {
             label: 'Clamped to',
             value: readout.hasClamp ? formatSI(readout.vSwitchClamped, 'V') : 'nothing fitted',
             note: readout.hasClamp
-              ? `supply + Vf (${formatSI(readout.vf, 'V')})`
+              ? <T k="supply + Vf ({vf})" vars={{ vf: formatSI(readout.vf, 'V') }} />
               : 'no freewheel path',
             warn: !readout.hasClamp || readout.clampOverBreakdown,
           },
@@ -240,89 +242,65 @@ export default function Coil() {
           {
             label: 'Clamp dissipation',
             value: readout.hasClamp ? formatSI(readout.diodePower, 'W') : 'n/a',
-            note: readout.hasClamp ? `peak ${formatSI(readout.iPeak, 'A')}` : undefined,
+            note: readout.hasClamp ? <T k="peak {iPeak}" vars={{ iPeak: formatSI(readout.iPeak, 'A') }} /> : undefined,
           },
           {
             label: 'Saturation headroom',
-            value: `${satPercent.toFixed(0)}% of Isat`,
+            value: <T k="{satPercent}% of Isat" vars={{ satPercent: satPercent.toFixed(0) }} />,
             warn: readout.saturating,
           },
         ]}
       />
 
       {!readout.hasClamp && (
-        <Warning>
-          No clamp fitted. Interrupting {formatSI(readout.iPeak, 'A')} through{' '}
-          {formatSI(l, 'H')} in {formatSI(turnOff, 's')} drives the collector to{' '}
-          {formatSI(readout.vSwitchOpen, 'V')}
-          {readout.overBreakdown
-            ? `, past the ${formatSI(vBreakdown, 'V')} rating of the switch. The transistor
-               avalanches and takes the energy as heat, usually once.`
-            : '. That is inside the rating here, but only because the coil is small.'}{' '}
-          Real boards clamp it anyway: winding capacitance is the only thing holding this
-          number finite.
-        </Warning>
+        <Warning
+          text="No clamp fitted. Interrupting {iPeak} through {l} in {turnOff} drives the collector to {vSwitchOpen}{small} Real boards clamp it anyway: winding capacitance is the only thing holding this number finite."
+          vars={{
+            iPeak: formatSI(readout.iPeak, 'A'),
+            l: formatSI(l, 'H'),
+            turnOff: formatSI(turnOff, 's'),
+            vSwitchOpen: formatSI(readout.vSwitchOpen, 'V'),
+            vBreakdown: formatSI(vBreakdown, 'V'),
+            small: readout.overBreakdown
+              ? ', past the {vBreakdown} rating of the switch. The transistor avalanches and takes the energy as heat, usually once.'
+              : '. That is inside the rating here, but only because the coil is small.',
+          }}
+        />
       )}
 
       {readout.hasClamp && readout.clampOverBreakdown && (
-        <Warning>
-          Even clamped, the switch sits at {formatSI(readout.vSwitchClamped, 'V')}, above its{' '}
-          {formatSI(vBreakdown, 'V')} rating. The diode is not the problem, the supply is.
-        </Warning>
+        <Warning
+          text="Even clamped, the switch sits at {vSwitchClamped}, above its {vBreakdown} rating. The diode is not the problem, the supply is."
+          vars={{
+            vSwitchClamped: formatSI(readout.vSwitchClamped, 'V'),
+            vBreakdown: formatSI(vBreakdown, 'V'),
+          }}
+        />
       )}
 
       {readout.saturating && (
-        <Warning>
-          Peak current is {satPercent.toFixed(0)}% of the {formatSI(iSat, 'A')} saturation
-          point. Past saturation the inductance collapses, the ramp goes near vertical and
-          the real current overshoots everything shown here. This model assumes L is
-          constant, so treat the trace as optimistic.
-        </Warning>
+        <Warning
+          text="Peak current is {satPercent}% of the {iSat} saturation point. Past saturation the inductance collapses, the ramp goes near vertical and the real current overshoots everything shown here. This model assumes L is constant, so treat the trace as optimistic."
+          vars={{ satPercent: satPercent.toFixed(0), iSat: formatSI(iSat, 'A') }}
+        />
       )}
 
       {readout.overGpio && (
-        <Warning>
-          {formatSI(readout.iPeak, 'A')} is well past the {GPIO_MAX_MA} mA an ESP32 pin can
-          sink. The transistor in the schematic is not optional, and the pin drives its base
-          or gate only.
-        </Warning>
+        <Warning
+          text="{iPeak} is well past the {GPIO_MAX_MA} mA an ESP32 pin can sink. The transistor in the schematic is not optional, and the pin drives its base or gate only."
+          vars={{ iPeak: formatSI(readout.iPeak, 'A'), GPIO_MAX_MA }}
+        />
       )}
 
-      <Theory>
-        <p>
-          Closing the switch puts the supply across a series RL. Current cannot step, so it
-          ramps: <code>i(t) = (V/R)·(1 - e^(-t·R/L))</code> with time constant{' '}
-          <code>tau = L/R</code>. It is 63.2% of the way there after one tau and 99.3% after
-          five, exactly like a capacitor charging, with current and voltage swapped.
-        </p>
-        <p>
-          That current is energy in the core, <code>E = 0.5·L·I²</code>. Open the switch and
-          the energy has nowhere to go, so the coil produces whatever voltage keeps the
-          current flowing: <code>Vkick = L·di/dt</code>. Turn off 44 mA through 100 mH in one
-          microsecond and that is over 4 kV. The switch, not the coil, is what fails.
-        </p>
-        <p>
-          A flyback diode across the coil gives the current a loop to run in. The switch node
-          is then held at <code>Vsupply + Vf</code>, i.e. under a volt above the rail. The
-          current freewheels down against the diode drop,{' '}
-          <code>i(t) = (I + Vf/R)·e^(-t·R/L) - Vf/R</code>, reaching zero at{' '}
-          <code>t = (L/R)·ln(1 + I·R/Vf)</code>. That is the catch: the clamp is why a
-          relay with a plain diode drops out slowly. A Schottky clamps lower, a zener or a
-          resistor in series with the diode releases faster at the cost of a higher switch
-          voltage.
-        </p>
-        <p>
-          At the drive frequency the winding also presents <code>XL = 2·pi·f·L</code>, so the
-          coil impedance is <code>|Z| = sqrt(R² + XL²)</code>. That is what limits current
-          once you PWM the coil rather than switching it once.
-        </p>
-        <p>
-          Both phases of the trace step with exact zero-order-hold discretisation,{' '}
-          <code>i[n] = I∞ + (i[n-1] - I∞)·e^(-dt/tau)</code>, so the samples sit on the
-          analytic curve at any step size instead of ringing or diverging the way forward
-          Euler does when dt passes tau.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "Closing the switch puts the supply across a series RL. Current cannot step, so it ramps: `i(t) = (V/R)·(1 - e^(-t·R/L))` with time constant `tau = L/R`. It is 63.2% of the way there after one tau and 99.3% after five, exactly like a capacitor charging, with current and voltage swapped.",
+          "That current is energy in the core, `E = 0.5·L·I²`. Open the switch and the energy has nowhere to go, so the coil produces whatever voltage keeps the current flowing: `Vkick = L·di/dt`. Turn off 44 mA through 100 mH in one microsecond and that is over 4 kV. The switch, not the coil, is what fails.",
+          "A flyback diode across the coil gives the current a loop to run in. The switch node is then held at `Vsupply + Vf`, i.e. under a volt above the rail. The current freewheels down against the diode drop, `i(t) = (I + Vf/R)·e^(-t·R/L) - Vf/R`, reaching zero at `t = (L/R)·ln(1 + I·R/Vf)`. That is the catch: the clamp is why a relay with a plain diode drops out slowly. A Schottky clamps lower, a zener or a resistor in series with the diode releases faster at the cost of a higher switch voltage.",
+          "At the drive frequency the winding also presents `XL = 2·pi·f·L`, so the coil impedance is `|Z| = sqrt(R² + XL²)`. That is what limits current once you PWM the coil rather than switching it once.",
+          "Both phases of the trace step with exact zero-order-hold discretisation, `i[n] = I∞ + (i[n-1] - I∞)·e^(-dt/tau)`, so the samples sit on the analytic curve at any step size instead of ringing or diverging the way forward Euler does when dt passes tau.",
+        ]}
+      />
     </SimPage>
   )
 }

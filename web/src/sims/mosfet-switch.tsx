@@ -3,6 +3,7 @@ import { GPIO_MAX_MA, VCC } from '../engine/constants'
 import { DEFAULTS, analyse, toCelsius, waveform } from '../engine/mosfet'
 import type { MosfetParams } from '../engine/mosfet'
 import { formatSI } from '../engine/units'
+import { T, useT } from '../i18n'
 import { Group, Segmented } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -37,8 +38,9 @@ function matchPart(p: MosfetParams): PartKey {
 }
 
 function Schematic() {
+  const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 132" aria-label="Low side N-channel MOSFET switch">
+    <svg className="schematic" viewBox="0 0 260 132" aria-label={t('Low side N-channel MOSFET switch')}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         {/* gate path: GPIO, series resistor, gate plate */}
         <circle cx="24" cy="75" r="3" />
@@ -129,7 +131,7 @@ export default function MosfetSwitch() {
               max={15}
               log={false}
               step={0.1}
-              hint={`ESP32 GPIO is ${VCC} V`}
+              hint={<T k="ESP32 GPIO is {VCC} V" vars={{ VCC }} />}
             />
             <Param
               label="Gate resistor Rg"
@@ -273,40 +275,38 @@ export default function MosfetSwitch() {
       <Oscilloscope traces={traces} dt={dt} unit="V" />
 
       {a.belowThreshold && (
-        <Warning>
-          VGS of {formatSI(p.vgsDrive, 'V')} is at or below the {formatSI(p.vth, 'V')} threshold,
-          so no channel forms and the load never sees current. This is the classic failure of
-          hanging a standard MOSFET off a 3.3 V pin: pick a logic level part, or add a gate
-          driver or a small BJT level shifter to swing the gate to 10 V.
-        </Warning>
+        <Warning
+          text="VGS of {vgsDrive} is at or below the {vth} threshold, so no channel forms and the load never sees current. This is the classic failure of hanging a standard MOSFET off a 3.3 V pin: pick a logic level part, or add a gate driver or a small BJT level shifter to swing the gate to 10 V."
+          vars={{ vgsDrive: formatSI(p.vgsDrive, 'V'), vth: formatSI(p.vth, 'V') }}
+        />
       )}
       {a.region === 'saturation' && (
-        <Warning>
-          The FET is sitting in saturation, i.e. behaving as a constant current source at{' '}
-          {formatSI(a.id, 'A')} with {formatSI(a.vds, 'V')} across it. That is a linear
-          regulator, not a switch, and it dissipates {formatSI(a.pCond, 'W')}. Raise VGS or
-          raise the load resistance.
-        </Warning>
+        <Warning
+          text="The FET is sitting in saturation, i.e. behaving as a constant current source at {id} with {vds} across it. That is a linear regulator, not a switch, and it dissipates {pCond}. Raise VGS or raise the load resistance."
+          vars={{
+            id: formatSI(a.id, 'A'),
+            vds: formatSI(a.vds, 'V'),
+            pCond: formatSI(a.pCond, 'W'),
+          }}
+        />
       )}
       {a.gateOverCurrent && (
-        <Warning>
-          Peak gate current is {formatSI(a.igPeak, 'A')}, over the {GPIO_MAX_MA} mA an ESP32
-          GPIO is rated for. Raise Rg or use a gate driver.
-        </Warning>
+        <Warning
+          text="Peak gate current is {igPeak}, over the {GPIO_MAX_MA} mA an ESP32 GPIO is rated for. Raise Rg or use a gate driver."
+          vars={{ igPeak: formatSI(a.igPeak, 'A'), GPIO_MAX_MA }}
+        />
       )}
       {a.transitionBound && (
-        <Warning>
-          The edges take {formatSI(a.trEff + a.tfEff, 's')} out of a{' '}
-          {formatSI(1 / p.fsw, 's')} period. The FET spends most of the cycle in transition, so
-          the hard switching loss model no longer applies and the real device will be hotter
-          than shown.
-        </Warning>
+        <Warning
+          text="The edges take {tfEff} out of a {fsw} period. The FET spends most of the cycle in transition, so the hard switching loss model no longer applies and the real device will be hotter than shown."
+          vars={{ tfEff: formatSI(a.trEff + a.tfEff, 's'), fsw: formatSI(1 / p.fsw, 's') }}
+        />
       )}
       {a.overTemp && (
-        <Warning>
-          Junction is at {toCelsius(a.tj).toFixed(0)} °C, past the 150 °C rating. Add a
-          heatsink (lower Rth), lower the current, or improve the gate drive.
-        </Warning>
+        <Warning
+          text="Junction is at {tj} °C, past the 150 °C rating. Add a heatsink (lower Rth), lower the current, or improve the gate drive."
+          vars={{ tj: toCelsius(a.tj).toFixed(0) }}
+        />
       )}
 
       <ReadoutGrid
@@ -319,31 +319,31 @@ export default function MosfetSwitch() {
           {
             label: 'Gate overdrive',
             value: formatSI(a.vov, 'V'),
-            note: `(VGS ${formatSI(p.vgsDrive, 'V')} - Vth ${formatSI(p.vth, 'V')})`,
+            note: <T k="(VGS {vgsDrive} - Vth {vth})" vars={{ vgsDrive: formatSI(p.vgsDrive, 'V'), vth: formatSI(p.vth, 'V') }} />,
             warn: a.belowThreshold,
           },
           {
             label: 'RDS(on) at this VGS',
             value: formatSI(a.rdsOn, 'Ω'),
-            note: `(datasheet ${formatSI(p.rdsOnSpec, 'Ω')} at ${formatSI(p.vgsSpec, 'V')})`,
+            note: <T k="(datasheet {rdsOnSpec} at {vgsSpec})" vars={{ rdsOnSpec: formatSI(p.rdsOnSpec, 'Ω'), vgsSpec: formatSI(p.vgsSpec, 'V') }} />,
             warn: a.underDriven,
           },
           {
             label: 'Drain current',
             value: formatSI(a.id, 'A'),
-            note: `(ideal switch ${formatSI(a.idIdeal, 'A')})`,
+            note: <T k="(ideal switch {idIdeal})" vars={{ idIdeal: formatSI(a.idIdeal, 'A') }} />,
           },
           { label: 'VDS on state', value: formatSI(a.vds, 'V') },
           { label: 'Miller plateau', value: formatSI(a.vPlateau, 'V') },
           {
             label: 'Conduction loss',
             value: formatSI(a.pCond, 'W'),
-            note: `(D·Id²·RDS at ${(p.duty * 100).toFixed(0)}% duty)`,
+            note: <T k="(D·Id²·RDS at {duty}% duty)" vars={{ duty: (p.duty * 100).toFixed(0) }} />,
           },
           {
             label: 'Switching loss',
             value: formatSI(a.pSw, 'W'),
-            note: `(edges ${formatSI(a.trEff, 's')} / ${formatSI(a.tfEff, 's')})`,
+            note: <T k="(edges {trEff} / {tfEff})" vars={{ trEff: formatSI(a.trEff, 's'), tfEff: formatSI(a.tfEff, 's') }} />,
             warn: a.transitionBound,
           },
           {
@@ -354,7 +354,7 @@ export default function MosfetSwitch() {
           {
             label: 'Peak gate current',
             value: formatSI(a.igPeak, 'A'),
-            note: `(GPIO limit ${GPIO_MAX_MA} mA)`,
+            note: <T k="(GPIO limit {GPIO_MAX_MA} mA)" vars={{ GPIO_MAX_MA }} />,
             warn: a.gateOverCurrent,
           },
           {
@@ -370,53 +370,26 @@ export default function MosfetSwitch() {
           {
             label: 'Junction temperature',
             value: `${toCelsius(a.tj).toFixed(1)} °C`,
-            note: `(rise ${(a.tj - p.ta).toFixed(1)} K over ${toCelsius(p.ta).toFixed(0)} °C)`,
+            note: <T k="(rise {ta} K over {ta2} °C)" vars={{ ta: (a.tj - p.ta).toFixed(1), ta2: toCelsius(p.ta).toFixed(0) }} />,
             warn: a.overTemp,
           },
           {
             label: 'Power to load',
             value: formatSI(a.pLoad, 'W'),
-            note: `(${(a.efficiency * 100).toFixed(1)}% of what the switch passes)`,
+            note: <T k="({efficiency}% of what the switch passes)" vars={{ efficiency: (a.efficiency * 100).toFixed(1) }} />,
           },
         ]}
       />
 
-      <Theory>
-        <p>
-          The channel follows the square law. Below threshold there is no channel at all. Above
-          it, with <code>Vov = VGS - Vth</code>, the drain current is{' '}
-          <code>Id = k·(Vov·VDS - VDS²/2)</code> in triode and saturates at{' '}
-          <code>Id = 0.5·k·Vov²</code> once <code>VDS &gt; Vov</code>. The operating point is
-          the intersection of that curve with the load line{' '}
-          <code>VDS = VS - Id·Rload</code>, solved in closed form rather than iterated.
-        </p>
-        <p>
-          RDS(on) is not a constant. Deep in triode the channel is{' '}
-          <code>rds = 1 / (k·Vov)</code>, so a datasheet quote pins down k:{' '}
-          <code>k = 1 / (RDS(on)spec · (VGSspec - Vth))</code>, and at any other gate voltage{' '}
-          <code>RDS(on) = RDS(on)spec · (VGSspec - Vth) / (VGS - Vth)</code>. That is why a part
-          advertised at 22 mΩ is nearer 51 mΩ on 3.3 V, and why a part quoted at 10 V is simply
-          off.
-        </p>
-        <p>
-          Losses split three ways. Conduction is <code>Pcond = D·Id²·RDS(on)</code>. Crossover
-          is <code>Psw = 0.5·VDS·Id·(tr + tf)·fsw</code>, taking each edge as a current rise at
-          full voltage followed by a voltage fall at full current, which is the conservative
-          clamped inductive case. Gate charge costs <code>Pgate = Qg·VGS·fsw</code>, dissipated
-          in the gate resistor and the driving pin rather than in the FET. Only the first two
-          heat the die, so <code>Tj = Ta + (Pcond + Psw)·Rth(j-a)</code>.
-        </p>
-        <p>
-          The edge times used are <code>max(tr, Qg·Rg/VGS)</code>. A gate cannot move faster
-          than the drive can shift its charge, so a large gate resistor on a GPIO, not the die,
-          usually sets the switching speed and therefore the switching loss.
-        </p>
-        <p>
-          The scope trace is built from that piecewise description evaluated directly at each
-          sample time, so it is exact at any time base and integrating <code>VDS·Id</code> over
-          it returns the same numbers as the closed forms above.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "The channel follows the square law. Below threshold there is no channel at all. Above it, with `Vov = VGS - Vth`, the drain current is `Id = k·(Vov·VDS - VDS²/2)` in triode and saturates at `Id = 0.5·k·Vov²` once `VDS &gt; Vov`. The operating point is the intersection of that curve with the load line `VDS = VS - Id·Rload`, solved in closed form rather than iterated.",
+          "RDS(on) is not a constant. Deep in triode the channel is `rds = 1 / (k·Vov)`, so a datasheet quote pins down k: `k = 1 / (RDS(on)spec · (VGSspec - Vth))`, and at any other gate voltage `RDS(on) = RDS(on)spec · (VGSspec - Vth) / (VGS - Vth)`. That is why a part advertised at 22 mΩ is nearer 51 mΩ on 3.3 V, and why a part quoted at 10 V is simply off.",
+          "Losses split three ways. Conduction is `Pcond = D·Id²·RDS(on)`. Crossover is `Psw = 0.5·VDS·Id·(tr + tf)·fsw`, taking each edge as a current rise at full voltage followed by a voltage fall at full current, which is the conservative clamped inductive case. Gate charge costs `Pgate = Qg·VGS·fsw`, dissipated in the gate resistor and the driving pin rather than in the FET. Only the first two heat the die, so `Tj = Ta + (Pcond + Psw)·Rth(j-a)`.",
+          "The edge times used are `max(tr, Qg·Rg/VGS)`. A gate cannot move faster than the drive can shift its charge, so a large gate resistor on a GPIO, not the die, usually sets the switching speed and therefore the switching loss.",
+          "The scope trace is built from that piecewise description evaluated directly at each sample time, so it is exact at any time base and integrating `VDS·Id` over it returns the same numbers as the closed forms above.",
+        ]}
+      />
     </SimPage>
   )
 }

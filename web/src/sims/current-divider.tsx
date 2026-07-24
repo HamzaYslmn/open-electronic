@@ -3,6 +3,7 @@ import { VCC, GPIO_MAX_MA } from '../engine/constants'
 import { QUARTER_WATT, analyse } from '../engine/currentDivider'
 import type { BranchResult, Drive } from '../engine/currentDivider'
 import { formatSI } from '../engine/units'
+import { T, useT } from '../i18n'
 import { Group, Segmented } from '../ui/Controls'
 import { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -19,8 +20,9 @@ function Schematic({ count, kind }: { count: number; kind: DriveKind }) {
   const xs = Array.from({ length: count }, (_, i) =>
     count === 1 ? 160 : 90 + (i * 142) / (count - 1),
   )
+  const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 120" aria-label="Parallel branch network">
+    <svg className="schematic" viewBox="0 0 260 120" aria-label={t('Parallel branch network')}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         {kind === 'voltage' ? (
           <>
@@ -238,7 +240,7 @@ export default function CurrentDivider() {
           {
             label: 'Node voltage',
             value: formatSI(readout.voltage, 'V'),
-            note: kind === 'voltage' ? `(${formatSI(supply - readout.voltage, 'V')} across Rs)` : undefined,
+            note: kind === 'voltage' ? <T k="({voltage} across Rs)" vars={{ voltage: formatSI(supply - readout.voltage, 'V') }} /> : undefined,
           },
           {
             label: 'Total current',
@@ -248,7 +250,7 @@ export default function CurrentDivider() {
           },
           { label: 'Total power', value: formatSI(readout.totalPower, 'W') },
           ...readout.branches.map((b, i) => ({
-            label: `R${i + 1} current`,
+            label: <T k="R{i} current" vars={{ i: i + 1 }} />,
             value: formatSI(b.current, 'A'),
             note: `(${(b.share * 100).toFixed(1)}%, ${formatSI(b.power, 'W')})`,
             warn: b.overPower,
@@ -257,44 +259,34 @@ export default function CurrentDivider() {
       />
 
       {readout.overGpio && (
-        <Warning>
-          Total draw is {formatSI(readout.total, 'A')}, past the {GPIO_MAX_MA} mA an ESP32 pin
-          may source or sink. Feed the bank from the rail through a MOSFET or a driver, not
-          straight off a GPIO.
-        </Warning>
+        <Warning
+          text="Total draw is {total}, past the {GPIO_MAX_MA} mA an ESP32 pin may source or sink. Feed the bank from the rail through a MOSFET or a driver, not straight off a GPIO."
+          vars={{ total: formatSI(readout.total, 'A'), GPIO_MAX_MA }}
+        />
       )}
       {readout.anyOverPower && (
-        <Warning>
-          {hot} over the {formatSI(rating, 'W')} rating. Pick a larger part or raise the branch
-          resistance.
-        </Warning>
+        <Warning
+          text="{hot} over the {rating} rating. Pick a larger part or raise the branch resistance."
+          vars={{ hot, rating: formatSI(rating, 'W') }}
+        />
       )}
       {kind === 'current' && readout.voltage > supply && (
-        <Warning>
-          An ideal current source holds {formatSI(readout.total, 'A')} into any load, so the node
-          sits at {formatSI(readout.voltage, 'V')}. A real 3V3 supply cannot go there: switch to
-          rail plus Rs to see what the circuit actually does.
-        </Warning>
+        <Warning
+          text="An ideal current source holds {total} into any load, so the node sits at {voltage}. A real 3V3 supply cannot go there: switch to rail plus Rs to see what the circuit actually does."
+          vars={{
+            total: formatSI(readout.total, 'A'),
+            voltage: formatSI(readout.voltage, 'V'),
+          }}
+        />
       )}
 
-      <Theory>
-        <p>
-          Parallel branches share one node pair, so they all see the same voltage. Conductance
-          adds: <code>G = 1/R</code>, <code>Req = 1 / sum(G)</code>. Req is always smaller than
-          the smallest branch, i.e. adding a path can only make the load heavier.
-        </p>
-        <p>
-          The node sits at <code>V = Itotal·Req</code>, so each branch carries
-          <code> Ix = V/Rx = Itotal·Gx / sum(G)</code>. The low-resistance branch takes the most
-          current, which is the opposite of the voltage divider intuition. For two branches this
-          collapses to <code>I1 = Itotal·R2 / (R1 + R2)</code>, the other resistor on top.
-        </p>
-        <p>
-          Dissipation is <code>Px = Ix²·Rx</code>, and the branch powers sum to
-          <code> V·Itotal</code>. In rail mode the source sees <code>Rs + Req</code>, so
-          <code> Itotal = Vs / (Rs + Req)</code> and Rs takes the rest of the supply.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "Parallel branches share one node pair, so they all see the same voltage. Conductance adds: `G = 1/R`, `Req = 1 / sum(G)`. Req is always smaller than the smallest branch, i.e. adding a path can only make the load heavier.",
+          "The node sits at `V = Itotal·Req`, so each branch carries `Ix = V/Rx = Itotal·Gx / sum(G)`. The low-resistance branch takes the most current, which is the opposite of the voltage divider intuition. For two branches this collapses to `I1 = Itotal·R2 / (R1 + R2)`, the other resistor on top.",
+          "Dissipation is `Px = Ix²·Rx`, and the branch powers sum to `V·Itotal`. In rail mode the source sees `Rs + Req`, so `Itotal = Vs / (Rs + Req)` and Rs takes the rest of the supply.",
+        ]}
+      />
     </SimPage>
   )
 }

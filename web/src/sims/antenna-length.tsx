@@ -52,37 +52,18 @@ export default function AntennaLength() {
         ]}
       />
 
-      <Warning>
-        A quarter-wave whip is only half an antenna. The other half is the ground plane, and
-        without one the coax braid radiates instead, which detunes everything and makes
-        performance depend on how you hold the board. Either give it radials, use a proper
-        ground pour, or fit a half-wave dipole which needs no ground plane.
-      </Warning>
+      <Warning
+        text="A quarter-wave whip is only half an antenna. The other half is the ground plane, and without one the coax braid radiates instead, which detunes everything and makes performance depend on how you hold the board. Either give it radials, use a proper ground pour, or fit a half-wave dipole which needs no ground plane."
+      />
 
-      <Theory>
-        <p>
-          Wavelength is <code>lambda = c/f</code>. A quarter-wave element is resonant because
-          the reflection from its open end arrives back at the feed in phase, presenting a
-          real impedance of roughly 37 Ω over a perfect ground plane, which is a reasonable
-          match to 50 Ω coax.
-        </p>
-        <p>
-          The physical length is always shorter than <code>lambda/4</code> in vacuum. The wave
-          travels partly in the conductor and its surroundings, so the velocity factor applies:
-          about 0.95 for a bare wire, 0.66 for typical coax dielectric, and nearer 0.55 for a
-          microstrip trace where half the field sits in FR-4.
-        </p>
-        <p>
-          At 2.4 GHz a quarter wave is about 31 mm, which is why chip and meander antennas are
-          practical there and why an 868 MHz node needs a visibly long whip at about 86 mm.
-          Getting the length wrong by 10% shifts resonance well outside a narrow band and can
-          easily cost 10 dB, which is a factor of three in range.
-        </p>
-        <p>
-          Keep the element clear of ground, metal and your hand. Detuning by proximity is the
-          most common reason a bench-tested link fails once the board is in a case.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "Wavelength is `lambda = c/f`. A quarter-wave element is resonant because the reflection from its open end arrives back at the feed in phase, presenting a real impedance of roughly 37 Ω over a perfect ground plane, which is a reasonable match to 50 Ω coax.",
+          "The physical length is always shorter than `lambda/4` in vacuum. The wave travels partly in the conductor and its surroundings, so the velocity factor applies: about 0.95 for a bare wire, 0.66 for typical coax dielectric, and nearer 0.55 for a microstrip trace where half the field sits in FR-4.",
+          "At 2.4 GHz a quarter wave is about 31 mm, which is why chip and meander antennas are practical there and why an 868 MHz node needs a visibly long whip at about 86 mm. Getting the length wrong by 10% shifts resonance well outside a narrow band and can easily cost 10 dB, which is a factor of three in range.",
+          "Keep the element clear of ground, metal and your hand. Detuning by proximity is the most common reason a bench-tested link fails once the board is in a case.",
+        ]}
+      />
     </SimPage>
   )
 }

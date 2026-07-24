@@ -3,6 +3,7 @@ import { VCC } from '../engine/constants'
 import { ADC_LSB, FC_RATIO_GOOD, FC_RATIO_MIN, analyse, simulate } from '../engine/pwmFilter'
 import { sweep } from '../engine/signal'
 import { formatSI } from '../engine/units'
+import { T, useT } from '../i18n'
 import { Group, Segmented } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -18,8 +19,9 @@ const MIN_SAMPLES_PER_PERIOD = 8
 type View = 'ripple' | 'startup'
 
 function Schematic() {
+  const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 110" aria-label="ESP32 GPIO into an RC low pass">
+    <svg className="schematic" viewBox="0 0 260 110" aria-label={t('ESP32 GPIO into an RC low pass')}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         <rect x="8" y="20" width="34" height="28" />
         <path d="M42 34h28M25 48v32h199" />
@@ -103,12 +105,14 @@ export default function PwmFilter() {
     }
   }, [vs, r, c, f, dutyPct, bits, view, cycles])
 
+  // Parenthesised here rather than in the note, so the whole phrase is one
+  // dictionary key instead of a fragment glued to punctuation.
   const band =
     readout.smoothing === 'good'
-      ? 'clean DC'
+      ? '(clean DC)'
       : readout.smoothing === 'marginal'
-        ? 'visible ripple'
-        : 'barely filtered'
+        ? '(visible ripple)'
+        : '(barely filtered)'
 
   return (
     <SimPage
@@ -189,32 +193,27 @@ export default function PwmFilter() {
       <Oscilloscope traces={traces} dt={dt} unit="V" />
 
       {readout.smoothing !== 'good' && (
-        <Warning>
-          fc sits only {readout.ratio.toFixed(1)}x below f_pwm. Aim for {FC_RATIO_GOOD}x
-          (40 dB on the switching fundamental); under {FC_RATIO_MIN}x the RC is not
-          smoothing, it is just rounding the edges. Raise f_pwm or raise R·C.
-        </Warning>
+        <Warning
+          text="fc sits only {ratio}x below f_pwm. Aim for {FC_RATIO_GOOD}x (40 dB on the switching fundamental); under {FC_RATIO_MIN}x the RC is not smoothing, it is just rounding the edges. Raise f_pwm or raise R·C."
+          vars={{ ratio: readout.ratio.toFixed(1), FC_RATIO_GOOD, FC_RATIO_MIN }}
+        />
       )}
       {!readout.bitsOk && (
-        <Warning>
-          The LEDC timer cannot do {bits} bits at {formatSI(f, 'Hz')}. 2^bits · f must stay
-          under the 80 MHz APB clock, so {readout.maxBits} bits is the ceiling here. The
-          driver will reject the config.
-        </Warning>
+        <Warning
+          text="The LEDC timer cannot do {bits} bits at {f}. 2^bits · f must stay under the 80 MHz APB clock, so {maxBits} bits is the ceiling here. The driver will reject the config."
+          vars={{ bits, f: formatSI(f, 'Hz'), maxBits: readout.maxBits }}
+        />
       )}
       {!readout.gpioOk && (
-        <Warning>
-          Peak pin current is {formatSI(readout.gpioPeakA, 'A')} at power-on, when the
-          capacitor is still empty. That is past the 12 mA an ESP32 GPIO is rated for.
-          Raise R.
-        </Warning>
+        <Warning
+          text="Peak pin current is {gpioPeakA} at power-on, when the capacitor is still empty. That is past the 12 mA an ESP32 GPIO is rated for. Raise R."
+          vars={{ gpioPeakA: formatSI(readout.gpioPeakA, 'A') }}
+        />
       )}
       {!showInput && (
-        <Warning>
-          One PWM period is shorter than a scope sample at this time base, so the Vpwm
-          trace is omitted rather than drawn aliased. Vout is a closed-form solution, so it
-          stays exact.
-        </Warning>
+        <Warning
+          text="One PWM period is shorter than a scope sample at this time base, so the Vpwm trace is omitted rather than drawn aliased. Vout is a closed-form solution, so it stays exact."
+        />
       )}
 
       <ReadoutGrid
@@ -227,13 +226,13 @@ export default function PwmFilter() {
           {
             label: 'Ripple Vpp',
             value: formatSI(readout.vpp, 'V'),
-            note: `(${readout.ripplePercent.toFixed(2)}% of Vout)`,
+            note: <T k="({ripplePercent}% of Vout)" vars={{ ripplePercent: readout.ripplePercent.toFixed(2) }} />,
             warn: readout.smoothing === 'poor',
           },
           {
             label: 'Ripple on the ADC',
             value: `${readout.rippleLsb >= 10 ? Math.round(readout.rippleLsb) : readout.rippleLsb.toFixed(2)} LSB`,
-            note: `(12-bit step ${formatSI(ADC_LSB, 'V')})`,
+            note: <T k="(12-bit step {ADC_LSB})" vars={{ ADC_LSB: formatSI(ADC_LSB, 'V') }} />,
             warn: readout.rippleLsb > 4,
           },
           {
@@ -244,17 +243,17 @@ export default function PwmFilter() {
           {
             label: 'Settling to 1%',
             value: formatSI(readout.settle1pc, 's'),
-            note: `(5·tau = ${formatSI(readout.settle5tau, 's')})`,
+            note: <T k="(5·tau = {settle5tau})" vars={{ settle5tau: formatSI(readout.settle5tau, 's') }} />,
           },
           {
             label: 'Cutoff fc',
             value: formatSI(readout.fc, 'Hz'),
-            note: `(tau = ${formatSI(readout.tau, 's')})`,
+            note: <T k="(tau = {tau})" vars={{ tau: formatSI(readout.tau, 's') }} />,
           },
           {
             label: 'f_pwm / fc',
             value: `${readout.ratio < 10 ? readout.ratio.toFixed(2) : Math.round(readout.ratio)}x`,
-            note: `(${band})`,
+            note: band,
             warn: readout.smoothing === 'poor',
           },
           {
@@ -264,7 +263,7 @@ export default function PwmFilter() {
           {
             label: 'Duty step',
             value: formatSI(readout.dutyStepV, 'V'),
-            note: `(${bits} bit, max ${readout.maxBits} at this f)`,
+            note: <T k="({bits} bit, max {maxBits} at this f)" vars={{ bits, maxBits: readout.maxBits }} />,
             warn: !readout.bitsOk,
           },
           {
@@ -276,33 +275,14 @@ export default function PwmFilter() {
         ]}
       />
 
-      <Theory>
-        <p>
-          An RC low pass has unity gain at DC and the rectangle's average is
-          <code> D·Vs</code>, so the settled output is <code>Vout = D·Vs</code> no matter
-          what R and C are. R and C only decide how much of the switching gets through.
-        </p>
-        <p>
-          Ripple is usually quoted as <code>Vpp ≈ Vs·D·(1-D) / (f·R·C)</code>, which is the
-          small-ripple limit. This page solves it exactly: with
-          <code> a = e^(-D·T/tau)</code> and <code>b = e^(-(1-D)·T/tau)</code>, matching
-          charge against discharge over one period gives
-          <code> Vpp = Vs·(1-a)(1-b) / (1-a·b)</code>. The two agree to a fraction of a
-          percent once tau is more than about ten switching periods, and the approximation
-          reads high below that. Worst-case ripple is always at 50% duty.
-        </p>
-        <p>
-          The trace is the closed-form response, <code>y(t) = y_ss(t) + (y0 - y_ss(0))·e^(-t/tau)</code>,
-          i.e. the periodic steady state plus one decaying exponential. That is exact for a
-          linear time-invariant filter, so it cannot go unstable at any time base.
-        </p>
-        <p>
-          The tradeoff is the whole point: ripple falls as <code>1/(R·C)</code> and settling
-          rises as <code>5·R·C</code>, so trading one for the other buys nothing. Raising
-          f_pwm is the only free win, up to the point where the LEDC timer runs out of duty
-          resolution, since <code>2^bits · f</code> must stay under the 80 MHz APB clock.
-        </p>
-      </Theory>
+      <Theory
+        text={[
+          "An RC low pass has unity gain at DC and the rectangle's average is `D·Vs`, so the settled output is `Vout = D·Vs` no matter what R and C are. R and C only decide how much of the switching gets through.",
+          "Ripple is usually quoted as `Vpp ≈ Vs·D·(1-D) / (f·R·C)`, which is the small-ripple limit. This page solves it exactly: with `a = e^(-D·T/tau)` and `b = e^(-(1-D)·T/tau)`, matching charge against discharge over one period gives `Vpp = Vs·(1-a)(1-b) / (1-a·b)`. The two agree to a fraction of a percent once tau is more than about ten switching periods, and the approximation reads high below that. Worst-case ripple is always at 50% duty.",
+          "The trace is the closed-form response, `y(t) = y_ss(t) + (y0 - y_ss(0))·e^(-t/tau)`, i.e. the periodic steady state plus one decaying exponential. That is exact for a linear time-invariant filter, so it cannot go unstable at any time base.",
+          "The tradeoff is the whole point: ripple falls as `1/(R·C)` and settling rises as `5·R·C`, so trading one for the other buys nothing. Raising f_pwm is the only free win, up to the point where the LEDC timer runs out of duty resolution, since `2^bits · f` must stay under the 80 MHz APB clock.",
+        ]}
+      />
     </SimPage>
   )
 }
