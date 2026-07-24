@@ -92,7 +92,7 @@ function Schematic({ topology }: { topology: Topology }) {
 
   const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 275 178" aria-label={t('{topology} rectifier', { topology })}>
+    <svg className="schematic" viewBox="0 0 275 178" aria-label={t('rectifier.rectifier')}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         {topology === 'half' && (
           <>
@@ -177,9 +177,9 @@ export default function Rectifier() {
     return {
       dt,
       traces: [
-        { label: 'Vsec', color: TRACE_COLORS[0], samples },
-        { label: 'Vout', color: TRACE_COLORS[1], samples: trace.vout },
-        { label: 'No cap', color: TRACE_COLORS[3], samples: trace.vraw, quiet: true },
+        { label: 'rectifier.vsec', color: TRACE_COLORS[0], samples },
+        { label: 'common.vout', color: TRACE_COLORS[1], samples: trace.vout },
+        { label: 'rectifier.noCap', color: TRACE_COLORS[3], samples: trace.vraw, quiet: true },
       ],
       // A DC source never stops conducting, so it has no ripple frequency.
       r: analyse(spec, samples, trace, source.kind === 'dc' ? 0 : source.frequency, diode),
@@ -191,35 +191,35 @@ export default function Rectifier() {
   return (
     <SimPage
       id="rectifier"
-      lede="Half wave, full wave bridge or centre tapped, into a reservoir cap and a resistive load. The scope shows the secondary, the smoothed output and what the same rectifier gives with the cap removed."
+      lede="rectifier.lede"
       controls={
         <>
           <Segmented
-            label="Topology"
+            label="common.topology"
             value={topology}
             onChange={setTopology}
             options={TOPOLOGIES}
           />
           <Schematic topology={topology} />
 
-          <Group label="Rectifier">
+          <Group label="rectifier.rectifier2">
             <Select
-              label="Diode"
+              label="rectifier.diode"
               value={diode.id}
               onChange={setDiodeId}
               options={DIODES.map((d) => ({ value: d.id, label: d.label }))}
             />
             <Param
-              label="Reservoir cap"
+              label="rectifier.reservoirCap"
               unit="F"
               value={c}
               onChange={setC}
               min={1e-9}
               max={47e-3}
-              hint="1 nF is effectively no smoothing"
+              hint="rectifier.1NfIsEffectively"
             />
             <Param
-              label="Load"
+              label="common.load"
               unit="Ω"
               value={rload}
               onChange={setRload}
@@ -227,17 +227,17 @@ export default function Rectifier() {
               max={100e3}
             />
             <Param
-              label="Source resistance"
+              label="rectifier.sourceResistance"
               unit="Ω"
               value={rs}
               onChange={setRs}
               min={0.01}
               max={100}
-              hint="Winding plus diode bulk. Sets the peak charging current."
+              hint="rectifier.windingPlusDiodeBulk"
             />
           </Group>
 
-          <SourceControls value={source} onChange={patchSource} maxAmplitude={400} label="Secondary" />
+          <SourceControls value={source} onChange={patchSource} maxAmplitude={400} label="rectifier.secondary" />
         </>
       }
     >
@@ -245,7 +245,7 @@ export default function Rectifier() {
 
       {r.deadOutput && (
         <Warning
-          text="Peak secondary is {vPeakIn}, below the {vf} of diode drop. Nothing ever conducts."
+          text="rectifier.warn1"
           vars={{
             vPeakIn: formatSI(r.vPeakIn, 'V'),
             vf: formatSI(seriesDiodes(topology) * diode.vf, 'V'),
@@ -254,13 +254,13 @@ export default function Rectifier() {
       )}
       {r.overPiv && (
         <Warning
-          text="PIV {piv} exceeds the {id} VRRM of {vrrm}. The diode breaks down in reverse."
+          text="rectifier.warn2"
           vars={{ piv: formatSI(r.piv, 'V'), id: diode.id, vrrm: formatSI(diode.vrrm, 'V') }}
         />
       )}
       {r.overCurrent && (
         <Warning
-          text="{iAvgPerDiode} average per diode is over the {id} IO rating of {io}."
+          text="rectifier.warn3"
           vars={{
             iAvgPerDiode: formatSI(r.iAvgPerDiode, 'A'),
             id: diode.id,
@@ -270,7 +270,7 @@ export default function Rectifier() {
       )}
       {r.overSurge && (
         <Warning
-          text="Peak charging current {iPeak} is past the {id} IFSM of {isurge}. Add series resistance or a soft start."
+          text="rectifier.warn4"
           vars={{
             iPeak: formatSI(r.iPeak, 'A'),
             id: diode.id,
@@ -280,12 +280,12 @@ export default function Rectifier() {
       )}
       {topology === 'half' && (
         <Warning
-          text="Half wave pulls DC through the secondary, which walks the transformer core toward saturation. Fine for a few milliamps, not for a supply."
+          text="rectifier.warn5"
         />
       )}
       {loose && (
         <Warning
-          text="Ripple is {rippleFactor}% of the output. The Vdc = Vpeak - Vr/2 approximation only holds for small ripple, so trust the measured trace over the textbook column."
+          text="rectifier.warn6"
           vars={{ rippleFactor: (r.rippleFactor * 100).toFixed(0) }}
         />
       )}
@@ -293,69 +293,69 @@ export default function Rectifier() {
       <ReadoutGrid
         items={[
           {
-            label: 'Secondary',
+            label: 'rectifier.secondary',
             value: formatSI(r.vRmsIn, 'V'),
-            note: <T k="rms, {vPeakIn} peak" vars={{ vPeakIn: formatSI(r.vPeakIn, 'V') }} />,
+            note: <T k="rectifier.rmsPeak" vars={{ vPeakIn: formatSI(r.vPeakIn, 'V') }} />,
           },
           {
-            label: 'DC output',
+            label: 'rectifier.dcOutput',
             value: formatSI(r.vdc, 'V'),
-            note: <T k="textbook {vdc}" vars={{ vdc: formatSI(r.ideal.vdc, 'V') }} />,
+            note: <T k="rectifier.textbook" vars={{ vdc: formatSI(r.ideal.vdc, 'V') }} />,
           },
           {
-            label: 'Ripple',
+            label: 'common.ripple',
             value: formatSI(r.vRipplePP, 'V'),
-            note: <T k="pp, formula {vripple}" vars={{ vripple: formatSI(r.ideal.vripple, 'V') }} />,
+            note: <T k="rectifier.ppFormula" vars={{ vripple: formatSI(r.ideal.vripple, 'V') }} />,
             warn: loose,
           },
           {
-            label: 'Ripple factor',
+            label: 'rectifier.rippleFactor',
             value: `${(r.rippleFactor * 100).toFixed(1)} %`,
-            note: <T k="at {fRipple}" vars={{ fRipple: formatSI(r.fRipple, 'Hz') }} />,
+            note: <T k="rectifier.at" vars={{ fRipple: formatSI(r.fRipple, 'Hz') }} />,
             warn: loose,
           },
           {
-            label: 'Load current',
+            label: 'common.loadCurrent',
             value: formatSI(r.idc, 'A'),
             note: formatSI(r.pLoad, 'W'),
           },
           {
-            label: 'Peak diode current',
+            label: 'rectifier.peakDiodeCurrent',
             value: formatSI(r.iPeak, 'A'),
-            note: <T k="{crestFactor}x Idc" vars={{ crestFactor: r.crestFactor.toFixed(0) }} />,
+            note: <T k="rectifier.xIdc" vars={{ crestFactor: r.crestFactor.toFixed(0) }} />,
             warn: r.overSurge,
           },
           {
-            label: 'Average per diode',
+            label: 'rectifier.averagePerDiode',
             value: formatSI(r.iAvgPerDiode, 'A'),
-            note: <T k="{id} IO {io}" vars={{ id: diode.id, io: formatSI(diode.io, 'A') }} />,
+            note: <T k="rectifier.io" vars={{ id: diode.id, io: formatSI(diode.io, 'A') }} />,
             warn: r.overCurrent,
           },
           {
-            label: 'RMS per diode',
+            label: 'rectifier.rmsPerDiode',
             value: formatSI(r.iRmsPerDiode, 'A'),
-            note: <T k="{conductionAngle}° conduction" vars={{ conductionAngle: r.conductionAngle.toFixed(0) }} />,
+            note: <T k="rectifier.conduction" vars={{ conductionAngle: r.conductionAngle.toFixed(0) }} />,
           },
           {
-            label: 'PIV per diode',
+            label: 'rectifier.pivPerDiode',
             value: formatSI(r.piv, 'V'),
-            note: <T k="{id} VRRM {vrrm}" vars={{ id: diode.id, vrrm: formatSI(diode.vrrm, 'V') }} />,
+            note: <T k="rectifier.vrrm" vars={{ id: diode.id, vrrm: formatSI(diode.vrrm, 'V') }} />,
             warn: r.overPiv,
           },
           {
-            label: 'Diode dissipation',
+            label: 'rectifier.diodeDissipation',
             value: formatSI(r.pDiodeTotal, 'W'),
-            note: <T k="{pDiodePer} each, {topology} diodes" vars={{ pDiodePer: formatSI(r.pDiodePer, 'W'), topology: diodeCount(topology) }} />,
+            note: <T k="rectifier.eachDiodes" vars={{ pDiodePer: formatSI(r.pDiodePer, 'W'), topology: diodeCount(topology) }} />,
           },
         ]}
       />
 
       <Theory
         text={[
-          "The cap charges to the peak through the diodes, then supplies the load alone until the next peak. Treating that discharge as linear gives `Vr = Idc / (fr·C)`, where `fr` is the line frequency for a half wave rectifier and `2f` for a bridge or a centre tap, since both fill in the gap the half wave leaves. The output sits at the middle of that sawtooth, `Vdc = Vpeak - n·Vf - Vr/2`, with `n` = 2 for a bridge and 1 for the other two.",
-          "Peak inverse voltage is what actually kills diodes. A bridge diode blocks one `Vpeak`. A half wave or centre tapped diode has the negative peak on its anode while the cap holds its cathode at `Vdc`, so it blocks `Vpeak + Vdc`, i.e. about `2·Vpeak`. A 12 V secondary is already 34 V of PIV.",
-          "Every coulomb delivered to the load crosses `n` junctions, so conduction loss is `n·Vf·Idc` shared over the diodes in the circuit. The current is not shared evenly in time: the diodes only conduct near the peaks, so the peak current is many times `Idc`, which is why the conduction angle and crest factor are on the readout. Source resistance is what limits that spike, and a real transformer has some.",
-          "The trace is not the formula. It is a sample-by-sample solve that switches between two sub-circuits, conducting (source behind Rs into C parallel RL) and off (C discharging into RL), each integrated with exact zero-order-hold discretisation `v[n] = vInf + (v[n-1] - vInf)·e^(-dt/tau)`. That stays stable at any step size. It also explains why the measured ripple comes in under the formula: the cap only discharges for the part of the period the diodes are off, and it does so exponentially, not linearly.",
+          'rectifier.theCapChargesTo',
+          'rectifier.peakInverseVoltageIs',
+          'rectifier.everyCoulombDeliveredTo',
+          'rectifier.theTraceIsNot',
         ]}
       />
     </SimPage>

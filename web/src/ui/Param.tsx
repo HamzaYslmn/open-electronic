@@ -1,10 +1,11 @@
 import { useEffect, useId, useState } from 'react'
 import type { ReactNode } from 'react'
 import { clamp, formatSI, parseSI } from '../engine/units'
-import { useT } from '../i18n'
+import { useMaybeKey, useT } from '../i18n'
+import type { Key } from '../i18n'
 
 export type ParamProps = {
-  label: string
+  label: Key
   unit?: string
   value: number
   onChange: (next: number) => void
@@ -14,7 +15,7 @@ export type ParamProps = {
   log?: boolean
   /** Linear step. Ignored when log is set. */
   step?: number
-  /** A plain string is translated; use <T> when the hint interpolates a value. */
+  /** A key, a formatted number, or a node. Only a key is translated. */
   hint?: ReactNode
 }
 
@@ -39,6 +40,7 @@ export default function Param({
 }: ParamProps) {
   const id = useId()
   const t = useT()
+  const tx = useMaybeKey()
   const name = t(label)
   const [text, setText] = useState(() => formatSI(value, unit))
   const [invalid, setInvalid] = useState(false)
@@ -97,7 +99,7 @@ export default function Param({
         aria-label={name}
       />
       {hint && (
-        <small className="param-hint">{typeof hint === 'string' ? t(hint) : hint}</small>
+        <small className="param-hint">{tx(hint) as ReactNode}</small>
       )}
     </div>
   )

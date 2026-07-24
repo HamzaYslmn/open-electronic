@@ -121,13 +121,14 @@ describe('tp4056 charger', () => {
 describe('resistor codes', () => {
   it('encodes a 4 band 4.7k as yellow violet red', () => {
     const c = encodeResistor(4700, 4)
-    expect(c.bands.slice(0, 3)).toEqual(['yellow', 'violet', 'red'])
+    // Band names are dictionary keys, since they are shown on the page.
+    expect(c.bands.slice(0, 3)).toEqual(['opt.yellow', 'opt.violet', 'opt.red2'])
     expect(c.value).toBeCloseTo(4700, 6)
   })
 
   it('encodes a 5 band 4.75k as yellow violet green', () => {
     const c = encodeResistor(4750, 5)
-    expect(c.bands.slice(0, 3)).toEqual(['yellow', 'violet', 'green'])
+    expect(c.bands.slice(0, 3)).toEqual(['opt.yellow', 'opt.violet', 'opt.green'])
   })
 
   it('produces the standard SMD codes', () => {

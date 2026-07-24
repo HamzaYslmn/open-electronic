@@ -37,7 +37,7 @@ export default function DeepSleep() {
       dt,
       traces: [
         { label: 'I', color: TRACE_COLORS[0], samples: current },
-        { label: 'mean', color: TRACE_COLORS[2], samples: average, quiet: true },
+        { label: 'common.mean', color: TRACE_COLORS[2], samples: average, quiet: true },
       ],
     }
   }, [activeCurrent, activeTime, sleepCurrent, sleepTime, capacityAh, packVoltage, derating])
@@ -45,21 +45,21 @@ export default function DeepSleep() {
   return (
     <SimPage
       id="deep-sleep"
-      lede="A battery node lives or dies on its average current, not its peak. The scope shows the current profile over one wake/sleep cycle against the resulting average, on a linear time axis."
+      lede="deep-sleep.lede"
       controls={
         <>
-          <Group label="Awake">
-            <Param label="Active current" unit="A" value={activeCurrent} onChange={setActiveCurrent} min={1e-3} max={1} />
-            <Param label="Active time" unit="s" value={activeTime} onChange={setActiveTime} min={0.01} max={600} />
+          <Group label="deep-sleep.awake">
+            <Param label="common.activeCurrent" unit="A" value={activeCurrent} onChange={setActiveCurrent} min={1e-3} max={1} />
+            <Param label="common.activeTime" unit="s" value={activeTime} onChange={setActiveTime} min={0.01} max={600} />
           </Group>
-          <Group label="Asleep">
-            <Param label="Sleep current" unit="A" value={sleepCurrent} onChange={setSleepCurrent} min={1e-7} max={1e-2} />
-            <Param label="Sleep time" unit="s" value={sleepTime} onChange={setSleepTime} min={1} max={86400} />
+          <Group label="deep-sleep.asleep">
+            <Param label="common.sleepCurrent" unit="A" value={sleepCurrent} onChange={setSleepCurrent} min={1e-7} max={1e-2} />
+            <Param label="common.sleepTime" unit="s" value={sleepTime} onChange={setSleepTime} min={1} max={86400} />
           </Group>
-          <Group label="Battery">
-            <Param label="Capacity" unit="Ah" value={capacityAh} onChange={setCapacityAh} min={0.02} max={100} />
-            <Param label="Pack voltage" unit="V" value={packVoltage} onChange={setPackVoltage} min={1} max={24} log={false} step={0.1} />
-            <Param label="Usable fraction" value={derating} onChange={setDerating} min={0.3} max={1} log={false} step={0.05} />
+          <Group label="common.battery">
+            <Param label="common.capacity" unit="Ah" value={capacityAh} onChange={setCapacityAh} min={0.02} max={100} />
+            <Param label="common.packVoltage" unit="V" value={packVoltage} onChange={setPackVoltage} min={1} max={24} log={false} step={0.1} />
+            <Param label="deep-sleep.usableFraction" value={derating} onChange={setDerating} min={0.3} max={1} log={false} step={0.05} />
           </Group>
         </>
       }
@@ -68,44 +68,44 @@ export default function DeepSleep() {
 
       <ReadoutGrid
         items={[
-          { label: 'Average current', value: formatSI(r.averageCurrent, 'A') },
-          { label: 'Duty cycle', value: `${(r.duty * 100).toFixed(3)}%` },
-          { label: 'Cycle period', value: formatSI(r.period, 's') },
-          { label: 'Charge per wake', value: `${(r.chargePerCycle * 1000).toFixed(2)} mAs` },
-          { label: 'Energy per wake', value: formatSI(r.energyPerCycle, 'J') },
+          { label: 'common.averageCurrent', value: formatSI(r.averageCurrent, 'A') },
+          { label: 'common.dutyCycle', value: `${(r.duty * 100).toFixed(3)}%` },
+          { label: 'deep-sleep.cyclePeriod', value: formatSI(r.period, 's') },
+          { label: 'deep-sleep.chargePerWake', value: `${(r.chargePerCycle * 1000).toFixed(2)} mAs` },
+          { label: 'deep-sleep.energyPerWake', value: formatSI(r.energyPerCycle, 'J') },
           {
-            label: 'Runtime',
-            value: <T k="{runtimeDays} days" vars={{ runtimeDays: r.runtimeDays.toFixed(0) }} />,
-            note: <T k="{runtimeDays} years" vars={{ runtimeDays: (r.runtimeDays / 365).toFixed(2) }} />,
+            label: 'common.runtime',
+            value: <T k="deep-sleep.days" vars={{ runtimeDays: r.runtimeDays.toFixed(0) }} />,
+            note: <T k="deep-sleep.years" vars={{ runtimeDays: (r.runtimeDays / 365).toFixed(2) }} />,
           },
-          { label: 'Wake cycles', value: Math.floor(r.cycles).toLocaleString() },
+          { label: 'deep-sleep.wakeCycles', value: Math.floor(r.cycles).toLocaleString() },
           {
-            label: 'Sleep share of budget',
+            label: 'deep-sleep.sleepShareOfBudget',
             value: `${(r.sleepShare * 100).toFixed(1)}%`,
             warn: r.sleepDominated,
           },
-          { label: 'Consumption', value: <T k="{whPerDay} Wh/day" vars={{ whPerDay: r.whPerDay.toFixed(3) }} /> },
+          { label: 'deep-sleep.consumption', value: <T k="deep-sleep.whDay" vars={{ whPerDay: r.whPerDay.toFixed(3) }} /> },
         ]}
       />
 
       {r.sleepDominated && (
         <Warning
-          text="Sleep current is {sleepShare}% of the budget, so optimising the wake phase buys you almost nothing. Attack the standby draw instead: a linear regulator's quiescent current, a permanently connected divider, or a peripheral left powered are the usual culprits, and each can dwarf the ESP32's own 10 µA."
+          text="deep-sleep.warn1"
           vars={{ sleepShare: (r.sleepShare * 100).toFixed(0) }}
         />
       )}
       {activeCurrent > 0.15 && (
         <Warning
-          text="Above about 150 mA you are almost certainly transmitting. WiFi association costs far more energy than the transmission itself, so batching several readings into one wake is usually a bigger win than making each wake shorter."
+          text="deep-sleep.warn2"
         />
       )}
 
       <Theory
         text={[
-          "Average current is the time-weighted mean over one cycle, `Iavg = (Ion·ton + Isleep·tsleep) / (ton + tsleep)`. Runtime is then the usable capacity divided by that. Nothing else matters: the peak current only affects whether the supply can deliver it, not how long the pack lasts.",
-          "The consequence is unintuitive. An ESP32 drawing 80 mA for 3 seconds every hour averages about 77 µA, so a 2 Ah cell lasts over two years. The same chip left awake would flatten it in a day. Deep sleep is not an optimisation, it is the entire design.",
-          "Which term dominates decides where to spend effort. Once the sleep phase carries most of the average, shortening the wake is wasted work, and the target becomes standby leakage: regulator quiescent current, pull-up and divider networks, and sensors that stay powered.",
-          "The usable fraction is doing real work here. Nominal capacity assumes a slow discharge to a low cutoff at room temperature, none of which holds in the field. Planning on 80% is normal, and less in the cold.",
+          'deep-sleep.theory1',
+          'deep-sleep.theConsequenceIsUnintuitive',
+          'deep-sleep.whichTermDominatesDecides',
+          'deep-sleep.theUsableFractionIs',
         ]}
       />
     </SimPage>

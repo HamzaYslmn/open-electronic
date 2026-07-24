@@ -19,6 +19,7 @@ pnpm dev         # vite dev server on :5173
 pnpm build       # tsc -b (strict) then vite build; both must pass
 pnpm test        # vitest run, engine tests only
 pnpm test:watch  # vitest watch
+pnpm i18n        # translation status: untranslated, mismatched placeholders, unused keys
 pnpm vitest run src/engine/rc.test.ts   # single test file
 pnpm vitest run -t "reaches 63.2%"      # single test by name
 ```
@@ -30,9 +31,8 @@ web/src/
   engine/      pure TypeScript maths, NO React imports, one module per domain + <name>.test.ts
   ui/          generic primitives with no domain knowledge (see below)
   sims/        ONE file per simulator, named after its catalog id: rc-filter.tsx
-  i18n/        translation map and the useT hook
+  i18n/        en.ts and tr.ts, every string in the app, plus the useT hook
   catalog.ts   the registry: routes, home grid, sidebar and category colours derive from it
-  useCases.ts  the "Where is it used?" text, keyed by catalog id
 ```
 
 Related simulators share one engine module rather than each getting their own: `logic.ts` covers the I2C
@@ -61,40 +61,51 @@ the scope above the fold on a phone while still rendering controls on the right 
 The shell in `App.tsx` is a CSS grid: topbar across the top, `Sidebar` (every simulator, always visible) in the
 left column, routed page in the right. Under 800px the sidebar becomes an off-canvas drawer, same markup.
 
-**Adding a simulator is five steps:** write `engine/<domain>.ts` plus its test, write `sims/<id>.tsx`,
-add a `useCases.ts` entry for the same id, flip the catalog entry to `status: 'ready'` and attach
-`Component: lazy(() => import('./sims/<id>'))`, then run `pnpm test` and add the strings it lists to
-`i18n/en.ts` and `i18n/tr.ts`. Routes, the home grid, the sidebar and the "Where is it used?" card all pick
-it up automatically. Do not add a route by hand.
+**Adding a simulator is four steps:** write `engine/<domain>.ts` plus its test, add the page's strings to
+`i18n/en.ts` and `i18n/tr.ts` under `<id>.*` (including `<id>.title`, `<id>.blurb` and `<id>.use`), write
+`sims/<id>.tsx` referring to those keys, then flip the catalog entry to `status: 'ready'` and attach
+`Component: lazy(() => import('./sims/<id>'))`. Routes, the home grid, the sidebar and the
+"Where is it used?" card all pick it up automatically. Do not add a route by hand.
 
 ### Internationalisation
 
-`i18n/index.tsx` uses the **English source string as the lookup key**, so English needs no map, any string
-without a Turkish entry falls back to English by itself, and there is no key-naming scheme to keep in sync
-with the text it names. `{name}` placeholders are filled from a `vars` object, which lets a translation
-reorder them; a placeholder holding a string is itself translated, so a page can pick between whole phrases
-rather than gluing fragments together.
+No display text lives in a component. `i18n/en.ts` holds the English under short stable keys, `i18n/tr.ts`
+holds the Turkish under the same keys, and the source refers to keys only:
 
-**Pages almost never call `t()`.** The `ui/` primitives translate their own `label`, `note`, `value` and
-`hint` when given a plain string, so a simulator passes English and gets translation for free and cannot
-forget. Reach for `<T k="..." vars={{ ... }} />` only where the text interpolates a live value into a slot
-that takes a node, and for `useT()` only in a component that needs a bare string, such as an `aria-label`.
+```tsx
+<Param label="buck.inductorL" unit="H" ... />
+<Warning text="buck.dcm" vars={{ boundary: formatSI(op.boundary, 'A') }} />
+```
 
-- `en.ts` is the **generated inventory** of every displayable string, not a runtime lookup. It is the
-  checklist a translator works from and what `coverage.test.ts` diffs `tr.ts` against. Nothing imports it in
-  the app: since the key already is the English text, shipping it would add 68 kB gzipped of identity map.
-- `tr.ts` is fetched **on demand**, only when Turkish is selected (`LOADERS` in `i18n/index.tsx`). It is
-  120 kB gzipped, more than the rest of the app, so an English visitor must not pay for it.
-- `coverage.test.ts` scans the source and fails if a displayable string is missing from `en.ts`, if `tr.ts`
-  is missing a key, or if a translation's placeholders do not match its key. Adding a page fails this test
-  until its strings are in both maps, which is the only thing stopping a string from silently staying English.
+Keys are `<sim-id>.<what>`, or `common.<what>` when more than one page uses the string. Roles are
+predictable: `<id>.title`, `<id>.blurb`, `<id>.lede`, `<id>.use`, `<id>.theory1..n`, `<id>.warn1..n`.
+The "Where is it used?" card is looked up as `<id>.use`, so there is no separate table of them.
+
+**The compiler is the only checker, and it is enough.** `t()` takes a `Key`, and `tr.ts` is typed
+`Record<Key, string>`, so a typo, a missing translation and a stale key are all build errors. Nothing scans
+the source, and rewording an English sentence cannot break its translation, because the key does not move.
+
+- `pnpm i18n` reports what types cannot see: entries identical to the English, placeholders that differ
+  between a key and its translation, and keys nothing refers to.
+- `sym('R1')` is the escape hatch for a label that is a symbol rather than prose, so it is obvious in review
+  that nothing was forgotten. Use it for part numbers, pin names and units, nothing else.
+- `tr.ts` is fetched **on demand**, only when Turkish is selected (`LOADERS` in `i18n/index.tsx`), so an
+  English visitor never downloads it.
+- `{name}` placeholders come from `vars` and may be reordered by a translation. A placeholder holding a key
+  is itself translated, which lets a page choose between whole phrases instead of gluing fragments together.
+  Never interpolate a raw state id into a sentence: it will not be translated.
+
+**Pages almost never call `t()`.** The `ui/` primitives translate their own labels, so a page passes a key
+and cannot forget. Use `<T k="..." vars={{ ... }} />` where a live value goes into a slot that takes a node,
+and `useT()` only where a bare string is needed, such as an `aria-label`.
 
 Add a language by adding one map next to `tr.ts` and one line in `LOADERS`.
 
 ### Rules that matter
 
 - **The engine never imports React.** It is plain functions over numbers so it stays unit-testable headlessly.
-  Components own state and rendering; they never contain circuit maths.
+  Components own state and rendering; they never contain circuit maths. The one thing it may import is
+  `type { Key }`, for the option tables it exports; a type-only import is erased at build and costs it nothing.
 - **Base SI units everywhere internally** (V, A, Ω, F, H, s, Hz, W). Prefixes exist only at the display and
   input edge via `formatSI` / `parseSI` in `engine/units.ts`. Never store `"4.7k"` or `4.7` meaning kilohms in state.
 - **Time-domain simulation uses exact zero-order-hold discretisation**, not forward Euler. See `engine/rc.ts`:

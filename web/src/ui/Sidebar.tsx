@@ -28,7 +28,7 @@ export default function Sidebar({ open, onNavigate }: SidebarProps) {
           // Match the translated text as well as the English, so filtering
           // works whichever language the list is currently showing.
           (q === '' ||
-            [s.title, s.blurb, s.formula, t(s.title), t(s.blurb)].some((f) =>
+            [s.formula, t(s.title), t(s.blurb)].some((f) =>
               f.toLowerCase().includes(q),
             )),
       ),
@@ -36,11 +36,11 @@ export default function Sidebar({ open, onNavigate }: SidebarProps) {
   }, [filter, t])
 
   return (
-    <nav className={open ? 'sidebar open' : 'sidebar'} aria-label={t('All simulators')}>
+    <nav className={open ? 'sidebar open' : 'sidebar'} aria-label={t('ui.allSimulators')}>
       <input
         className="sidebar-filter"
         type="search"
-        placeholder={t('Filter simulators')}
+        placeholder={t('ui.filterSimulators')}
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
         spellCheck={false}
@@ -62,7 +62,7 @@ export default function Sidebar({ open, onNavigate }: SidebarProps) {
                   </NavLink>
                 </li>
               ) : (
-                <li key={sim.id} className="soon" title={t('Not built yet.')}>
+                <li key={sim.id} className="soon" title={t('common.notBuiltYet')}>
                   {t(sim.title)}
                 </li>
               ),
@@ -71,7 +71,7 @@ export default function Sidebar({ open, onNavigate }: SidebarProps) {
         </section>
       ))}
 
-      {groups.length === 0 && <p className="sidebar-empty">{t('No match.')}</p>}
+      {groups.length === 0 && <p className="sidebar-empty">{t('ui.noMatch')}</p>}
     </nav>
   )
 }

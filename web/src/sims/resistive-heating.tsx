@@ -67,33 +67,33 @@ export default function ResistiveHeating() {
   return (
     <SimPage
       id="resistive-heating"
-      lede="Nichrome and Kanthal elements: pyrography tips, foam cutters, small furnaces. The scope shows wire temperature in °C and dissipated power in W against time, settling at equilibrium rather than climbing forever."
+      lede="resistive-heating.lede"
       controls={
         <>
-          <Group label="Element">
-            <Select label="Alloy" value={materialKey} onChange={setMaterialKey} options={MATERIAL_OPTIONS} />
+          <Group label="resistive-heating.element">
+            <Select label="resistive-heating.alloy" value={materialKey} onChange={setMaterialKey} options={MATERIAL_OPTIONS} />
             <Segmented
-              label="Size by"
+              label="resistive-heating.sizeBy"
               value={sizing}
               onChange={setSizing}
               options={[
-                { value: 'awg', label: 'AWG' },
-                { value: 'diameter', label: 'Diameter' },
+                { value: 'awg', label: 'resistive-heating.awg' },
+                { value: 'diameter', label: 'common.diameter' },
               ]}
             />
             {sizing === 'awg' ? (
-              <Param label="Gauge" unit="AWG" value={awg} onChange={(v) => setAwg(Math.round(v))} min={10} max={40} log={false} step={1} />
+              <Param label="common.gauge" unit="AWG" value={awg} onChange={(v) => setAwg(Math.round(v))} min={10} max={40} log={false} step={1} />
             ) : (
-              <Param label="Diameter" unit="mm" value={diameterMm} onChange={setDiameterMm} min={0.05} max={3} />
+              <Param label="common.diameter" unit="mm" value={diameterMm} onChange={setDiameterMm} min={0.05} max={3} />
             )}
-            <Param label="Length" unit="m" value={length} onChange={setLength} min={0.01} max={20} />
+            <Param label="resistive-heating.length" unit="m" value={length} onChange={setLength} min={0.01} max={20} />
           </Group>
 
-          <Group label="Drive and environment">
-            <Param label="Supply" unit="V" value={supply} onChange={setSupply} min={0.5} max={240} />
-            <Param label="Convection h" unit="W/m²K" value={h} onChange={setH} min={5} max={200} log={false} step={1} />
-            <Param label="Ambient" unit="°C" value={ambientC} onChange={setAmbientC} min={-20} max={60} log={false} step={1} />
-            <Param label="Target temperature" unit="°C" value={targetC} onChange={setTargetC} min={30} max={1300} log={false} step={10} />
+          <Group label="resistive-heating.driveAndEnvironment">
+            <Param label="common.supply" unit="V" value={supply} onChange={setSupply} min={0.5} max={240} />
+            <Param label="resistive-heating.convectionH" unit="W/m²K" value={h} onChange={setH} min={5} max={200} log={false} step={1} />
+            <Param label="common.ambient" unit="°C" value={ambientC} onChange={setAmbientC} min={-20} max={60} log={false} step={1} />
+            <Param label="resistive-heating.targetTemperature" unit="°C" value={targetC} onChange={setTargetC} min={30} max={1300} log={false} step={10} />
           </Group>
         </>
       }
@@ -102,58 +102,58 @@ export default function ResistiveHeating() {
 
       <ReadoutGrid
         items={[
-          { label: 'Resistance cold', value: formatSI(r.rCold, 'Ω'), note: 'at 20 °C' },
-          { label: 'Resistance hot', value: formatSI(r.rHot, 'Ω'), note: 'at equilibrium' },
-          { label: 'Inrush current', value: formatSI(r.currentCold, 'A'), warn: r.overCurrent },
-          { label: 'Settled current', value: formatSI(r.currentHot, 'A') },
-          { label: 'Power cold', value: formatSI(r.powerCold, 'W') },
-          { label: 'Power settled', value: formatSI(r.powerHot, 'W') },
+          { label: 'resistive-heating.resistanceCold', value: formatSI(r.rCold, 'Ω'), note: 'resistive-heating.at20C' },
+          { label: 'resistive-heating.resistanceHot', value: formatSI(r.rHot, 'Ω'), note: 'resistive-heating.atEquilibrium' },
+          { label: 'resistive-heating.inrushCurrent', value: formatSI(r.currentCold, 'A'), warn: r.overCurrent },
+          { label: 'resistive-heating.settledCurrent', value: formatSI(r.currentHot, 'A') },
+          { label: 'resistive-heating.powerCold', value: formatSI(r.powerCold, 'W') },
+          { label: 'resistive-heating.powerSettled', value: formatSI(r.powerHot, 'W') },
           {
-            label: 'Equilibrium temp',
+            label: 'resistive-heating.equilibriumTemp',
             value: `${toC(r.equilibrium).toFixed(0)} °C`,
-            note: <T k="limit {maxTemp} °C" vars={{ maxTemp: toC(material.maxTemp).toFixed(0) }} />,
+            note: <T k="resistive-heating.limitC" vars={{ maxTemp: toC(material.maxTemp).toFixed(0) }} />,
             warn: r.overTemp,
           },
-          { label: 'Thermal tau', value: formatSI(r.tau, 's') },
+          { label: 'resistive-heating.thermalTau', value: formatSI(r.tau, 's') },
           {
-            label: 'Time to target',
-            value: r.reachable ? formatSI(r.tTarget, 's') : 'never',
-            note: r.reachable ? undefined : '(below equilibrium)',
+            label: 'resistive-heating.timeToTarget',
+            value: r.reachable ? formatSI(r.tTarget, 's') : 'common.never',
+            note: r.reachable ? undefined : 'resistive-heating.belowEquilibrium',
             warn: !r.reachable,
           },
-          { label: 'Settling time', value: formatSI(r.tSettle, 's'), note: '5 tau' },
-          { label: 'Surface load', value: formatSI(r.surfaceLoad, 'W/m²') },
-          { label: 'Hold duty', value: r.holdDuty <= 1 ? `${(r.holdDuty * 100).toFixed(0)}%` : 'over 100%', warn: r.holdDuty > 1 },
-          { label: 'Radiated share', value: `${(r.radiation * 100).toFixed(0)}%`, note: 'rest is convection' },
-          { label: 'Current limit', value: formatSI(r.limitCurrent, 'A'), note: 'at service temp' },
-          { label: 'Wire mass', value: formatSI(r.mass, 'kg') },
-          { label: 'Energy to target', value: formatSI(r.energyToTarget, 'J') },
+          { label: 'resistive-heating.settlingTime', value: formatSI(r.tSettle, 's'), note: 'resistive-heating.5Tau' },
+          { label: 'resistive-heating.surfaceLoad', value: formatSI(r.surfaceLoad, 'W/m²') },
+          { label: 'resistive-heating.holdDuty', value: r.holdDuty <= 1 ? `${(r.holdDuty * 100).toFixed(0)}%` : 'resistive-heating.over100', warn: r.holdDuty > 1 },
+          { label: 'resistive-heating.radiatedShare', value: `${(r.radiation * 100).toFixed(0)}%`, note: 'resistive-heating.restIsConvection' },
+          { label: 'resistive-heating.currentLimit', value: formatSI(r.limitCurrent, 'A'), note: 'resistive-heating.atServiceTemp' },
+          { label: 'resistive-heating.wireMass', value: formatSI(r.mass, 'kg') },
+          { label: 'resistive-heating.energyToTarget', value: formatSI(r.energyToTarget, 'J') },
         ]}
       />
 
       {r.overTemp && (
         <Warning
-          text="Equilibrium is above the {maxTemp} °C continuous rating for {label}. The element will oxidise fast and fail early. Use thicker wire, a longer run, or less voltage."
+          text="resistive-heating.warn1"
           vars={{ maxTemp: toC(material.maxTemp).toFixed(0), label: material.label }}
         />
       )}
       {!r.reachable && (
         <Warning
-          text="The target sits above the equilibrium temperature, so the wire never reaches it no matter how long it runs. Raise the supply or reduce the cooling."
+          text="resistive-heating.warn2"
         />
       )}
       {materialKey === 'copper' && (
         <Warning
-          text="Copper is here for contrast, not for building elements. Its temperature coefficient is roughly 80x that of nichrome, so its resistance and therefore its power swing wildly as it heats, and it oxidises away quickly at element temperatures."
+          text="resistive-heating.warn3"
         />
       )}
 
       <Theory
         text={[
-          "Resistance is `R = rho·L/A`, so power at a fixed supply is `P = V²/R`. Halving the length halves the resistance and doubles the power, which is the usual way people accidentally burn out a pen tip.",
-          "Temperature is not that formula. The wire obeys a balance: `m·c·dT/dt = P - h·As·(T - Tamb)`. The loss term grows with temperature, so the wire settles at `Tamb + P/(h·As)` rather than climbing forever. That equilibrium is what the trace converges to, and the time constant `m·c/(h·As)` is independent of length: a longer wire has proportionally more mass and more surface.",
-          "Resistance drifts with temperature too, so the settled power is not the switch-on power. This is why the simulation freezes the power over each step and applies the exact solution: the feedback is negative for every real element alloy, hotter means more resistance means less power, so it converges rather than running away.",
-          "Element makers size on surface load, watts per square metre of wire surface, not on total power. Two elements of the same wattage behave very differently if one packs it into half the surface.",
+          'resistive-heating.theory1',
+          'resistive-heating.temperatureIsNotThat',
+          'resistive-heating.resistanceDriftsWithTemperature',
+          'resistive-heating.elementMakersSizeOn',
         ]}
       />
     </SimPage>

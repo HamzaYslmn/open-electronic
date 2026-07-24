@@ -1,3 +1,5 @@
+import { sym } from '../i18n'
+import type { Key } from '../i18n'
 /**
  * LM317 adjustable linear regulator: divider sizing, dissipation and thermals.
  *
@@ -74,13 +76,13 @@ export type PackageId = 'to220' | 'to263' | 'sot223'
  */
 export const PACKAGES: ReadonlyArray<{
   value: PackageId
-  label: string
+  label: Key
   rthJC: number
   rthJA: number
 }> = [
-  { value: 'to220', label: 'TO-220', rthJC: 4, rthJA: 50 },
-  { value: 'to263', label: 'TO-263 (D2PAK)', rthJC: 3, rthJA: 35 },
-  { value: 'sot223', label: 'SOT-223', rthJC: 15, rthJA: 120 },
+  { value: 'to220', label: sym('TO-220'), rthJC: 4, rthJA: 50 },
+  { value: 'to263', label: 'opt.to263D2pak', rthJC: 3, rthJA: 35 },
+  { value: 'sot223', label: sym('SOT-223'), rthJC: 15, rthJA: 120 },
 ]
 
 /**

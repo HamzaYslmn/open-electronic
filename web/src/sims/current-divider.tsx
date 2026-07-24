@@ -3,7 +3,7 @@ import { VCC, GPIO_MAX_MA } from '../engine/constants'
 import { QUARTER_WATT, analyse } from '../engine/currentDivider'
 import type { BranchResult, Drive } from '../engine/currentDivider'
 import { formatSI } from '../engine/units'
-import { T, useT } from '../i18n'
+import { T, sym, useT } from '../i18n'
 import { Group, Segmented } from '../ui/Controls'
 import { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -22,7 +22,7 @@ function Schematic({ count, kind }: { count: number; kind: DriveKind }) {
   )
   const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 120" aria-label={t('Parallel branch network')}>
+    <svg className="schematic" viewBox="0 0 260 120" aria-label={t('current-divider.parallelBranchNetwork')}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         {kind === 'voltage' ? (
           <>
@@ -148,35 +148,35 @@ export default function CurrentDivider() {
   return (
     <SimPage
       id="current-divider"
-      lede="Parallel branches share a node voltage, so the current splits by conductance, not by resistance. The bar shows each branch's share of the total."
+      lede="current-divider.lede"
       controls={
         <>
           <Segmented
-            label="Branch count"
+            label="current-divider.branchCount"
             value={String(count)}
             onChange={(v) => setCount(Number(v))}
             options={[
-              { value: '2', label: '2' },
-              { value: '3', label: '3' },
-              { value: '4', label: '4' },
+              { value: '2', label: sym('2') },
+              { value: '3', label: sym('3') },
+              { value: '4', label: sym('4') },
             ]}
           />
           <Segmented
-            label="Drive"
+            label="common.drive"
             value={kind}
             onChange={setKind}
             options={[
-              { value: 'voltage', label: 'Rail + Rs' },
-              { value: 'current', label: 'Current source' },
+              { value: 'voltage', label: 'current-divider.railRs' },
+              { value: 'current', label: 'current-divider.currentSource' },
             ]}
           />
           <Schematic count={count} kind={kind} />
 
-          <Group label="Source">
+          <Group label="common.source">
             {kind === 'voltage' ? (
               <>
                 <Param
-                  label="Supply Vs"
+                  label="current-divider.supplyVs"
                   unit="V"
                   value={supply}
                   onChange={setSupply}
@@ -184,10 +184,10 @@ export default function CurrentDivider() {
                   max={24}
                   log={false}
                   step={0.1}
-                  hint="3.3 V is the ESP32 rail."
+                  hint="common.33VIs"
                 />
                 <Param
-                  label="Series Rs"
+                  label="common.seriesRs"
                   unit="Ω"
                   value={series}
                   onChange={setSeries}
@@ -197,7 +197,7 @@ export default function CurrentDivider() {
               </>
             ) : (
               <Param
-                label="Total current"
+                label="current-divider.totalCurrent"
                 unit="A"
                 value={current}
                 onChange={setCurrent}
@@ -207,11 +207,11 @@ export default function CurrentDivider() {
             )}
           </Group>
 
-          <Group label="Branches">
+          <Group label="current-divider.branches">
             {resistors.slice(0, count).map((r, i) => (
               <Param
                 key={i}
-                label={`R${i + 1}`}
+                label={sym(`R${i + 1}`)}
                 unit="Ω"
                 value={r}
                 onChange={(v) => setR(i, v)}
@@ -220,13 +220,13 @@ export default function CurrentDivider() {
               />
             ))}
             <Param
-              label="Resistor rating"
+              label="current-divider.resistorRating"
               unit="W"
               value={rating}
               onChange={setRating}
               min={0.031}
               max={5}
-              hint="0.25 W axial, 0.125 W for 0805."
+              hint="current-divider.025WAxial"
             />
           </Group>
         </>
@@ -236,21 +236,21 @@ export default function CurrentDivider() {
 
       <ReadoutGrid
         items={[
-          { label: 'Equivalent R', value: formatSI(readout.req, 'Ω') },
+          { label: 'current-divider.equivalentR', value: formatSI(readout.req, 'Ω') },
           {
-            label: 'Node voltage',
+            label: 'current-divider.nodeVoltage',
             value: formatSI(readout.voltage, 'V'),
-            note: kind === 'voltage' ? <T k="({voltage} across Rs)" vars={{ voltage: formatSI(supply - readout.voltage, 'V') }} /> : undefined,
+            note: kind === 'voltage' ? <T k="current-divider.acrossRs" vars={{ voltage: formatSI(supply - readout.voltage, 'V') }} /> : undefined,
           },
           {
-            label: 'Total current',
+            label: 'current-divider.totalCurrent',
             value: formatSI(readout.total, 'A'),
-            note: readout.overGpio ? '(over one GPIO)' : undefined,
+            note: readout.overGpio ? 'current-divider.overOneGpio' : undefined,
             warn: readout.overGpio,
           },
-          { label: 'Total power', value: formatSI(readout.totalPower, 'W') },
+          { label: 'current-divider.totalPower', value: formatSI(readout.totalPower, 'W') },
           ...readout.branches.map((b, i) => ({
-            label: <T k="R{i} current" vars={{ i: i + 1 }} />,
+            label: <T k="current-divider.rCurrent" vars={{ i: i + 1 }} />,
             value: formatSI(b.current, 'A'),
             note: `(${(b.share * 100).toFixed(1)}%, ${formatSI(b.power, 'W')})`,
             warn: b.overPower,
@@ -260,19 +260,19 @@ export default function CurrentDivider() {
 
       {readout.overGpio && (
         <Warning
-          text="Total draw is {total}, past the {GPIO_MAX_MA} mA an ESP32 pin may source or sink. Feed the bank from the rail through a MOSFET or a driver, not straight off a GPIO."
+          text="current-divider.warn1"
           vars={{ total: formatSI(readout.total, 'A'), GPIO_MAX_MA }}
         />
       )}
       {readout.anyOverPower && (
         <Warning
-          text="{hot} over the {rating} rating. Pick a larger part or raise the branch resistance."
+          text="current-divider.warn2"
           vars={{ hot, rating: formatSI(rating, 'W') }}
         />
       )}
       {kind === 'current' && readout.voltage > supply && (
         <Warning
-          text="An ideal current source holds {total} into any load, so the node sits at {voltage}. A real 3V3 supply cannot go there: switch to rail plus Rs to see what the circuit actually does."
+          text="current-divider.warn3"
           vars={{
             total: formatSI(readout.total, 'A'),
             voltage: formatSI(readout.voltage, 'V'),
@@ -282,9 +282,9 @@ export default function CurrentDivider() {
 
       <Theory
         text={[
-          "Parallel branches share one node pair, so they all see the same voltage. Conductance adds: `G = 1/R`, `Req = 1 / sum(G)`. Req is always smaller than the smallest branch, i.e. adding a path can only make the load heavier.",
-          "The node sits at `V = Itotal·Req`, so each branch carries `Ix = V/Rx = Itotal·Gx / sum(G)`. The low-resistance branch takes the most current, which is the opposite of the voltage divider intuition. For two branches this collapses to `I1 = Itotal·R2 / (R1 + R2)`, the other resistor on top.",
-          "Dissipation is `Px = Ix²·Rx`, and the branch powers sum to `V·Itotal`. In rail mode the source sees `Rs + Req`, so `Itotal = Vs / (Rs + Req)` and Rs takes the rest of the supply.",
+          'current-divider.theory1',
+          'current-divider.theNodeSitsAt',
+          'current-divider.dissipationIsPxIx',
         ]}
       />
     </SimPage>

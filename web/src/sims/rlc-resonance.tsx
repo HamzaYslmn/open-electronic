@@ -28,7 +28,7 @@ function Schematic({ topology }: { topology: RLCTopology }) {
   const series = topology === 'series'
   const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 110" aria-label={t('{topology} RLC network', { topology })}>
+    <svg className="schematic" viewBox="0 0 260 110" aria-label={t('rlc-resonance.rlcNetwork')}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         <circle cx="24" cy="34" r="10" />
         <path d="M18 34a6 6 0 0 1 12 0M24 24V14M24 44v36h212" />
@@ -111,8 +111,8 @@ export default function RLCResonance() {
     return {
       dt,
       traces: [
-        { label: 'Vin', color: TRACE_COLORS[0], samples: input },
-        { label: 'Vout', color: TRACE_COLORS[1], samples: vout },
+        { label: 'common.vin', color: TRACE_COLORS[0], samples: input },
+        { label: 'common.vout', color: TRACE_COLORS[1], samples: vout },
       ],
       readout,
       peakVout,
@@ -130,24 +130,24 @@ export default function RLCResonance() {
   return (
     <SimPage
       id="rlc-resonance"
-      lede="Step response of an RLC network. The horizontal axis is time, the trace is the capacitor voltage (series) or the tank node voltage (parallel). Drop R to watch it ring, raise it to damp it out."
+      lede="rlc-resonance.lede"
       controls={
         <>
           <Segmented
-            label="Topology"
+            label="common.topology"
             value={topology}
             onChange={setTopology}
             options={[
-              { value: 'series', label: 'Series' },
-              { value: 'parallel', label: 'Parallel' },
+              { value: 'series', label: 'common.series' },
+              { value: 'parallel', label: 'common.parallel' },
             ]}
           />
           <Schematic topology={topology} />
 
-          <Group label="Components">
-            <Param label="Resistor" unit="Ω" value={r} onChange={setR} min={0.01} max={1e6} />
-            <Param label="Inductor" unit="H" value={l} onChange={setL} min={1e-9} max={1} />
-            <Param label="Capacitor" unit="F" value={c} onChange={setC} min={1e-12} max={1e-3} />
+          <Group label="common.components">
+            <Param label="common.resistor" unit="Ω" value={r} onChange={setR} min={0.01} max={1e6} />
+            <Param label="common.inductor" unit="H" value={l} onChange={setL} min={1e-9} max={1} />
+            <Param label="common.capacitor" unit="F" value={c} onChange={setC} min={1e-12} max={1e-3} />
           </Group>
 
           <SourceControls value={source} onChange={patchSource} maxAmplitude={24} />
@@ -158,89 +158,89 @@ export default function RLCResonance() {
 
       <ReadoutGrid
         items={[
-          { label: 'Resonance f0', value: formatSI(readout.f0, 'Hz') },
+          { label: 'common.resonanceF0', value: formatSI(readout.f0, 'Hz') },
           {
-            label: 'Q factor',
+            label: 'common.qFactor',
             value: readout.q.toFixed(3),
-            note: lossyQ ? '(ideal L and C, see below)' : undefined,
+            note: lossyQ ? 'rlc-resonance.idealLAndC' : undefined,
             warn: lossyQ,
           },
-          { label: 'Bandwidth', value: formatSI(readout.bw, 'Hz') },
+          { label: 'common.bandwidth', value: formatSI(readout.bw, 'Hz') },
           {
-            label: 'Damping zeta',
+            label: 'rlc-resonance.dampingZeta',
             value: readout.zeta.toFixed(4),
             note: `(${DAMPING_TEXT[readout.damping]})`,
           },
           {
-            label: 'Ring frequency fd',
-            value: readout.fd > 0 ? formatSI(readout.fd, 'Hz') : 'none',
+            label: 'rlc-resonance.ringFrequencyFd',
+            value: readout.fd > 0 ? formatSI(readout.fd, 'Hz') : 'common.none',
             note: readout.fd > 0 ? `(${(readout.fd / readout.f0).toFixed(3)} x f0)` : undefined,
             warn: aliased,
           },
           {
-            label: 'Half power band',
+            label: 'rlc-resonance.halfPowerBand',
             value: `${formatSI(readout.fLow, 'Hz')} to ${formatSI(readout.fHigh, 'Hz')}`,
           },
-          { label: 'Damping alpha', value: formatSI(readout.alpha, 'rad/s') },
-          { label: 'Settling to 1%', value: formatSI(readout.settling, 's') },
+          { label: 'rlc-resonance.dampingAlpha', value: formatSI(readout.alpha, 'rad/s') },
+          { label: 'common.settlingTo1', value: formatSI(readout.settling, 's') },
           {
-            label: 'Impedance Z0',
+            label: 'rlc-resonance.impedanceZ0',
             value: formatSI(readout.z0, 'Ω'),
-            note: '(sqrt(L/C))',
+            note: 'rlc-resonance.sqrtLC',
           },
           {
-            label: 'R for critical',
+            label: 'rlc-resonance.rForCritical',
             value: formatSI(readout.rCritical, 'Ω'),
           },
           {
-            label: 'Overshoot',
+            label: 'rlc-resonance.overshoot',
             value:
               topology === 'series' && readout.damping === 'under'
                 ? `${(readout.overshoot * 100).toFixed(1)} %`
-                : 'none',
+                : 'common.none',
           },
           {
-            label: 'Peak Vout',
+            label: 'rlc-resonance.peakVout',
             value: formatSI(peakVout, 'V'),
-            note: <T k="(drive {drive})" vars={{ drive: formatSI(drive, 'V') }} />,
+            note: <T k="rlc-resonance.drive" vars={{ drive: formatSI(drive, 'V') }} />,
             warn: overshootWarn,
           },
           {
-            label: 'Peak coil current',
+            label: 'common.peakCoilCurrent',
             value: formatSI(peakCurrent, 'A'),
-            note: '(check Isat)',
+            note: 'rlc-resonance.checkIsat',
           },
         ]}
       />
 
       {overshootWarn && (
         <Warning
-          text="The capacitor reaches {peakVout} on a {drive} drive. An undamped series RLC tops out near 2x the supply, so rate the capacitor and the switching device for the peak, not the rail. Add series R or a snubber."
+          text="rlc-resonance.warn1"
           vars={{ peakVout: formatSI(peakVout, 'V'), drive: formatSI(drive, 'V') }}
         />
       )}
 
       {lossyQ && (
         <Warning
-          text="Q above {HIGH_Q_LIMIT} assumes a lossless L and C. A real inductor's winding resistance and core loss, plus the capacitor ESR, both sit in the loop and will hold the measured Q well below this. Add the coil DCR into R for a realistic answer."
+          text="rlc-resonance.warn2"
           vars={{ HIGH_Q_LIMIT }}
         />
       )}
 
       {aliased && (
         <Warning
-          text="The scope window holds {perRing} samples per ring cycle, so the drawn trace is aliased. The numbers above are still exact, they come from closed form, not the trace. Shorten the window or raise the source frequency to see the real ring."
+          text="rlc-resonance.warn3"
           vars={{ perRing: perRing.toFixed(1) }}
         />
       )}
 
       <Theory
         text={[
-          "Resonance is where the two reactances cancel, `Xl = Xc`, giving `f0 = 1 / (2·pi·sqrt(L·C))`. It does not depend on R.",
-          "R sets how fast the stored energy leaks away. Series: `Q = (1/R)·sqrt(L/C)` and `alpha = R / (2L)`. Parallel: `Q = R·sqrt(C/L)` and `alpha = 1 / (2·R·C)`. The two are reciprocal about the characteristic impedance `Z0 = sqrt(L/C)`, so series wants R small for a high Q and parallel wants R large.",
-          "From there, `BW = f0 / Q`, `zeta = 1 / (2Q) = alpha / w0` and the ring frequency is `wd = w0·sqrt(1 - zeta²)`. zeta below 1 rings, zeta at 1 is critical damping (fastest settle with no overshoot), zeta above 1 crawls in without ringing. First peak overshoot is `exp(-pi·zeta / sqrt(1 - zeta²))`, which is 100% at zeta = 0 and why a lossless step doubles the supply.",
-          "The trace is a two-state simulation of `[Vc, Il]` using exact zero-order-hold discretisation, `x[n+1] = xss + e^(A·dt)·(x[n] - xss)`. The matrix exponential is closed form, so the solver is exact for a piecewise constant drive and stable at any step size. Forward Euler on a resonant second-order system diverges as soon as `dt &gt; 2/w0`.",
-          "Parallel here is driven Thevenin style, i.e. the source feeds R in series into the L-C node. That is the same circuit as a current step `Vin/R` into R || L || C, so the parallel Q applies. Its output decays to zero because the inductor is a short at DC.",
+          'rlc-resonance.theory1',
+          'rlc-resonance.rSetsHowFast',
+          'rlc-resonance.fromThereBwF0',
+          'rlc-resonance.theTraceIsA',
+          'rlc-resonance.parallelHereIsDriven',
         ]}
       />
     </SimPage>

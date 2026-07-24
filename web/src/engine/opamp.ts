@@ -1,3 +1,4 @@
+import type { Key } from '../i18n'
 /**
  * Operational amplifier behavioural model.
  *
@@ -33,14 +34,14 @@ export type OpAmpMode =
   | 'integrator'
   | 'comparator'
 
-export const OPAMP_MODES: ReadonlyArray<{ value: OpAmpMode; label: string }> = [
-  { value: 'inverting', label: 'Inverting' },
-  { value: 'noninverting', label: 'Non-inverting' },
-  { value: 'buffer', label: 'Buffer (unity gain)' },
-  { value: 'summing', label: 'Summing' },
-  { value: 'difference', label: 'Difference' },
-  { value: 'integrator', label: 'Integrator' },
-  { value: 'comparator', label: 'Comparator + hysteresis' },
+export const OPAMP_MODES: ReadonlyArray<{ value: OpAmpMode; label: Key }> = [
+  { value: 'inverting', label: 'common.inverting' },
+  { value: 'noninverting', label: 'opt.nonInverting' },
+  { value: 'buffer', label: 'opt.bufferUnityGain' },
+  { value: 'summing', label: 'opt.summing' },
+  { value: 'difference', label: 'opt.difference' },
+  { value: 'integrator', label: 'opt.integrator' },
+  { value: 'comparator', label: 'opt.comparatorHysteresis' },
 ]
 
 /** The part itself, i.e. everything a datasheet tells you. */

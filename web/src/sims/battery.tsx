@@ -45,8 +45,8 @@ export default function Battery() {
       r,
       dt: r.dt,
       traces: [
-        { label: 'Vterm', color: TRACE_COLORS[0], samples: r.terminal },
-        { label: 'OCV', color: TRACE_COLORS[1], samples: r.ocv },
+        { label: 'battery.vterm', color: TRACE_COLORS[0], samples: r.terminal },
+        { label: 'battery.ocv', color: TRACE_COLORS[1], samples: r.ocv },
       ],
     }
   }, [chemistry, series, parallel, capacityAh, mode, loadValue])
@@ -57,34 +57,34 @@ export default function Battery() {
   return (
     <SimPage
       id="battery"
-      lede="Discharge a pack into a constant load and watch it sag. The scope plots terminal voltage against the open-circuit voltage over time: the gap between the two traces is the loss in the pack's own internal resistance."
+      lede="battery.lede"
       controls={
         <>
-          <Group label="Pack">
+          <Group label="battery.pack">
             <Select
-              label="Chemistry"
+              label="battery.chemistry"
               value={chemistry}
               onChange={setChemistry}
               options={CHEMISTRY_OPTIONS}
             />
-            <Param label="Cells in series" value={series} onChange={(v) => setSeries(Math.round(v))} min={1} max={16} log={false} step={1} />
-            <Param label="Cells in parallel" value={parallel} onChange={(v) => setParallel(Math.round(v))} min={1} max={16} log={false} step={1} />
-            <Param label="Cell capacity" unit="Ah" value={capacityAh} onChange={setCapacityAh} min={0.05} max={200} />
+            <Param label="common.cellsInSeries" value={series} onChange={(v) => setSeries(Math.round(v))} min={1} max={16} log={false} step={1} />
+            <Param label="battery.cellsInParallel" value={parallel} onChange={(v) => setParallel(Math.round(v))} min={1} max={16} log={false} step={1} />
+            <Param label="battery.cellCapacity" unit="Ah" value={capacityAh} onChange={setCapacityAh} min={0.05} max={200} />
           </Group>
 
-          <Group label="Load">
+          <Group label="common.load">
             <Segmented
-              label="Load type"
+              label="common.loadType"
               value={mode}
               onChange={setMode}
               options={[
-                { value: 'current', label: 'Current' },
-                { value: 'resistance', label: 'Resistor' },
-                { value: 'power', label: 'Power' },
+                { value: 'current', label: 'common.current' },
+                { value: 'resistance', label: 'common.resistor' },
+                { value: 'power', label: 'battery.power' },
               ]}
             />
             <Param
-              label="Load"
+              label="common.load"
               unit={LOAD_UNITS[mode]}
               value={loadValue}
               onChange={setLoadValue}
@@ -100,52 +100,52 @@ export default function Battery() {
       <ReadoutGrid
         items={[
           {
-            label: 'Runtime',
+            label: 'common.runtime',
             value: hours >= 1 ? `${hours.toFixed(2)} h` : `${(r.runtime / 60).toFixed(1)} min`,
             warn: r.deadOnArrival,
           },
-          { label: 'Mean current', value: formatSI(r.meanCurrent, 'A') },
-          { label: 'C rate', value: `${r.cRate.toFixed(2)} C`, note: <T k="max {maxCRate} C" vars={{ maxCRate: spec.maxCRate }} />, warn: r.overCRate },
-          { label: 'Energy delivered', value: `${(r.energy / JOULES_PER_WH).toFixed(2)} Wh` },
-          { label: 'Charge delivered', value: `${(r.delivered / COULOMBS_PER_AH).toFixed(3)} Ah` },
-          { label: 'Rated capacity', value: `${(r.rated / COULOMBS_PER_AH).toFixed(3)} Ah` },
+          { label: 'battery.meanCurrent', value: formatSI(r.meanCurrent, 'A') },
+          { label: 'common.cRate', value: `${r.cRate.toFixed(2)} C`, note: <T k="battery.maxC" vars={{ maxCRate: spec.maxCRate }} />, warn: r.overCRate },
+          { label: 'battery.energyDelivered', value: `${(r.energy / JOULES_PER_WH).toFixed(2)} Wh` },
+          { label: 'battery.chargeDelivered', value: `${(r.delivered / COULOMBS_PER_AH).toFixed(3)} Ah` },
+          { label: 'battery.ratedCapacity', value: `${(r.rated / COULOMBS_PER_AH).toFixed(3)} Ah` },
           {
-            label: 'Peukert usable',
+            label: 'battery.peukertUsable',
             value: `${(r.capacityRatio * 100).toFixed(0)}%`,
-            note: 'of rated at this rate',
+            note: 'battery.ofRatedAtThis',
           },
-          { label: 'Pack resistance', value: formatSI(r.rint, 'Ω') },
-          { label: 'Loss in pack', value: `${(r.lossJoules / JOULES_PER_WH).toFixed(2)} Wh` },
-          { label: 'Pack efficiency', value: `${(r.efficiency * 100).toFixed(1)}%` },
-          { label: 'Start voltage', value: formatSI(r.startVoltage, 'V') },
-          { label: 'Cutoff voltage', value: formatSI(r.cutoff, 'V') },
-          { label: 'Worst sag', value: formatSI(r.maxSag, 'V') },
-          { label: 'Nominal voltage', value: formatSI(r.nominal, 'V'), note: <T k="{series}S{parallel}P" vars={{ series, parallel }} /> },
+          { label: 'battery.packResistance', value: formatSI(r.rint, 'Ω') },
+          { label: 'battery.lossInPack', value: `${(r.lossJoules / JOULES_PER_WH).toFixed(2)} Wh` },
+          { label: 'battery.packEfficiency', value: `${(r.efficiency * 100).toFixed(1)}%` },
+          { label: 'battery.startVoltage', value: formatSI(r.startVoltage, 'V') },
+          { label: 'battery.cutoffVoltage', value: formatSI(r.cutoff, 'V') },
+          { label: 'battery.worstSag', value: formatSI(r.maxSag, 'V') },
+          { label: 'battery.nominalVoltage', value: formatSI(r.nominal, 'V'), note: <T k="battery.sP" vars={{ series, parallel }} /> },
         ]}
       />
 
       {r.overPower && (
         <Warning
-          text="The load asks for more power than this pack can ever deliver. Maximum power transfer caps it at `OCV² / (4·Rint)`, and past that no operating point exists at any voltage. Reduce the load or add cells in parallel to drop Rint."
+          text="battery.warn1"
         />
       )}
       {r.overCRate && !r.overPower && (
         <Warning
-          text="Drawing {cRate} C, past the {maxCRate} C continuous rating for {label}. Real cells overheat and age fast here, which this model does not simulate: it will happily show you a runtime you should not use."
+          text="battery.warn2"
           vars={{ cRate: r.cRate.toFixed(2), maxCRate: spec.maxCRate, label: spec.label }}
         />
       )}
       {r.deadOnArrival && (
         <Warning
-          text="The pack is already below its cutoff at the first sample, so there is no usable runtime. The load is too heavy for this pack size."
+          text="battery.warn3"
         />
       )}
 
       <Theory
         text={[
-          "Terminal voltage is `V = OCV(depth) - I·Rint`. The open-circuit curve falls with depth of discharge, and the internal resistance subtracts a further drop proportional to current. That is the whole reason a battery reads 4.2 V at rest and 3.7 V the moment you load it.",
-          "Peukert's law captures the fact that capacity is not a constant: `t = H·(C/(I·H))^k`. With k above 1, heavy discharge extracts less total charge. Lead acid is the worst offender at k around 1.2 to 1.3; lithium is close to 1.05, which is why a LiPo holds its rating far better under load.",
-          "Resistive and constant-power loads behave differently as the pack drains. A resistor draws less current as voltage falls, so it tails off gently. A constant-power load draws *more* current as voltage falls, which accelerates the collapse at the end: this is exactly the behaviour of a switching regulator feeding an ESP32, and it is why the last few percent of a pack disappears so suddenly.",
+          'battery.theory1',
+          'battery.peukertSLawCaptures',
+          'battery.resistiveAndConstantPower',
         ]}
       />
     </SimPage>

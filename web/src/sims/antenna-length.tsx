@@ -21,47 +21,47 @@ export default function AntennaLength() {
   return (
     <SimPage
       id="antenna-length"
-      lede="Cut a wire whip to the right length. The physical element is always shorter than the free-space figure because the wave travels slower in and around the conductor."
+      lede="antenna-length.lede"
       controls={
         <>
-          <Group label="Frequency">
+          <Group label="common.frequency">
             <Select
-              label="Band preset"
+              label="antenna-length.bandPreset"
               value={String(BANDS.findIndex((b) => b.frequency === frequency))}
               onChange={(i) => setFrequency(BANDS[Number(i)]?.frequency ?? frequency)}
               options={BAND_OPTIONS}
             />
-            <Param label="Frequency" unit="Hz" value={frequency} onChange={setFrequency} min={1e6} max={10e9} />
+            <Param label="common.frequency" unit="Hz" value={frequency} onChange={setFrequency} min={1e6} max={10e9} />
           </Group>
-          <Group label="Conductor">
-            <Select label="Velocity factor" value={vfKey} onChange={setVfKey} options={VF_OPTIONS} />
+          <Group label="antenna-length.conductor">
+            <Select label="antenna-length.velocityFactor" value={vfKey} onChange={setVfKey} options={VF_OPTIONS} />
           </Group>
         </>
       }
     >
       <ReadoutGrid
         items={[
-          { label: 'Wavelength', value: mm(r.lambda), note: formatSI(r.lambda, 'm') },
-          { label: 'Quarter wave', value: mm(r.quarterWave), note: 'the usual whip' },
-          { label: 'Half wave', value: mm(r.halfWave), note: 'dipole, each leg is a quarter' },
-          { label: '5/8 wave', value: mm(r.fiveEighths), note: 'slightly more gain' },
-          { label: 'Full wave', value: mm(r.fullWave) },
-          { label: 'Ground radial', value: mm(r.groundRadial), note: 'each, 4 or more' },
-          { label: 'Quarter wave in free space', value: mm(r.freeSpaceQuarter), note: 'before shortening' },
-          { label: 'Velocity factor', value: vf.toFixed(2) },
+          { label: 'antenna-length.wavelength', value: mm(r.lambda), note: formatSI(r.lambda, 'm') },
+          { label: 'antenna-length.quarterWave', value: mm(r.quarterWave), note: 'antenna-length.theUsualWhip' },
+          { label: 'common.halfWave', value: mm(r.halfWave), note: 'antenna-length.dipoleEachLegIs' },
+          { label: 'antenna-length.58Wave', value: mm(r.fiveEighths), note: 'antenna-length.slightlyMoreGain' },
+          { label: 'antenna-length.fullWave', value: mm(r.fullWave) },
+          { label: 'antenna-length.groundRadial', value: mm(r.groundRadial), note: 'antenna-length.each4OrMore' },
+          { label: 'antenna-length.quarterWaveInFree', value: mm(r.freeSpaceQuarter), note: 'antenna-length.beforeShortening' },
+          { label: 'antenna-length.velocityFactor', value: vf.toFixed(2) },
         ]}
       />
 
       <Warning
-        text="A quarter-wave whip is only half an antenna. The other half is the ground plane, and without one the coax braid radiates instead, which detunes everything and makes performance depend on how you hold the board. Either give it radials, use a proper ground pour, or fit a half-wave dipole which needs no ground plane."
+        text="antenna-length.warn1"
       />
 
       <Theory
         text={[
-          "Wavelength is `lambda = c/f`. A quarter-wave element is resonant because the reflection from its open end arrives back at the feed in phase, presenting a real impedance of roughly 37 Ω over a perfect ground plane, which is a reasonable match to 50 Ω coax.",
-          "The physical length is always shorter than `lambda/4` in vacuum. The wave travels partly in the conductor and its surroundings, so the velocity factor applies: about 0.95 for a bare wire, 0.66 for typical coax dielectric, and nearer 0.55 for a microstrip trace where half the field sits in FR-4.",
-          "At 2.4 GHz a quarter wave is about 31 mm, which is why chip and meander antennas are practical there and why an 868 MHz node needs a visibly long whip at about 86 mm. Getting the length wrong by 10% shifts resonance well outside a narrow band and can easily cost 10 dB, which is a factor of three in range.",
-          "Keep the element clear of ground, metal and your hand. Detuning by proximity is the most common reason a bench-tested link fails once the board is in a case.",
+          'antenna-length.theory1',
+          'antenna-length.thePhysicalLengthIs',
+          'antenna-length.at24Ghz',
+          'antenna-length.keepTheElementClear',
         ]}
       />
     </SimPage>

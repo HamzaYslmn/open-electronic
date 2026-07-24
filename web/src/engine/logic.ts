@@ -1,3 +1,4 @@
+import type { Key } from '../i18n'
 /**
  * Logic-net timing shared by the I2C pull-up, level shifter and debounce pages.
  *
@@ -52,7 +53,7 @@ export function voltageAt(t: number, r: number, c: number, vcc = VCC, start = 0)
 export type I2cSpeed = 'standard' | 'fast' | 'fastplus'
 
 export type I2cSpeedSpec = {
-  label: string
+  label: Key
   /** Bus clock, Hz. */
   frequency: number
   /** Maximum rise time the specification allows, seconds. */
@@ -63,9 +64,9 @@ export type I2cSpeedSpec = {
 
 /** NXP UM10204 I2C specification, table 10. */
 export const I2C_SPEEDS: Record<I2cSpeed, I2cSpeedSpec> = {
-  standard: { label: 'Standard 100 kHz', frequency: 100e3, maxRise: 1000e-9, maxCapacitance: 400e-12 },
-  fast: { label: 'Fast 400 kHz', frequency: 400e3, maxRise: 300e-9, maxCapacitance: 400e-12 },
-  fastplus: { label: 'Fast plus 1 MHz', frequency: 1e6, maxRise: 120e-9, maxCapacitance: 550e-12 },
+  standard: { label: 'opt.standard100Khz', frequency: 100e3, maxRise: 1000e-9, maxCapacitance: 400e-12 },
+  fast: { label: 'opt.fast400Khz', frequency: 400e3, maxRise: 300e-9, maxCapacitance: 400e-12 },
+  fastplus: { label: 'opt.fastPlus1Mhz', frequency: 1e6, maxRise: 120e-9, maxCapacitance: 550e-12 },
 }
 
 export const I2C_SPEED_OPTIONS = (Object.keys(I2C_SPEEDS) as I2cSpeed[]).map((value) => ({

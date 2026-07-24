@@ -1,3 +1,4 @@
+import type { Key } from '../i18n'
 /**
  * Small discrete-part calculators: level shifters, crystal load capacitors,
  * TP4056 charging and resistor markings. Each is short enough that a module of
@@ -211,16 +212,16 @@ export function analyseCharger(
 // ---------------------------------------------------------------------------
 
 export const BAND_COLORS = [
-  { name: 'black', digit: 0, hex: '#1a1a1a' },
-  { name: 'brown', digit: 1, hex: '#8b4513' },
-  { name: 'red', digit: 2, hex: '#d02020' },
-  { name: 'orange', digit: 3, hex: '#e07020' },
-  { name: 'yellow', digit: 4, hex: '#e0c020' },
-  { name: 'green', digit: 5, hex: '#20a040' },
-  { name: 'blue', digit: 6, hex: '#2060d0' },
-  { name: 'violet', digit: 7, hex: '#8040c0' },
-  { name: 'grey', digit: 8, hex: '#808080' },
-  { name: 'white', digit: 9, hex: '#f0f0f0' },
+  { name: 'opt.black', digit: 0, hex: '#1a1a1a' },
+  { name: 'opt.brown', digit: 1, hex: '#8b4513' },
+  { name: 'opt.red2', digit: 2, hex: '#d02020' },
+  { name: 'opt.orange', digit: 3, hex: '#e07020' },
+  { name: 'opt.yellow', digit: 4, hex: '#e0c020' },
+  { name: 'opt.green', digit: 5, hex: '#20a040' },
+  { name: 'opt.blue2', digit: 6, hex: '#2060d0' },
+  { name: 'opt.violet', digit: 7, hex: '#8040c0' },
+  { name: 'opt.grey', digit: 8, hex: '#808080' },
+  { name: 'opt.white', digit: 9, hex: '#f0f0f0' },
 ] as const
 
 /** EIA-96 mantissa table: code 01 to 96 maps onto the E96 series. */
@@ -241,7 +242,7 @@ export const EIA96_MULTIPLIER: Record<string, number> = {
 
 export type ResistorCodes = {
   /** Three colour digits and a multiplier exponent, for a 4 or 5 band part. */
-  bands: string[]
+  bands: Key[]
   /** Three digit SMD code, e.g. 472. */
   smd3: string
   /** Four digit SMD code, e.g. 4701. */
@@ -263,9 +264,9 @@ export function encodeResistor(value: number, bandCount: 4 | 5): ResistorCodes {
   const digits = bandCount === 4 ? 2 : 3
   const { mantissa, exp } = split(value, digits)
   const chars = String(mantissa).padStart(digits, '0').split('')
-  const bands = chars.map((d) => BAND_COLORS[Number(d)]?.name ?? 'black')
+  const bands = chars.map((d) => BAND_COLORS[Number(d)]?.name ?? 'opt.black')
   // The multiplier band is itself a colour, for exponents 0 to 9.
-  bands.push(BAND_COLORS[Math.max(0, Math.min(9, exp))]?.name ?? 'black')
+  bands.push(BAND_COLORS[Math.max(0, Math.min(9, exp))]?.name ?? 'opt.black')
 
   const s3 = split(value, 2)
   const s4 = split(value, 3)

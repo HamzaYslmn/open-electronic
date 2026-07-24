@@ -1,3 +1,4 @@
+import type { Key } from '../i18n'
 /**
  * Resistive heating: nichrome hot-wire cutters and pyrography tips.
  *
@@ -52,7 +53,7 @@ export type MaterialKey = 'nichrome80' | 'nichrome60' | 'kanthal-a1' | 'ss304' |
 
 export type Material = {
   key: MaterialKey
-  label: string
+  label: Key
   /** Resistivity at 20 C, ohm metres. */
   rho20: number
   /** Temperature coefficient of resistance, per kelvin, averaged over the
@@ -79,7 +80,7 @@ export type Material = {
 export const MATERIALS: readonly Material[] = [
   {
     key: 'nichrome80',
-    label: 'Nichrome 80/20 (NiCr A)',
+    label: 'opt.nichrome8020Nicr',
     rho20: 1.09e-6,
     alpha: 1.0e-4,
     density: 8300,
@@ -89,7 +90,7 @@ export const MATERIALS: readonly Material[] = [
   },
   {
     key: 'nichrome60',
-    label: 'Nichrome 60/16 (NiCr C)',
+    label: 'opt.nichrome6016Nicr',
     rho20: 1.11e-6,
     alpha: 1.5e-4,
     density: 8200,
@@ -99,7 +100,7 @@ export const MATERIALS: readonly Material[] = [
   },
   {
     key: 'kanthal-a1',
-    label: 'Kanthal A1 (FeCrAl)',
+    label: 'opt.kanthalA1Fecral',
     rho20: 1.45e-6,
     alpha: 4.0e-5,
     density: 7100,
@@ -109,7 +110,7 @@ export const MATERIALS: readonly Material[] = [
   },
   {
     key: 'ss304',
-    label: 'Stainless 304',
+    label: 'opt.stainless304',
     rho20: 7.2e-7,
     alpha: 9.4e-4,
     density: 8000,
@@ -119,7 +120,7 @@ export const MATERIALS: readonly Material[] = [
   },
   {
     key: 'copper',
-    label: 'Copper (for contrast)',
+    label: 'opt.copperForContrast',
     rho20: 1.68e-8,
     alpha: 3.93e-3,
     density: 8960,

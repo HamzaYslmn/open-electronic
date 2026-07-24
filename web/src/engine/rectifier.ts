@@ -1,3 +1,4 @@
+import type { Key } from '../i18n'
 /**
  * Diode rectifiers: half wave, full wave bridge and centre tapped, each with a
  * capacitor input (reservoir) filter feeding a resistive load.
@@ -17,15 +18,15 @@ import { mean, rms } from './signal'
 
 export type Topology = 'half' | 'bridge' | 'centre'
 
-export const TOPOLOGIES: ReadonlyArray<{ value: Topology; label: string }> = [
-  { value: 'half', label: 'Half wave' },
-  { value: 'bridge', label: 'Bridge' },
-  { value: 'centre', label: 'Centre tap' },
+export const TOPOLOGIES: ReadonlyArray<{ value: Topology; label: Key }> = [
+  { value: 'half', label: 'common.halfWave' },
+  { value: 'bridge', label: 'opt.bridge' },
+  { value: 'centre', label: 'opt.centreTap' },
 ]
 
 export type Diode = {
   id: string
-  label: string
+  label: Key
   /** Forward drop at or near rated current, V. */
   vf: number
   /** IO, maximum average rectified forward current, A. */
@@ -43,10 +44,10 @@ export type Diode = {
  * charging a reservoir cap works at amps.
  */
 export const DIODES: ReadonlyArray<Diode> = [
-  { id: '1N4148', label: '1N4148 signal', vf: 1.0, io: 0.15, vrrm: 100, isurge: 1 },
-  { id: '1N4007', label: '1N4007 1 A silicon', vf: 0.9, io: 1, vrrm: 1000, isurge: 30 },
-  { id: '1N5408', label: '1N5408 3 A silicon', vf: 1.0, io: 3, vrrm: 1000, isurge: 200 },
-  { id: '1N5819', label: '1N5819 Schottky', vf: 0.45, io: 1, vrrm: 40, isurge: 25 },
+  { id: '1N4148', label: 'opt.1n4148Signal', vf: 1.0, io: 0.15, vrrm: 100, isurge: 1 },
+  { id: '1N4007', label: 'opt.1n40071ASilicon', vf: 0.9, io: 1, vrrm: 1000, isurge: 30 },
+  { id: '1N5408', label: 'opt.1n54083ASilicon', vf: 1.0, io: 3, vrrm: 1000, isurge: 200 },
+  { id: '1N5819', label: 'opt.1n5819Schottky', vf: 0.45, io: 1, vrrm: 40, isurge: 25 },
 ]
 
 /** Diodes stacked in series in the conduction path. Only the bridge has two. */

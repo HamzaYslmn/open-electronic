@@ -3,7 +3,7 @@ import { GPIO_MAX_MA, VCC } from '../engine/constants'
 import { DEFAULTS, analyse, toCelsius, waveform } from '../engine/mosfet'
 import type { MosfetParams } from '../engine/mosfet'
 import { formatSI } from '../engine/units'
-import { T, useT } from '../i18n'
+import { T, sym, useT } from '../i18n'
 import { Group, Segmented } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -40,7 +40,7 @@ function matchPart(p: MosfetParams): PartKey {
 function Schematic() {
   const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 132" aria-label={t('Low side N-channel MOSFET switch')}>
+    <svg className="schematic" viewBox="0 0 260 132" aria-label={t('mosfet-switch.lowSideNChannel')}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         {/* gate path: GPIO, series resistor, gate plate */}
         <circle cx="24" cy="75" r="3" />
@@ -90,8 +90,8 @@ export default function MosfetSwitch() {
       dt: w.dt,
       a,
       traces: [
-        { label: 'Vgs', color: TRACE_COLORS[0], samples: w.vgs },
-        { label: 'Vds', color: TRACE_COLORS[1], samples: w.vds },
+        { label: 'mosfet-switch.vgs', color: TRACE_COLORS[0], samples: w.vgs },
+        { label: 'mosfet-switch.vds', color: TRACE_COLORS[1], samples: w.vds },
       ],
     }
   }, [p, cycles])
@@ -107,23 +107,23 @@ export default function MosfetSwitch() {
   return (
     <SimPage
       id="mosfet-switch"
-      lede="A logic level N-channel MOSFET switching a load from an ESP32 GPIO. The scope shows gate and drain voltage over one or more PWM cycles, horizontal axis is time. Readouts below are the operating point, the loss split and the junction temperature."
+      lede="mosfet-switch.lede"
       controls={
         <>
           <Segmented
-            label="Part"
+            label="mosfet-switch.part"
             value={part}
             onChange={(key: PartKey) => key !== 'custom' && patch(PARTS[key])}
             options={[
-              { value: 'irlz44n', label: 'IRLZ44N' },
-              { value: 'irf540n', label: 'IRF540N' },
+              { value: 'irlz44n', label: sym('IRLZ44N') },
+              { value: 'irf540n', label: sym('IRF540N') },
             ]}
           />
           <Schematic />
 
-          <Group label="Gate drive">
+          <Group label="mosfet-switch.gateDrive">
             <Param
-              label="Gate drive VGS"
+              label="common.gateDriveVgs"
               unit="V"
               value={p.vgsDrive}
               onChange={(vgsDrive) => patch({ vgsDrive })}
@@ -131,10 +131,10 @@ export default function MosfetSwitch() {
               max={15}
               log={false}
               step={0.1}
-              hint={<T k="ESP32 GPIO is {VCC} V" vars={{ VCC }} />}
+              hint={<T k="mosfet-switch.esp32GpioIsV" vars={{ VCC }} />}
             />
             <Param
-              label="Gate resistor Rg"
+              label="mosfet-switch.gateResistorRg"
               unit="Ω"
               value={p.rg}
               onChange={(rg) => patch({ rg })}
@@ -142,7 +142,7 @@ export default function MosfetSwitch() {
               max={10_000}
             />
             <Param
-              label="Gate charge Qg"
+              label="mosfet-switch.gateChargeQg"
               unit="C"
               value={p.qg}
               onChange={(qg) => patch({ qg })}
@@ -151,9 +151,9 @@ export default function MosfetSwitch() {
             />
           </Group>
 
-          <Group label="MOSFET">
+          <Group label="mosfet-switch.mosfet">
             <Param
-              label="Threshold Vth"
+              label="mosfet-switch.thresholdVth"
               unit="V"
               value={p.vth}
               onChange={(vth) => patch({ vth })}
@@ -163,7 +163,7 @@ export default function MosfetSwitch() {
               step={0.1}
             />
             <Param
-              label="RDS(on) quoted"
+              label="mosfet-switch.rdsOnQuoted"
               unit="Ω"
               value={p.rdsOnSpec}
               onChange={(rdsOnSpec) => patch({ rdsOnSpec })}
@@ -171,7 +171,7 @@ export default function MosfetSwitch() {
               max={2}
             />
             <Param
-              label="quoted at VGS"
+              label="mosfet-switch.quotedAtVgs"
               unit="V"
               value={p.vgsSpec}
               onChange={(vgsSpec) => patch({ vgsSpec })}
@@ -182,9 +182,9 @@ export default function MosfetSwitch() {
             />
           </Group>
 
-          <Group label="Load">
+          <Group label="common.load">
             <Param
-              label="Supply VS"
+              label="mosfet-switch.supplyVs"
               unit="V"
               value={p.vSupply}
               onChange={(vSupply) => patch({ vSupply })}
@@ -194,7 +194,7 @@ export default function MosfetSwitch() {
               step={0.1}
             />
             <Param
-              label="Load resistance"
+              label="common.loadResistance"
               unit="Ω"
               value={p.rLoad}
               onChange={(rLoad) => patch({ rLoad })}
@@ -203,9 +203,9 @@ export default function MosfetSwitch() {
             />
           </Group>
 
-          <Group label="Switching">
+          <Group label="mosfet-switch.switching">
             <Param
-              label="Frequency"
+              label="common.frequency"
               unit="Hz"
               value={p.fsw}
               onChange={(fsw) => patch({ fsw })}
@@ -213,7 +213,7 @@ export default function MosfetSwitch() {
               max={1e6}
             />
             <Param
-              label="Duty"
+              label="common.duty"
               value={p.duty}
               onChange={(duty) => patch({ duty })}
               min={0.01}
@@ -222,7 +222,7 @@ export default function MosfetSwitch() {
               step={0.01}
             />
             <Param
-              label="Rise time tr"
+              label="mosfet-switch.riseTimeTr"
               unit="s"
               value={p.tr}
               onChange={(tr) => patch({ tr })}
@@ -230,7 +230,7 @@ export default function MosfetSwitch() {
               max={10e-6}
             />
             <Param
-              label="Fall time tf"
+              label="mosfet-switch.fallTimeTf"
               unit="s"
               value={p.tf}
               onChange={(tf) => patch({ tf })}
@@ -238,7 +238,7 @@ export default function MosfetSwitch() {
               max={10e-6}
             />
             <Param
-              label="Cycles shown"
+              label="common.cyclesShown"
               value={cycles}
               onChange={(v) => setCycles(Math.round(v))}
               min={1}
@@ -248,9 +248,9 @@ export default function MosfetSwitch() {
             />
           </Group>
 
-          <Group label="Thermal">
+          <Group label="common.thermal">
             <Param
-              label="Rth junction to ambient"
+              label="mosfet-switch.rthJunctionToAmbient"
               unit="K/W"
               value={p.rthJA}
               onChange={(rthJA) => patch({ rthJA })}
@@ -258,7 +258,7 @@ export default function MosfetSwitch() {
               max={200}
             />
             <Param
-              label="Ambient"
+              label="common.ambient"
               unit="K"
               value={p.ta}
               onChange={(ta) => patch({ ta })}
@@ -276,13 +276,13 @@ export default function MosfetSwitch() {
 
       {a.belowThreshold && (
         <Warning
-          text="VGS of {vgsDrive} is at or below the {vth} threshold, so no channel forms and the load never sees current. This is the classic failure of hanging a standard MOSFET off a 3.3 V pin: pick a logic level part, or add a gate driver or a small BJT level shifter to swing the gate to 10 V."
+          text="mosfet-switch.warn1"
           vars={{ vgsDrive: formatSI(p.vgsDrive, 'V'), vth: formatSI(p.vth, 'V') }}
         />
       )}
       {a.region === 'saturation' && (
         <Warning
-          text="The FET is sitting in saturation, i.e. behaving as a constant current source at {id} with {vds} across it. That is a linear regulator, not a switch, and it dissipates {pCond}. Raise VGS or raise the load resistance."
+          text="mosfet-switch.warn2"
           vars={{
             id: formatSI(a.id, 'A'),
             vds: formatSI(a.vds, 'V'),
@@ -292,19 +292,19 @@ export default function MosfetSwitch() {
       )}
       {a.gateOverCurrent && (
         <Warning
-          text="Peak gate current is {igPeak}, over the {GPIO_MAX_MA} mA an ESP32 GPIO is rated for. Raise Rg or use a gate driver."
+          text="mosfet-switch.warn3"
           vars={{ igPeak: formatSI(a.igPeak, 'A'), GPIO_MAX_MA }}
         />
       )}
       {a.transitionBound && (
         <Warning
-          text="The edges take {tfEff} out of a {fsw} period. The FET spends most of the cycle in transition, so the hard switching loss model no longer applies and the real device will be hotter than shown."
+          text="mosfet-switch.warn4"
           vars={{ tfEff: formatSI(a.trEff + a.tfEff, 's'), fsw: formatSI(1 / p.fsw, 's') }}
         />
       )}
       {a.overTemp && (
         <Warning
-          text="Junction is at {tj} °C, past the 150 °C rating. Add a heatsink (lower Rth), lower the current, or improve the gate drive."
+          text="mosfet-switch.warn5"
           vars={{ tj: toCelsius(a.tj).toFixed(0) }}
         />
       )}
@@ -312,82 +312,82 @@ export default function MosfetSwitch() {
       <ReadoutGrid
         items={[
           {
-            label: 'Operating region',
+            label: 'mosfet-switch.operatingRegion',
             value: region,
             warn: a.region !== 'triode',
           },
           {
-            label: 'Gate overdrive',
+            label: 'mosfet-switch.gateOverdrive',
             value: formatSI(a.vov, 'V'),
-            note: <T k="(VGS {vgsDrive} - Vth {vth})" vars={{ vgsDrive: formatSI(p.vgsDrive, 'V'), vth: formatSI(p.vth, 'V') }} />,
+            note: <T k="mosfet-switch.vgsVth" vars={{ vgsDrive: formatSI(p.vgsDrive, 'V'), vth: formatSI(p.vth, 'V') }} />,
             warn: a.belowThreshold,
           },
           {
-            label: 'RDS(on) at this VGS',
+            label: 'mosfet-switch.rdsOnAtThis',
             value: formatSI(a.rdsOn, 'Ω'),
-            note: <T k="(datasheet {rdsOnSpec} at {vgsSpec})" vars={{ rdsOnSpec: formatSI(p.rdsOnSpec, 'Ω'), vgsSpec: formatSI(p.vgsSpec, 'V') }} />,
+            note: <T k="mosfet-switch.datasheetAt" vars={{ rdsOnSpec: formatSI(p.rdsOnSpec, 'Ω'), vgsSpec: formatSI(p.vgsSpec, 'V') }} />,
             warn: a.underDriven,
           },
           {
-            label: 'Drain current',
+            label: 'mosfet-switch.drainCurrent',
             value: formatSI(a.id, 'A'),
-            note: <T k="(ideal switch {idIdeal})" vars={{ idIdeal: formatSI(a.idIdeal, 'A') }} />,
+            note: <T k="mosfet-switch.idealSwitch" vars={{ idIdeal: formatSI(a.idIdeal, 'A') }} />,
           },
-          { label: 'VDS on state', value: formatSI(a.vds, 'V') },
-          { label: 'Miller plateau', value: formatSI(a.vPlateau, 'V') },
+          { label: 'mosfet-switch.vdsOnState', value: formatSI(a.vds, 'V') },
+          { label: 'mosfet-switch.millerPlateau', value: formatSI(a.vPlateau, 'V') },
           {
-            label: 'Conduction loss',
+            label: 'mosfet-switch.conductionLoss',
             value: formatSI(a.pCond, 'W'),
-            note: <T k="(D·Id²·RDS at {duty}% duty)" vars={{ duty: (p.duty * 100).toFixed(0) }} />,
+            note: <T k="mosfet-switch.dIdRdsAt" vars={{ duty: (p.duty * 100).toFixed(0) }} />,
           },
           {
-            label: 'Switching loss',
+            label: 'mosfet-switch.switchingLoss',
             value: formatSI(a.pSw, 'W'),
-            note: <T k="(edges {trEff} / {tfEff})" vars={{ trEff: formatSI(a.trEff, 's'), tfEff: formatSI(a.tfEff, 's') }} />,
+            note: <T k="mosfet-switch.edges" vars={{ trEff: formatSI(a.trEff, 's'), tfEff: formatSI(a.tfEff, 's') }} />,
             warn: a.transitionBound,
           },
           {
-            label: 'Gate charge time',
+            label: 'mosfet-switch.gateChargeTime',
             value: formatSI(a.tGate, 's'),
-            note: a.tGate > p.tr ? '(drive limited, not die limited)' : '(die limited)',
+            note: a.tGate > p.tr ? 'mosfet-switch.driveLimitedNotDie' : 'mosfet-switch.dieLimited',
           },
           {
-            label: 'Peak gate current',
+            label: 'mosfet-switch.peakGateCurrent',
             value: formatSI(a.igPeak, 'A'),
-            note: <T k="(GPIO limit {GPIO_MAX_MA} mA)" vars={{ GPIO_MAX_MA }} />,
+            note: <T k="mosfet-switch.gpioLimitMa" vars={{ GPIO_MAX_MA }} />,
             warn: a.gateOverCurrent,
           },
           {
-            label: 'Gate drive power',
+            label: 'mosfet-switch.gateDrivePower',
             value: formatSI(a.pGate, 'W'),
-            note: '(burned in Rg and the pin, not the FET)',
+            note: 'mosfet-switch.burnedInRgAnd',
           },
           {
-            label: 'Channel dissipation',
+            label: 'mosfet-switch.channelDissipation',
             value: formatSI(a.pTotal, 'W'),
-            note: '(conduction + switching)',
+            note: 'mosfet-switch.conductionSwitching',
           },
           {
-            label: 'Junction temperature',
+            label: 'mosfet-switch.junctionTemperature',
             value: `${toCelsius(a.tj).toFixed(1)} °C`,
-            note: <T k="(rise {ta} K over {ta2} °C)" vars={{ ta: (a.tj - p.ta).toFixed(1), ta2: toCelsius(p.ta).toFixed(0) }} />,
+            note: <T k="mosfet-switch.riseKOverC" vars={{ ta: (a.tj - p.ta).toFixed(1), ta2: toCelsius(p.ta).toFixed(0) }} />,
             warn: a.overTemp,
           },
           {
-            label: 'Power to load',
+            label: 'mosfet-switch.powerToLoad',
             value: formatSI(a.pLoad, 'W'),
-            note: <T k="({efficiency}% of what the switch passes)" vars={{ efficiency: (a.efficiency * 100).toFixed(1) }} />,
+            note: <T k="mosfet-switch.ofWhatTheSwitch" vars={{ efficiency: (a.efficiency * 100).toFixed(1) }} />,
           },
         ]}
       />
 
       <Theory
         text={[
-          "The channel follows the square law. Below threshold there is no channel at all. Above it, with `Vov = VGS - Vth`, the drain current is `Id = k·(Vov·VDS - VDS²/2)` in triode and saturates at `Id = 0.5·k·Vov²` once `VDS &gt; Vov`. The operating point is the intersection of that curve with the load line `VDS = VS - Id·Rload`, solved in closed form rather than iterated.",
-          "RDS(on) is not a constant. Deep in triode the channel is `rds = 1 / (k·Vov)`, so a datasheet quote pins down k: `k = 1 / (RDS(on)spec · (VGSspec - Vth))`, and at any other gate voltage `RDS(on) = RDS(on)spec · (VGSspec - Vth) / (VGS - Vth)`. That is why a part advertised at 22 mΩ is nearer 51 mΩ on 3.3 V, and why a part quoted at 10 V is simply off.",
-          "Losses split three ways. Conduction is `Pcond = D·Id²·RDS(on)`. Crossover is `Psw = 0.5·VDS·Id·(tr + tf)·fsw`, taking each edge as a current rise at full voltage followed by a voltage fall at full current, which is the conservative clamped inductive case. Gate charge costs `Pgate = Qg·VGS·fsw`, dissipated in the gate resistor and the driving pin rather than in the FET. Only the first two heat the die, so `Tj = Ta + (Pcond + Psw)·Rth(j-a)`.",
-          "The edge times used are `max(tr, Qg·Rg/VGS)`. A gate cannot move faster than the drive can shift its charge, so a large gate resistor on a GPIO, not the die, usually sets the switching speed and therefore the switching loss.",
-          "The scope trace is built from that piecewise description evaluated directly at each sample time, so it is exact at any time base and integrating `VDS·Id` over it returns the same numbers as the closed forms above.",
+          'mosfet-switch.theChannelFollowsThe',
+          'mosfet-switch.rdsOnIsNot',
+          'mosfet-switch.lossesSplitThreeWays',
+          'mosfet-switch.theEdgeTimesUsed',
+          'mosfet-switch.theScopeTraceIs',
         ]}
       />
     </SimPage>

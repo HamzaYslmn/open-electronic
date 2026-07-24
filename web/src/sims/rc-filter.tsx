@@ -18,7 +18,7 @@ function Schematic({ mode }: { mode: RCMode }) {
   const [first, second] = mode === 'lowpass' ? ['R', 'C'] : ['C', 'R']
   const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 110" aria-label={t('{mode} RC network', { mode })}>
+    <svg className="schematic" viewBox="0 0 260 110" aria-label={t('rc-filter.rcNetwork')}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         <circle cx="24" cy="34" r="10" />
         <path d="M18 34a6 6 0 0 1 12 0M24 24V14M24 44v36h212M34 34h36" />
@@ -71,8 +71,8 @@ export default function RCFilter() {
     return {
       dt,
       traces: [
-        { label: 'Vin', color: TRACE_COLORS[0], samples: input },
-        { label: 'Vout', color: TRACE_COLORS[1], samples: output },
+        { label: 'common.vin', color: TRACE_COLORS[0], samples: input },
+        { label: 'common.vout', color: TRACE_COLORS[1], samples: output },
       ],
       readout: analyse(r, c, source.frequency, mode),
     }
@@ -94,24 +94,24 @@ export default function RCFilter() {
   return (
     <SimPage
       id="rc-filter"
-      lede="A resistor and a capacitor: the most common filter in electronics. Adjust anything and the scope updates immediately."
+      lede="rc-filter.lede"
       controls={
         <>
           <Segmented
-            label="Filter topology"
+            label="common.filterTopology"
             value={mode}
             onChange={setMode}
             options={[
-              { value: 'lowpass', label: 'Low pass' },
-              { value: 'highpass', label: 'High pass' },
+              { value: 'lowpass', label: 'common.lowPass' },
+              { value: 'highpass', label: 'common.highPass' },
             ]}
           />
           <Schematic mode={mode} />
 
-          <Group label="Components">
-            <Param label="Resistor" unit="Ω" value={r} onChange={setR} min={1} max={10e6} />
+          <Group label="common.components">
+            <Param label="common.resistor" unit="Ω" value={r} onChange={setR} min={1} max={10e6} />
             <Param
-              label="Capacitor"
+              label="common.capacitor"
               unit="F"
               value={c}
               onChange={setC}
@@ -128,30 +128,30 @@ export default function RCFilter() {
 
       <ReadoutGrid
         items={[
-          { label: 'Cutoff fc', value: formatSI(readout.fc, 'Hz') },
-          { label: 'Time constant', value: formatSI(readout.tau, 's') },
-          { label: 'Rise time (10-90%)', value: formatSI(2.197 * readout.tau, 's') },
+          { label: 'common.cutoffFc', value: formatSI(readout.fc, 'Hz') },
+          { label: 'common.timeConstant', value: formatSI(readout.tau, 's') },
+          { label: 'common.riseTime1090', value: formatSI(2.197 * readout.tau, 's') },
           {
-            label: <T k="Gain at {frequency}" vars={{ frequency: formatSI(source.frequency, 'Hz') }} />,
+            label: <T k="common.gainAt" vars={{ frequency: formatSI(source.frequency, 'Hz') }} />,
             value: `${readout.gainDb.toFixed(2)} dB`,
             note: `(${readout.gain.toFixed(4)}x)`,
           },
-          { label: 'Phase shift', value: `${readout.phase.toFixed(1)}°` },
+          { label: 'common.phaseShift', value: `${readout.phase.toFixed(1)}°` },
           {
-            label: 'f / fc',
+            label: 'common.fFc',
             value: ratio < 0.01 ? ratio.toExponential(1) : ratio.toFixed(2),
             note: band,
           },
-          { label: 'Reactance Xc', value: formatSI(readout.xc, 'Ω') },
-          { label: 'Source load |Z|', value: formatSI(readout.z, 'Ω') },
+          { label: 'rc-filter.reactanceXc', value: formatSI(readout.xc, 'Ω') },
+          { label: 'common.sourceLoadZ', value: formatSI(readout.z, 'Ω') },
         ]}
       />
 
       <Theory
         text={[
-          "Cutoff is where the capacitor's reactance equals the resistance, so `fc = 1 / (2·pi·R·C)` and the output is down 3 dB.",
-          "Magnitude is `|H| = 1 / sqrt(1 + (f/fc)²)` for the low pass and `(f/fc) / sqrt(1 + (f/fc)²)` for the high pass. Phase is `-atan(f/fc)` and `90° - atan(f/fc)` respectively.",
-          "The scope trace is not that formula. It is a sample-by-sample simulation using exact zero-order-hold discretisation, `y[n] = x[n] + (y[n-1] - x[n])·e^(-dt/tau)`, which stays stable at any step size and reproduces clipping, ringing and PWM edges that a frequency-domain answer cannot show.",
+          'rc-filter.cutoffIsWhereThe',
+          'rc-filter.magnitudeIsH1',
+          'rc-filter.theScopeTraceIs',
         ]}
       />
     </SimPage>

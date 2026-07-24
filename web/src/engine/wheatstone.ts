@@ -1,3 +1,4 @@
+import { sym } from '../i18n'
 /**
  * Wheatstone bridge: two voltage dividers across one excitation supply, read
  * differentially.
@@ -17,16 +18,18 @@
  * to zero, which the UI cannot reach but a caller could.
  */
 
+import type { Key } from '../i18n'
+
 import { ADC_BITS, ADC_FULL_SCALE } from './constants'
 
 /** Which arm carries the sensor, i.e. the one the sweep varies. */
 export type Arm = 'R1' | 'R2' | 'R3' | 'R4'
 
-export const ARMS: ReadonlyArray<{ value: Arm; label: string }> = [
-  { value: 'R1', label: 'R1' },
-  { value: 'R2', label: 'R2' },
-  { value: 'R3', label: 'R3' },
-  { value: 'R4', label: 'R4' },
+export const ARMS: ReadonlyArray<{ value: Arm; label: Key }> = [
+  { value: 'R1', label: sym('R1') },
+  { value: 'R2', label: sym('R2') },
+  { value: 'R3', label: sym('R3') },
+  { value: 'R4', label: sym('R4') },
 ]
 
 export type Bridge = {

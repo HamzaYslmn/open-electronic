@@ -1,3 +1,4 @@
+import type { Key } from '../i18n'
 /**
  * 555 timer: astable (free running) and monostable (one shot).
  *
@@ -54,7 +55,7 @@ export const THRESHOLD_BIAS_A = 30e-9
 const BIAS_ERROR_LIMIT = 0.05
 
 export type VariantSpec = {
-  label: string
+  label: Key
   /** Datasheet supply range. */
   minSupply: number
   maxSupply: number
@@ -74,7 +75,7 @@ export const VARIANTS: Record<Timer555Variant, VariantSpec> = {
   // NE555: bipolar totem pole, Vcc 4.5 to 16 V, VOH typ Vcc-1.7 V at 100 mA,
   // VOL typ 0.1 V at 5 mA, ICC typ 3 mA at 5 V, usable to roughly 500 kHz.
   bipolar: {
-    label: 'NE555 bipolar',
+    label: 'opt.ne555Bipolar',
     minSupply: 4.5,
     maxSupply: 16,
     outputDrop: 1.7,
@@ -87,7 +88,7 @@ export const VARIANTS: Record<Timer555Variant, VariantSpec> = {
   // 10 mA, ICC typ 170 uA at 5 V, specified to 2.1 MHz. The only sane choice
   // on a 3.3 V ESP32 rail.
   cmos: {
-    label: 'TLC555 CMOS',
+    label: 'opt.tlc555Cmos',
     minSupply: 2,
     maxSupply: 15,
     outputDrop: 0.3,

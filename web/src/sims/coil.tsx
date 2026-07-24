@@ -17,7 +17,7 @@ const N = 8192
 function Schematic({ protection }: { protection: Protection }) {
   const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 130" aria-label={t('Low side switched coil')}>
+    <svg className="schematic" viewBox="0 0 260 130" aria-label={t('coil.lowSideSwitchedCoil')}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         {/* supply rail */}
         <path d="M40 16h180M150 16v14" />
@@ -88,12 +88,12 @@ export default function Coil() {
     }
     const sim = simulate(p, N, cycles)
     const traces: Trace[] = [
-      { label: 'I coil', color: TRACE_COLORS[0], samples: sim.clamped },
+      { label: 'coil.iCoil', color: TRACE_COLORS[0], samples: sim.clamped },
     ]
     // With no clamp the two runs are identical, so only draw the comparison
     // when a diode is actually fitted.
     if (protection !== 'none') {
-      traces.push({ label: 'I no diode', color: TRACE_COLORS[4], samples: sim.unclamped })
+      traces.push({ label: 'coil.iNoDiode', color: TRACE_COLORS[4], samples: sim.unclamped })
     }
     return { dt: sim.dt, traces, readout: analyse(p, sim.measure) }
   }, [supply, l, r, frequency, duty, cycles, protection, turnOff, vBreakdown, iSat])
@@ -103,28 +103,28 @@ export default function Coil() {
   return (
     <SimPage
       id="coil"
-      lede="A relay or solenoid coil switched by a low-side transistor. The scope plots coil current against time across the switching cycle. Watch the ramp fill the core, then watch what the coil does to the transistor when the switch opens."
+      lede="coil.lede"
       controls={
         <>
           <Schematic protection={protection} />
 
-          <Group label="Coil">
-            <Param label="Inductance" unit="H" value={l} onChange={setL} min={1e-6} max={10} />
-            <Param label="Winding DCR" unit="Ω" value={r} onChange={setR} min={0.1} max={10e3} />
+          <Group label="coil.coil">
+            <Param label="common.inductance" unit="H" value={l} onChange={setL} min={1e-6} max={10} />
+            <Param label="coil.windingDcr" unit="Ω" value={r} onChange={setR} min={0.1} max={10e3} />
             <Param
-              label="Saturation current"
+              label="common.saturationCurrent"
               unit="A"
               value={iSat}
               onChange={setISat}
               min={1e-3}
               max={50}
-              hint="Where the core gives up and L collapses."
+              hint="coil.whereTheCoreGives"
             />
           </Group>
 
-          <Group label="Drive">
+          <Group label="common.drive">
             <Param
-              label="Supply"
+              label="common.supply"
               unit="V"
               value={supply}
               onChange={setSupply}
@@ -132,10 +132,10 @@ export default function Coil() {
               max={60}
               log={false}
               step={0.1}
-              hint="3V3 by default. Most relay coils are 5 V or 12 V parts."
+              hint="coil.3v3ByDefaultMost"
             />
             <Param
-              label="Switching frequency"
+              label="common.switchingFrequency"
               unit="Hz"
               value={frequency}
               onChange={setFrequency}
@@ -143,7 +143,7 @@ export default function Coil() {
               max={100e3}
             />
             <Param
-              label="Duty"
+              label="common.duty"
               unit="%"
               value={duty * 100}
               onChange={(v) => setDuty(v / 100)}
@@ -153,7 +153,7 @@ export default function Coil() {
               step={1}
             />
             <Param
-              label="Cycles shown"
+              label="common.cyclesShown"
               value={cycles}
               onChange={(v) => setCycles(Math.round(v))}
               min={1}
@@ -163,24 +163,24 @@ export default function Coil() {
             />
           </Group>
 
-          <Group label="Switch and clamp">
+          <Group label="coil.switchAndClamp">
             <Segmented
-              label="Flyback clamp"
+              label="coil.flybackClamp"
               value={protection}
               onChange={setProtection}
               options={PROTECTION_OPTIONS}
             />
             <Param
-              label="Turn-off time"
+              label="coil.turnOffTime"
               unit="s"
               value={turnOff}
               onChange={setTurnOff}
               min={1e-9}
               max={1e-3}
-              hint="How fast the switch opens. This alone sets di/dt."
+              hint="coil.howFastTheSwitch"
             />
             <Param
-              label="Switch Vceo rating"
+              label="coil.switchVceoRating"
               unit="V"
               value={vBreakdown}
               onChange={setVBreakdown}
@@ -195,58 +195,58 @@ export default function Coil() {
 
       <ReadoutGrid
         items={[
-          { label: 'Time constant L/R', value: formatSI(readout.tau, 's') },
+          { label: 'coil.timeConstantLR', value: formatSI(readout.tau, 's') },
           {
-            label: 'Steady current',
+            label: 'coil.steadyCurrent',
             value: formatSI(readout.iSteady, 'A'),
-            note: '(V - Vsat) / R',
+            note: 'coil.vVsatR',
           },
           {
-            label: 'Peak current',
+            label: 'common.peakCurrent',
             value: formatSI(readout.iPeak, 'A'),
-            note: readout.continuous ? '(never reaches zero)' : '(falls to zero each cycle)',
+            note: readout.continuous ? 'coil.neverReachesZero' : 'coil.fallsToZeroEach',
             warn: readout.overGpio,
           },
-          { label: 'Current swing', value: formatSI(readout.ripple, 'A') },
+          { label: 'coil.currentSwing', value: formatSI(readout.ripple, 'A') },
           {
-            label: 'Stored energy at peak',
+            label: 'coil.storedEnergyAtPeak',
             value: formatSI(readout.energyPeak, 'J'),
             note: '0.5·L·I²',
           },
           {
-            label: 'Reactance XL',
+            label: 'common.reactanceXl',
             value: formatSI(readout.xl, 'Ω'),
-            note: <T k="at {frequency}" vars={{ frequency: formatSI(frequency, 'Hz') }} />,
+            note: <T k="coil.at" vars={{ frequency: formatSI(frequency, 'Hz') }} />,
           },
-          { label: 'Coil impedance |Z|', value: formatSI(readout.z, 'Ω') },
+          { label: 'coil.coilImpedanceZ', value: formatSI(readout.z, 'Ω') },
           {
-            label: 'Kick, unclamped',
+            label: 'coil.kickUnclamped',
             value: formatSI(readout.kick, 'V'),
-            note: <T k="switch sees {vSwitchOpen}" vars={{ vSwitchOpen: formatSI(readout.vSwitchOpen, 'V') }} />,
+            note: <T k="coil.switchSees" vars={{ vSwitchOpen: formatSI(readout.vSwitchOpen, 'V') }} />,
             warn: !readout.hasClamp && readout.overBreakdown,
           },
           {
-            label: 'Clamped to',
-            value: readout.hasClamp ? formatSI(readout.vSwitchClamped, 'V') : 'nothing fitted',
+            label: 'coil.clampedTo',
+            value: readout.hasClamp ? formatSI(readout.vSwitchClamped, 'V') : 'coil.nothingFitted',
             note: readout.hasClamp
-              ? <T k="supply + Vf ({vf})" vars={{ vf: formatSI(readout.vf, 'V') }} />
-              : 'no freewheel path',
+              ? <T k="coil.supplyVf" vars={{ vf: formatSI(readout.vf, 'V') }} />
+              : 'coil.noFreewheelPath',
             warn: !readout.hasClamp || readout.clampOverBreakdown,
           },
           {
-            label: 'Release time',
+            label: 'coil.releaseTime',
             value: formatSI(readout.release, 's'),
-            note: readout.hasClamp ? 'freewheel to zero' : 'switch turn-off',
+            note: readout.hasClamp ? 'coil.freewheelToZero' : 'coil.switchTurnOff',
           },
-          { label: 'Winding dissipation', value: formatSI(readout.coilPower, 'W') },
+          { label: 'coil.windingDissipation', value: formatSI(readout.coilPower, 'W') },
           {
-            label: 'Clamp dissipation',
+            label: 'coil.clampDissipation',
             value: readout.hasClamp ? formatSI(readout.diodePower, 'W') : 'n/a',
-            note: readout.hasClamp ? <T k="peak {iPeak}" vars={{ iPeak: formatSI(readout.iPeak, 'A') }} /> : undefined,
+            note: readout.hasClamp ? <T k="coil.peak" vars={{ iPeak: formatSI(readout.iPeak, 'A') }} /> : undefined,
           },
           {
-            label: 'Saturation headroom',
-            value: <T k="{satPercent}% of Isat" vars={{ satPercent: satPercent.toFixed(0) }} />,
+            label: 'coil.saturationHeadroom',
+            value: <T k="coil.ofIsat" vars={{ satPercent: satPercent.toFixed(0) }} />,
             warn: readout.saturating,
           },
         ]}
@@ -254,7 +254,7 @@ export default function Coil() {
 
       {!readout.hasClamp && (
         <Warning
-          text="No clamp fitted. Interrupting {iPeak} through {l} in {turnOff} drives the collector to {vSwitchOpen}{small} Real boards clamp it anyway: winding capacitance is the only thing holding this number finite."
+          text="coil.warn1"
           vars={{
             iPeak: formatSI(readout.iPeak, 'A'),
             l: formatSI(l, 'H'),
@@ -262,15 +262,15 @@ export default function Coil() {
             vSwitchOpen: formatSI(readout.vSwitchOpen, 'V'),
             vBreakdown: formatSI(vBreakdown, 'V'),
             small: readout.overBreakdown
-              ? ', past the {vBreakdown} rating of the switch. The transistor avalanches and takes the energy as heat, usually once.'
-              : '. That is inside the rating here, but only because the coil is small.',
+              ? 'coil.pastTheRatingOf'
+              : 'coil.thatIsInsideThe',
           }}
         />
       )}
 
       {readout.hasClamp && readout.clampOverBreakdown && (
         <Warning
-          text="Even clamped, the switch sits at {vSwitchClamped}, above its {vBreakdown} rating. The diode is not the problem, the supply is."
+          text="coil.warn2"
           vars={{
             vSwitchClamped: formatSI(readout.vSwitchClamped, 'V'),
             vBreakdown: formatSI(vBreakdown, 'V'),
@@ -280,25 +280,25 @@ export default function Coil() {
 
       {readout.saturating && (
         <Warning
-          text="Peak current is {satPercent}% of the {iSat} saturation point. Past saturation the inductance collapses, the ramp goes near vertical and the real current overshoots everything shown here. This model assumes L is constant, so treat the trace as optimistic."
+          text="coil.warn3"
           vars={{ satPercent: satPercent.toFixed(0), iSat: formatSI(iSat, 'A') }}
         />
       )}
 
       {readout.overGpio && (
         <Warning
-          text="{iPeak} is well past the {GPIO_MAX_MA} mA an ESP32 pin can sink. The transistor in the schematic is not optional, and the pin drives its base or gate only."
+          text="coil.warn4"
           vars={{ iPeak: formatSI(readout.iPeak, 'A'), GPIO_MAX_MA }}
         />
       )}
 
       <Theory
         text={[
-          "Closing the switch puts the supply across a series RL. Current cannot step, so it ramps: `i(t) = (V/R)·(1 - e^(-t·R/L))` with time constant `tau = L/R`. It is 63.2% of the way there after one tau and 99.3% after five, exactly like a capacitor charging, with current and voltage swapped.",
-          "That current is energy in the core, `E = 0.5·L·I²`. Open the switch and the energy has nowhere to go, so the coil produces whatever voltage keeps the current flowing: `Vkick = L·di/dt`. Turn off 44 mA through 100 mH in one microsecond and that is over 4 kV. The switch, not the coil, is what fails.",
-          "A flyback diode across the coil gives the current a loop to run in. The switch node is then held at `Vsupply + Vf`, i.e. under a volt above the rail. The current freewheels down against the diode drop, `i(t) = (I + Vf/R)·e^(-t·R/L) - Vf/R`, reaching zero at `t = (L/R)·ln(1 + I·R/Vf)`. That is the catch: the clamp is why a relay with a plain diode drops out slowly. A Schottky clamps lower, a zener or a resistor in series with the diode releases faster at the cost of a higher switch voltage.",
-          "At the drive frequency the winding also presents `XL = 2·pi·f·L`, so the coil impedance is `|Z| = sqrt(R² + XL²)`. That is what limits current once you PWM the coil rather than switching it once.",
-          "Both phases of the trace step with exact zero-order-hold discretisation, `i[n] = I∞ + (i[n-1] - I∞)·e^(-dt/tau)`, so the samples sit on the analytic curve at any step size instead of ringing or diverging the way forward Euler does when dt passes tau.",
+          'coil.theory1',
+          'coil.thatCurrentIsEnergy',
+          'coil.aFlybackDiodeAcross',
+          'coil.atTheDriveFrequency',
+          'coil.bothPhasesOfThe',
         ]}
       />
     </SimPage>

@@ -1,3 +1,4 @@
+import { sym } from '../i18n'
 import { useMemo, useState } from 'react'
 import {
   VARIANTS,
@@ -46,32 +47,32 @@ export default function Timer555() {
       return {
         dt: w.dt,
         traces: [
-          { label: 'Vout', color: TRACE_COLORS[0], samples: w.out },
-          { label: 'Vcap', color: TRACE_COLORS[1], samples: w.cap },
+          { label: 'common.vout', color: TRACE_COLORS[0], samples: w.out },
+          { label: 'timer-555.vcap', color: TRACE_COLORS[1], samples: w.cap },
         ],
         items: [
-          { label: 'Frequency', value: formatSI(r.freq, 'Hz') },
-          { label: 'Period', value: formatSI(r.period, 's') },
-          { label: 'Time high', value: formatSI(r.tHigh, 's') },
-          { label: 'Time low', value: formatSI(r.tLow, 's') },
+          { label: 'common.frequency', value: formatSI(r.freq, 'Hz') },
+          { label: 'common.period', value: formatSI(r.period, 's') },
+          { label: 'timer-555.timeHigh', value: formatSI(r.tHigh, 's') },
+          { label: 'timer-555.timeLow', value: formatSI(r.tLow, 's') },
           {
-            label: 'Duty cycle',
+            label: 'common.dutyCycle',
             value: `${(r.duty * 100).toFixed(1)}%`,
-            note: r.duty > 0.5 ? '(always >50% without a diode)' : undefined,
+            note: r.duty > 0.5 ? 'timer-555.always50WithoutA' : undefined,
           },
-          { label: 'Threshold 2/3 Vcc', value: formatSI(r.vThreshold, 'V') },
-          { label: 'Trigger 1/3 Vcc', value: formatSI(r.vTrigger, 'V') },
-          { label: 'Output swing', value: `${r.outputLow.toFixed(2)} to ${r.outputHigh.toFixed(2)} V` },
-          { label: 'Supply current', value: formatSI(r.supplyCurrent, 'A') },
+          { label: 'timer-555.threshold23Vcc', value: formatSI(r.vThreshold, 'V') },
+          { label: 'timer-555.trigger13Vcc', value: formatSI(r.vTrigger, 'V') },
+          { label: 'common.outputSwing', value: `${r.outputLow.toFixed(2)} to ${r.outputHigh.toFixed(2)} V` },
+          { label: 'common.supplyCurrent', value: formatSI(r.supplyCurrent, 'A') },
           {
-            label: 'Pin 7 peak sink',
+            label: 'timer-555.pin7PeakSink',
             value: formatSI(r.dischargePeak, 'A'),
             warn: r.dischargeOverload,
           },
         ] as ReadoutItem[],
         warnings: [
           r.supplyOutOfRange && {
-            text: '{part} wants {min} to {max} V. At {vcc} the timing is not trustworthy.',
+            text: 'timer-555.wantsToVAt',
             vars: {
               part: r.spec.label,
               min: r.spec.minSupply,
@@ -80,18 +81,18 @@ export default function Timer555() {
             },
           },
           r.tooFast && {
-            text: 'Past the practical ceiling of about {ceiling} for this variant. Propagation delay starts to dominate the RC timing.',
+            text: 'timer-555.pastThePracticalCeiling',
             vars: { ceiling: formatSI(r.spec.maxFrequency, 'Hz') },
           },
           r.dischargeOverload && {
-            text: 'Discharge pin is asked to sink {peak}, over its {rating} rating. Raise R1.',
+            text: 'timer-555.dischargePinIsAsked',
             vars: {
               peak: formatSI(r.dischargePeak, 'A'),
               rating: formatSI(r.spec.maxDischargeA, 'A'),
             },
           },
           r.biasSuspect && {
-            text: 'Timing resistance is high enough that threshold bias current shifts the result. Use larger C and smaller R.',
+            text: 'timer-555.timingResistanceIsHigh',
           },
         ].filter(Boolean) as WarnMsg[],
       }
@@ -115,31 +116,31 @@ export default function Timer555() {
     return {
       dt: w.dt,
       traces: [
-        { label: 'Vout', color: TRACE_COLORS[0], samples: w.out },
-        { label: 'Vcap', color: TRACE_COLORS[1], samples: w.cap },
-        ...(w.trigger ? [{ label: 'Trig', color: TRACE_COLORS[3], samples: w.trigger }] : []),
+        { label: 'common.vout', color: TRACE_COLORS[0], samples: w.out },
+        { label: 'timer-555.vcap', color: TRACE_COLORS[1], samples: w.cap },
+        ...(w.trigger ? [{ label: 'timer-555.trig', color: TRACE_COLORS[3], samples: w.trigger }] : []),
       ],
       items: [
-        { label: 'Pulse width', value: formatSI(r.pulse, 's') },
-        { label: 'Time constant', value: formatSI(r.tau, 's') },
-        { label: 'Recovery time', value: formatSI(r.resetTime, 's') },
-        { label: 'Max retrigger rate', value: formatSI(r.maxRate, 'Hz') },
-        { label: 'Threshold 2/3 Vcc', value: formatSI(r.vThreshold, 'V') },
-        { label: 'Output swing', value: `${r.outputLow.toFixed(2)} to ${r.outputHigh.toFixed(2)} V` },
+        { label: 'common.pulseWidth', value: formatSI(r.pulse, 's') },
+        { label: 'common.timeConstant', value: formatSI(r.tau, 's') },
+        { label: 'timer-555.recoveryTime', value: formatSI(r.resetTime, 's') },
+        { label: 'timer-555.maxRetriggerRate', value: formatSI(r.maxRate, 'Hz') },
+        { label: 'timer-555.threshold23Vcc', value: formatSI(r.vThreshold, 'V') },
+        { label: 'common.outputSwing', value: `${r.outputLow.toFixed(2)} to ${r.outputHigh.toFixed(2)} V` },
         {
-          label: 'Discharge current',
+          label: 'timer-555.dischargeCurrent',
           value: formatSI(r.idleCurrent, 'A'),
           warn: r.dischargeOverload,
         },
       ] as ReadoutItem[],
       warnings: [
         r.supplyOutOfRange && {
-          text: '{part} wants {min} to {max} V.',
+          text: 'timer-555.wantsToV',
           vars: { part: r.spec.label, min: r.spec.minSupply, max: r.spec.maxSupply },
         },
-        r.dischargeOverload && { text: 'Discharge pin is over its sink rating. Raise R.' },
+        r.dischargeOverload && { text: 'timer-555.dischargePinIsOver' },
         r.biasSuspect && {
-          text: 'Timing resistance is high enough that threshold bias current shifts the result.',
+          text: 'timer-555.timingResistanceIsHigh2',
         },
       ].filter(Boolean) as WarnMsg[],
     }
@@ -148,36 +149,36 @@ export default function Timer555() {
   return (
     <SimPage
       id="timer-555"
-      lede="The 555 in its two classic configurations. The scope shows the output pin against the capacitor voltage, so you can watch it ramp between the 1/3 and 2/3 Vcc trip points."
+      lede="timer-555.lede"
       controls={
         <>
           <Segmented
-            label="Mode"
+            label="common.mode"
             value={mode}
             onChange={setMode}
             options={[
-              { value: 'astable', label: 'Astable' },
-              { value: 'monostable', label: 'Monostable' },
+              { value: 'astable', label: 'timer-555.astable' },
+              { value: 'monostable', label: 'timer-555.monostable' },
             ]}
           />
 
-          <Group label="Supply">
+          <Group label="common.supply">
             <Select
-              label="Variant"
+              label="timer-555.variant"
               value={variant}
               onChange={setVariant}
               options={VARIANT_OPTIONS}
             />
-            <Param label="Vcc" unit="V" value={vcc} onChange={setVcc} min={1} max={18} log={false} step={0.1} />
+            <Param label="timer-555.vcc" unit="V" value={vcc} onChange={setVcc} min={1} max={18} log={false} step={0.1} />
           </Group>
 
           {mode === 'astable' ? (
-            <Group label="Timing network">
-              <Param label="R1" unit="Ω" value={r1} onChange={setR1} min={100} max={10e6} />
-              <Param label="R2" unit="Ω" value={r2} onChange={setR2} min={100} max={10e6} />
-              <Param label="C" unit="F" value={c} onChange={setC} min={1e-12} max={1e-3} />
+            <Group label="timer-555.timingNetwork">
+              <Param label={sym('R1')} unit="Ω" value={r1} onChange={setR1} min={100} max={10e6} />
+              <Param label={sym('R2')} unit="Ω" value={r2} onChange={setR2} min={100} max={10e6} />
+              <Param label={sym('C')} unit="F" value={c} onChange={setC} min={1e-12} max={1e-3} />
               <Param
-                label="Cycles shown"
+                label="common.cyclesShown"
                 value={cycles}
                 onChange={(v) => setCycles(Math.round(v))}
                 min={1}
@@ -186,15 +187,15 @@ export default function Timer555() {
                 step={1}
               />
               <Toggle
-                label="Start from power on"
+                label="timer-555.startFromPowerOn"
                 value={fromPowerOn}
                 onChange={setFromPowerOn}
               />
             </Group>
           ) : (
-            <Group label="Timing network">
-              <Param label="R" unit="Ω" value={rMono} onChange={setRMono} min={100} max={10e6} />
-              <Param label="C" unit="F" value={cMono} onChange={setCMono} min={1e-12} max={1e-3} />
+            <Group label="timer-555.timingNetwork">
+              <Param label={sym('R')} unit="Ω" value={rMono} onChange={setRMono} min={100} max={10e6} />
+              <Param label={sym('C')} unit="F" value={cMono} onChange={setCMono} min={1e-12} max={1e-3} />
             </Group>
           )}
         </>
@@ -208,10 +209,10 @@ export default function Timer555() {
 
       <Theory
         text={[
-          "The capacitor charges through R1+R2 toward Vcc and discharges through R2 alone, so the high time `0.693·(R1+R2)·C` is always longer than the low time `0.693·R2·C`. That is why a plain astable can never reach 50% duty: you need a diode across R2 to let it charge through R1 only.",
-          "Frequency is `1.44 / ((R1 + 2·R2)·C)`. The 0.693 is ln2, from the capacitor crossing between the 1/3 and 2/3 Vcc comparator trip points, which is a factor of two in the remaining distance to the rail.",
-          "Monostable timing is `1.1·R·C`, where 1.1 is ln3: the capacitor starts at 0 V rather than 1/3 Vcc, so it covers more of the exponential.",
-          "Both trip points scale with Vcc, which is why the timing is supply independent to first order. The trace is simulated with the same exact zero-order-hold relaxation used elsewhere in this app, not drawn from the formula, so the power-on first cycle really does run ln3 long instead of ln2.",
+          'timer-555.theory1',
+          'timer-555.frequencyIs144',
+          'timer-555.monostableTimingIs1',
+          'timer-555.bothTripPointsScale',
         ]}
       />
     </SimPage>

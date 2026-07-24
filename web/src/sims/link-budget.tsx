@@ -45,8 +45,8 @@ export default function LinkBudget() {
       r,
       dt: step,
       traces: [
-        { label: 'Prx', color: TRACE_COLORS[0], samples: prx },
-        { label: 'sensitivity', color: TRACE_COLORS[4], samples: floor, quiet: true },
+        { label: 'link-budget.prx', color: TRACE_COLORS[0], samples: prx },
+        { label: 'link-budget.sensitivity', color: TRACE_COLORS[4], samples: floor, quiet: true },
       ],
     }
   }, [radioKey, frequency, txDbm, gainTx, gainRx, extraLoss, distance, radio.sensitivity])
@@ -54,26 +54,26 @@ export default function LinkBudget() {
   return (
     <SimPage
       id="link-budget"
-      lede="Will the link close? The scope sweeps received power against DISTANCE, not time: the horizontal axis runs from zero out past the maximum range, and the flat line is the receiver's sensitivity floor. Where they cross, the link dies."
+      lede="link-budget.lede"
       controls={
         <>
-          <Group label="Radio">
-            <Select label="Mode" value={radioKey} onChange={(k) => { setRadioKey(k); setTxDbm(RADIOS[k].txPower) }} options={RADIO_OPTIONS} />
+          <Group label="link-budget.radio">
+            <Select label="common.mode" value={radioKey} onChange={(k) => { setRadioKey(k); setTxDbm(RADIOS[k].txPower) }} options={RADIO_OPTIONS} />
             <Select
-              label="Band"
+              label="link-budget.band"
               value={String(BANDS.findIndex((b) => b.frequency === frequency))}
               onChange={(i) => setFrequency(BANDS[Number(i)]?.frequency ?? frequency)}
               options={BAND_OPTIONS}
             />
-            <Param label="Frequency" unit="Hz" value={frequency} onChange={setFrequency} min={1e6} max={10e9} />
+            <Param label="common.frequency" unit="Hz" value={frequency} onChange={setFrequency} min={1e6} max={10e9} />
           </Group>
 
-          <Group label="Budget">
-            <Param label="TX power" unit="dBm" value={txDbm} onChange={setTxDbm} min={-20} max={30} log={false} step={1} />
-            <Param label="TX antenna gain" unit="dBi" value={gainTx} onChange={setGainTx} min={-10} max={25} log={false} step={0.5} />
-            <Param label="RX antenna gain" unit="dBi" value={gainRx} onChange={setGainRx} min={-10} max={25} log={false} step={0.5} />
-            <Param label="Cable and misc loss" unit="dB" value={extraLoss} onChange={setExtraLoss} min={0} max={30} log={false} step={0.5} />
-            <Param label="Distance" unit="m" value={distance} onChange={setDistance} min={1} max={100_000} />
+          <Group label="link-budget.budget">
+            <Param label="link-budget.txPower" unit="dBm" value={txDbm} onChange={setTxDbm} min={-20} max={30} log={false} step={1} />
+            <Param label="link-budget.txAntennaGain" unit="dBi" value={gainTx} onChange={setGainTx} min={-10} max={25} log={false} step={0.5} />
+            <Param label="link-budget.rxAntennaGain" unit="dBi" value={gainRx} onChange={setGainRx} min={-10} max={25} log={false} step={0.5} />
+            <Param label="link-budget.cableAndMiscLoss" unit="dB" value={extraLoss} onChange={setExtraLoss} min={0} max={30} log={false} step={0.5} />
+            <Param label="link-budget.distance" unit="m" value={distance} onChange={setDistance} min={1} max={100_000} />
           </Group>
         </>
       }
@@ -82,44 +82,44 @@ export default function LinkBudget() {
 
       <ReadoutGrid
         items={[
-          { label: 'Free space path loss', value: `${r.fsplDb.toFixed(1)} dB` },
-          { label: 'Total loss', value: `${r.totalLossDb.toFixed(1)} dB` },
-          { label: 'EIRP', value: `${r.eirpDbm.toFixed(1)} dBm`, note: formatSI(r.eirpW, 'W') },
-          { label: 'Received power', value: `${r.prxDbm.toFixed(1)} dBm`, note: formatSI(r.prxW, 'W') },
-          { label: 'Sensitivity', value: `${radio.sensitivity} dBm` },
+          { label: 'link-budget.freeSpacePathLoss', value: `${r.fsplDb.toFixed(1)} dB` },
+          { label: 'common.totalLoss', value: `${r.totalLossDb.toFixed(1)} dB` },
+          { label: 'link-budget.eirp', value: `${r.eirpDbm.toFixed(1)} dBm`, note: formatSI(r.eirpW, 'W') },
+          { label: 'link-budget.receivedPower', value: `${r.prxDbm.toFixed(1)} dBm`, note: formatSI(r.prxW, 'W') },
+          { label: 'common.sensitivity', value: `${radio.sensitivity} dBm` },
           {
-            label: 'Link margin',
+            label: 'link-budget.linkMargin',
             value: `${r.marginDb.toFixed(1)} dB`,
             warn: r.linkFails || r.marginal,
           },
-          { label: 'Range at 0 dB margin', value: formatSI(r.maxRange, 'm') },
+          { label: 'link-budget.rangeAt0Db', value: formatSI(r.maxRange, 'm') },
           {
-            label: <T k="Range at {MARGIN_MIN_DB} dB margin" vars={{ MARGIN_MIN_DB }} />,
+            label: <T k="link-budget.rangeAtDbMargin" vars={{ MARGIN_MIN_DB }} />,
             value: formatSI(r.reliableRange, 'm'),
-            note: 'usable in practice',
+            note: 'link-budget.usableInPractice',
           },
         ]}
       />
 
       {r.linkFails && (
         <Warning
-          text="The link does not close: received power is {marginDb} dB below the sensitivity floor. Halving the distance buys 6 dB, and so does doubling both antenna gains. A slower LoRa spreading factor buys far more."
+          text="link-budget.warn1"
           vars={{ marginDb: Math.abs(r.marginDb).toFixed(1) }}
         />
       )}
       {r.marginal && (
         <Warning
-          text="Only {marginDb} dB of margin. Free space loss is the best case: rain, foliage, a wall, a hand near the antenna or simple multipath fading each eat several dB. Aim for at least {MARGIN_MIN_DB} dB before calling a link dependable."
+          text="link-budget.warn2"
           vars={{ marginDb: r.marginDb.toFixed(1), MARGIN_MIN_DB }}
         />
       )}
 
       <Theory
         text={[
-          "The whole budget is one line in dB: `Prx = Ptx + Gtx + Grx - FSPL - losses`, and the link closes when Prx sits above the receiver's sensitivity. Working in decibels turns every multiplication into an addition, which is the only reason this is tractable by hand.",
-          "Free space path loss is `20·log10(d_km) + 20·log10(f_MHz) + 32.44`. Two consequences worth internalising: doubling the distance costs 6 dB, and so does doubling the frequency. That second one is why 868 MHz reaches so much further than 2.4 GHz at the same power, before you even consider that lower frequencies penetrate obstacles better.",
-          "Sensitivity is where LoRa earns its keep. Spreading the signal over more time buys processing gain: SF7 gets to about -123 dBm, SF12 to about -137 dBm. That 14 dB is a factor of five in range, paid for in data rate and airtime.",
-          "Never design to zero margin. This model assumes clear line of sight with nothing in the first Fresnel zone, which almost never holds. Ten dB is a working minimum, and twenty is sensible for anything you cannot easily go and fix.",
+          'link-budget.theory1',
+          'link-budget.freeSpacePathLoss2',
+          'link-budget.sensitivityIsWhereLora',
+          'link-budget.neverDesignToZero',
         ]}
       />
     </SimPage>

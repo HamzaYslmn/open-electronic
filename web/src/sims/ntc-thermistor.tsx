@@ -34,29 +34,29 @@ export default function NtcThermistor() {
     return {
       r,
       dt: step,
-      traces: [{ label: 'Vout', color: TRACE_COLORS[0], samples: volts }],
+      traces: [{ label: 'common.vout', color: TRACE_COLORS[0], samples: volts }],
     }
   }, [r0, beta, t0C, tempC, rSeries, dissipation, sweepLow, sweepHigh])
 
   return (
     <SimPage
       id="ntc-thermistor"
-      lede="A thermistor is not linear, and that is the whole design problem. The scope sweeps divider output against TEMPERATURE, not time: the horizontal axis runs from the low to the high limit you set, in °C."
+      lede="ntc-thermistor.lede"
       controls={
         <>
-          <Group label="Thermistor">
-            <Param label="R at reference" unit="Ω" value={r0} onChange={setR0} min={100} max={1e6} />
-            <Param label="Beta" unit="K" value={beta} onChange={setBeta} min={2000} max={5000} log={false} step={10} />
-            <Param label="Reference temp" unit="°C" value={t0C} onChange={setT0C} min={0} max={50} log={false} step={1} />
-            <Param label="Dissipation constant" unit="W/K" value={dissipation} onChange={setDissipation} min={0.0002} max={0.05} />
+          <Group label="ntc-thermistor.thermistor">
+            <Param label="ntc-thermistor.rAtReference" unit="Ω" value={r0} onChange={setR0} min={100} max={1e6} />
+            <Param label="ntc-thermistor.beta" unit="K" value={beta} onChange={setBeta} min={2000} max={5000} log={false} step={10} />
+            <Param label="ntc-thermistor.referenceTemp" unit="°C" value={t0C} onChange={setT0C} min={0} max={50} log={false} step={1} />
+            <Param label="ntc-thermistor.dissipationConstant" unit="W/K" value={dissipation} onChange={setDissipation} min={0.0002} max={0.05} />
           </Group>
-          <Group label="Circuit">
-            <Param label="Series resistor" unit="Ω" value={rSeries} onChange={setRSeries} min={100} max={1e6} />
-            <Param label="Temperature now" unit="°C" value={tempC} onChange={setTempC} min={-40} max={150} log={false} step={1} />
+          <Group label="common.circuit">
+            <Param label="common.seriesResistor" unit="Ω" value={rSeries} onChange={setRSeries} min={100} max={1e6} />
+            <Param label="ntc-thermistor.temperatureNow" unit="°C" value={tempC} onChange={setTempC} min={-40} max={150} log={false} step={1} />
           </Group>
-          <Group label="Sweep range">
-            <Param label="From" unit="°C" value={sweepLow} onChange={setSweepLow} min={-50} max={50} log={false} step={5} />
-            <Param label="To" unit="°C" value={sweepHigh} onChange={setSweepHigh} min={30} max={200} log={false} step={5} />
+          <Group label="ntc-thermistor.sweepRange">
+            <Param label="ntc-thermistor.from" unit="°C" value={sweepLow} onChange={setSweepLow} min={-50} max={50} log={false} step={5} />
+            <Param label="ntc-thermistor.to" unit="°C" value={sweepHigh} onChange={setSweepHigh} min={30} max={200} log={false} step={5} />
           </Group>
         </>
       }
@@ -65,15 +65,15 @@ export default function NtcThermistor() {
 
       <ReadoutGrid
         items={[
-          { label: 'Resistance now', value: formatSI(r.resistance, 'Ω'), note: <T k="at {tempC} °C" vars={{ tempC }} /> },
-          { label: 'Divider output', value: formatSI(r.vOut, 'V') },
-          { label: 'Sensitivity', value: `${(r.sensitivity * 1000).toFixed(2)} mV/K` },
-          { label: 'ADC counts per K', value: r.countsPerK.toFixed(1) },
-          { label: 'Resolution', value: `${r.resolutionK.toFixed(3)} K`, note: 'per ADC count' },
-          { label: 'Divider current', value: formatSI(r.current, 'A') },
-          { label: 'Self heating', value: formatSI(r.selfHeatW, 'W'), warn: r.selfHeatSignificant },
+          { label: 'ntc-thermistor.resistanceNow', value: formatSI(r.resistance, 'Ω'), note: <T k="ntc-thermistor.atC" vars={{ tempC }} /> },
+          { label: 'common.dividerOutput', value: formatSI(r.vOut, 'V') },
+          { label: 'common.sensitivity', value: `${(r.sensitivity * 1000).toFixed(2)} mV/K` },
+          { label: 'ntc-thermistor.adcCountsPerK', value: r.countsPerK.toFixed(1) },
+          { label: 'common.resolution', value: `${r.resolutionK.toFixed(3)} K`, note: 'common.perAdcCount' },
+          { label: 'common.dividerCurrent', value: formatSI(r.current, 'A') },
+          { label: 'ntc-thermistor.selfHeating', value: formatSI(r.selfHeatW, 'W'), warn: r.selfHeatSignificant },
           {
-            label: 'Self heating error',
+            label: 'ntc-thermistor.selfHeatingError',
             value: `${r.selfHeatK.toFixed(2)} K`,
             warn: r.selfHeatSignificant,
           },
@@ -82,23 +82,23 @@ export default function NtcThermistor() {
 
       {r.selfHeatSignificant && (
         <Warning
-          text="The bead is dissipating {selfHeatW}, warming itself by {selfHeatK} K. It is measuring its own current, not the ambient. Raise the series resistor, or switch the divider on only while sampling."
+          text="ntc-thermistor.warn1"
           vars={{ selfHeatW: formatSI(r.selfHeatW, 'W'), selfHeatK: r.selfHeatK.toFixed(2) }}
         />
       )}
       {rSeries !== r0 && (
         <Warning
-          text="Sensitivity peaks when the series resistor equals the thermistor's resistance at the temperature you care most about. For best resolution around {t0C} °C, set the series resistor to {r0}."
+          text="ntc-thermistor.warn2"
           vars={{ t0C, r0: formatSI(r0, 'Ω') }}
         />
       )}
 
       <Theory
         text={[
-          "The Beta equation is `1/T = 1/T0 + ln(R/R0)/B`, rearranged to `R = R0·exp(B·(1/T - 1/T0))`. One parameter, one calibration point, good to about half a kelvin over a 50 K span. Datasheets quote different B values for different intervals, e.g. B25/85, precisely because it is only a local fit.",
-          "Steinhart-Hart, `1/T = A + B·ln(R) + C·ln(R)³`, gets to a few millikelvin over a wide range but needs three calibration points. The Beta form is the special case with C = 0.",
-          "The curve on screen is the real design constraint. Sensitivity is highest where the thermistor's resistance matches the series resistor, and falls away at both ends: at high temperature the thermistor is a short next to the fixed resistor, and at low temperature it swamps it. So a 10k NTC with a 10k series resistor resolves beautifully near 25 °C and poorly at 120 °C.",
-          "Self heating is the trap. Current through the bead makes heat, the dissipation constant (typically 1 to 5 mW/K in still air) converts that to a temperature error, and the sensor confidently reports it. Keep the current small, or power the divider only for the microseconds you are sampling.",
+          'ntc-thermistor.theory1',
+          'ntc-thermistor.steinhartHart1T',
+          'ntc-thermistor.theCurveOnScreen',
+          'ntc-thermistor.selfHeatingIsThe',
         ]}
       />
     </SimPage>

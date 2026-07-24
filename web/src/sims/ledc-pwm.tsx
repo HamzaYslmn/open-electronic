@@ -39,8 +39,8 @@ export default function LedcPwm() {
       r,
       dt,
       traces: [
-        { label: 'pin', color: TRACE_COLORS[0], samples },
-        { label: 'mean', color: TRACE_COLORS[2], samples: mean, quiet: true },
+        { label: 'ledc-pwm.pin', color: TRACE_COLORS[0], samples },
+        { label: 'common.mean', color: TRACE_COLORS[2], samples: mean, quiet: true },
       ],
     }
   }, [frequency, requestedBits, duty, cycles])
@@ -48,13 +48,13 @@ export default function LedcPwm() {
   return (
     <SimPage
       id="ledc-pwm"
-      lede="On the ESP32 the LEDC timer divides an 80 MHz clock into 2^bits steps per period, so frequency and duty resolution trade directly against each other. Push the frequency up and the resolution collapses. The scope shows the pin waveform and its average."
+      lede="ledc-pwm.lede"
       controls={
         <>
-          <Group label="Timer">
-            <Param label="Frequency" unit="Hz" value={frequency} onChange={setFrequency} min={1} max={10e6} />
+          <Group label="ledc-pwm.timer">
+            <Param label="common.frequency" unit="Hz" value={frequency} onChange={setFrequency} min={1} max={10e6} />
             <Param
-              label="Requested bits"
+              label="ledc-pwm.requestedBits"
               value={requestedBits}
               onChange={(v) => setRequestedBits(Math.round(v))}
               min={1}
@@ -63,9 +63,9 @@ export default function LedcPwm() {
               step={1}
             />
           </Group>
-          <Group label="Output">
-            <Param label="Duty" value={duty} onChange={setDuty} min={0} max={1} log={false} step={0.001} />
-            <Param label="Cycles shown" value={cycles} onChange={(v) => setCycles(Math.round(v))} min={1} max={10} log={false} step={1} />
+          <Group label="common.output">
+            <Param label="common.duty" value={duty} onChange={setDuty} min={0} max={1} log={false} step={0.001} />
+            <Param label="common.cyclesShown" value={cycles} onChange={(v) => setCycles(Math.round(v))} min={1} max={10} log={false} step={1} />
           </Group>
         </>
       }
@@ -75,31 +75,31 @@ export default function LedcPwm() {
       <ReadoutGrid
         items={[
           {
-            label: 'Usable resolution',
+            label: 'common.usableResolution',
             value: `${r.bits} bits`,
-            note: r.clamped ? <T k="clamped from {requestedBits}" vars={{ requestedBits }} /> : 'as requested',
+            note: r.clamped ? <T k="ledc-pwm.clampedFrom" vars={{ requestedBits }} /> : 'ledc-pwm.asRequested',
             warn: r.clamped,
           },
-          { label: 'Duty steps', value: r.stepCount.toLocaleString() },
-          { label: 'Max freq at this res', value: formatSI(r.fMax, 'Hz') },
-          { label: 'Duty register', value: `${r.count} / ${r.stepCount}` },
-          { label: 'Actual duty', value: `${(r.actualDuty * 100).toFixed(3)}%`, note: <T k="asked {duty}%" vars={{ duty: (duty * 100).toFixed(3) }} /> },
-          { label: 'Quantisation error', value: `${(r.dutyError * 100).toFixed(4)}%` },
-          { label: 'Step size', value: `${(r.stepFraction * 100).toFixed(4)}%`, note: formatSI(r.stepVolts, 'V') },
-          { label: 'Period', value: formatSI(r.period, 's') },
-          { label: 'On time', value: formatSI(r.onTime, 's') },
+          { label: 'ledc-pwm.dutySteps', value: r.stepCount.toLocaleString() },
+          { label: 'ledc-pwm.maxFreqAtThis', value: formatSI(r.fMax, 'Hz') },
+          { label: 'common.dutyRegister', value: `${r.count} / ${r.stepCount}` },
+          { label: 'ledc-pwm.actualDuty', value: `${(r.actualDuty * 100).toFixed(3)}%`, note: <T k="ledc-pwm.asked" vars={{ duty: (duty * 100).toFixed(3) }} /> },
+          { label: 'ledc-pwm.quantisationError', value: `${(r.dutyError * 100).toFixed(4)}%` },
+          { label: 'ledc-pwm.stepSize', value: `${(r.stepFraction * 100).toFixed(4)}%`, note: formatSI(r.stepVolts, 'V') },
+          { label: 'common.period', value: formatSI(r.period, 's') },
+          { label: 'common.onTime', value: formatSI(r.onTime, 's') },
         ]}
       />
 
       {r.unreachable && (
         <Warning
-          text="{frequency} is not reachable at any resolution: even 1 bit needs the clock to be at least twice the output frequency, and the LEDC source is {APB_CLOCK}."
+          text="ledc-pwm.warn1"
           vars={{ frequency: formatSI(frequency, 'Hz'), APB_CLOCK: formatSI(APB_CLOCK, 'Hz') }}
         />
       )}
       {r.clamped && !r.unreachable && (
         <Warning
-          text="{requestedBits} bits is impossible at {frequency}. The timer silently uses {bits} bits, which is {stepCount} steps rather than the {requestedBits2} you asked for. Calling ledcSetup with an unsupported pair does not error, it just gives you less than you expect, which is a common source of banding on dimmed LEDs."
+          text="ledc-pwm.warn2"
           vars={{
             requestedBits,
             frequency: formatSI(frequency, 'Hz'),
@@ -111,16 +111,16 @@ export default function LedcPwm() {
       )}
       {r.bits > 0 && r.bits < 8 && !r.unreachable && (
         <Warning
-          text="Under 8 bits the steps are visible on an LED. For smooth dimming keep the frequency low enough for 10 bits or more, and remember perceived brightness is roughly the square of duty, so the low end needs the finest steps."
+          text="ledc-pwm.warn3"
         />
       )}
 
       <Theory
         text={[
-          "The LEDC timer counts to `2^bits` once per PWM period from an 80 MHz source, so the fastest it can run at a given resolution is `f_max = 80 MHz / 2^bits`. Rearranged, the best resolution at a given frequency is `floor(log2(80e6 / f))`.",
-          "That is a hard trade. 13 bits, the Arduino default, caps out at {maxFrequency}. Wanting 100 kHz for a buck converter leaves only 9 bits. Wanting 1 MHz leaves 6, which is 64 steps and useless for anything analogue.",
-          "The duty register is an integer, so the achievable duty is quantised to `1/2^bits`. Filtered into an analogue voltage that step is `Vcc/2^bits`, which is the real resolution of a PWM DAC: at 3.3 V and 10 bits it is about 3.2 mV, and no amount of filtering recovers anything finer.",
-          "For LEDs pick frequency above about 200 Hz to avoid visible flicker, and well above that if the light will ever be filmed. For motors, above 20 kHz puts the switching whine out of hearing, but check the resolution you have left at that frequency.",
+          'ledc-pwm.theory1',
+          'ledc-pwm.thatIsAHard',
+          'ledc-pwm.theDutyRegisterIs',
+          'ledc-pwm.forLedsPickFrequency',
         ]} vars={{ maxFrequency: formatSI(maxFrequency(13), 'Hz') }}
       />
     </SimPage>

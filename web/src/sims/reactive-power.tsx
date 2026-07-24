@@ -44,29 +44,29 @@ export default function ReactivePower() {
   return (
     <SimPage
       id="reactive-power"
-      lede="Watch current lag voltage and instantaneous power dip negative. That negative dip is energy the load borrows and hands straight back, which the cable has to carry both ways for nothing. Current and power traces are scaled onto the voltage axis; the readouts carry the true values."
+      lede="reactive-power.lede"
       controls={
         <>
-          <Group label="Supply">
-            <Param label="Line voltage" unit="V" value={vrms} onChange={setVrms} min={12} max={690} />
-            <Param label="Frequency" unit="Hz" value={frequency} onChange={setFrequency} min={16} max={400} log={false} step={1} />
-            <Param label="Cable resistance" unit="Ω" value={rLine} onChange={setRLine} min={0.001} max={10} />
+          <Group label="common.supply">
+            <Param label="reactive-power.lineVoltage" unit="V" value={vrms} onChange={setVrms} min={12} max={690} />
+            <Param label="common.frequency" unit="Hz" value={frequency} onChange={setFrequency} min={16} max={400} log={false} step={1} />
+            <Param label="reactive-power.cableResistance" unit="Ω" value={rLine} onChange={setRLine} min={0.001} max={10} />
           </Group>
 
-          <Group label="Load">
-            <Param label="Real power" unit="W" value={p} onChange={setP} min={10} max={500_000} />
+          <Group label="common.load">
+            <Param label="reactive-power.realPower" unit="W" value={p} onChange={setP} min={10} max={500_000} />
             <Segmented
-              label="Load type"
+              label="common.loadType"
               value={kind}
               onChange={setKind}
               options={[
-                { value: 'lagging', label: 'Inductive' },
-                { value: 'leading', label: 'Capacitive' },
+                { value: 'lagging', label: 'reactive-power.inductive' },
+                { value: 'leading', label: 'reactive-power.capacitive' },
               ]}
             />
-            <Param label="Present PF" value={pf} onChange={setPf} min={0.05} max={1} log={false} step={0.01} />
-            <Param label="Target PF" value={pfTarget} onChange={setPfTarget} min={0.05} max={1} log={false} step={0.01} />
-            <Param label="Cycles shown" value={cycles} onChange={(v) => setCycles(Math.round(v))} min={1} max={8} log={false} step={1} />
+            <Param label="reactive-power.presentPf" value={pf} onChange={setPf} min={0.05} max={1} log={false} step={0.01} />
+            <Param label="reactive-power.targetPf" value={pfTarget} onChange={setPfTarget} min={0.05} max={1} log={false} step={0.01} />
+            <Param label="common.cyclesShown" value={cycles} onChange={(v) => setCycles(Math.round(v))} min={1} max={8} log={false} step={1} />
           </Group>
         </>
       }
@@ -75,52 +75,52 @@ export default function ReactivePower() {
 
       <ReadoutGrid
         items={[
-          { label: 'Apparent power S', value: formatSI(r.s, 'VA') },
-          { label: 'Real power P', value: formatSI(p, 'W') },
-          { label: 'Reactive power Q', value: formatSI(r.q, 'var') },
-          { label: 'Phase angle', value: `${r.phiDeg.toFixed(1)}°`, note: kind === 'lagging' ? 'current lags' : 'current leads' },
-          { label: 'Line current', value: formatSI(r.irms, 'A') },
-          { label: 'Correction needed', value: formatSI(Math.abs(r.qc), 'var'), warn: r.targetTooLow },
+          { label: 'reactive-power.apparentPowerS', value: formatSI(r.s, 'VA') },
+          { label: 'reactive-power.realPowerP', value: formatSI(p, 'W') },
+          { label: 'reactive-power.reactivePowerQ', value: formatSI(r.q, 'var') },
+          { label: 'reactive-power.phaseAngle', value: `${r.phiDeg.toFixed(1)}°`, note: kind === 'lagging' ? 'reactive-power.currentLags' : 'reactive-power.currentLeads' },
+          { label: 'reactive-power.lineCurrent', value: formatSI(r.irms, 'A') },
+          { label: 'reactive-power.correctionNeeded', value: formatSI(Math.abs(r.qc), 'var'), warn: r.targetTooLow },
           {
-            label: r.needsInductor ? 'Shunt inductor' : 'Shunt capacitor',
+            label: r.needsInductor ? 'reactive-power.shuntInductor' : 'reactive-power.shuntCapacitor',
             value: r.needsInductor ? formatSI(r.inductance, 'H') : formatSI(r.capacitance, 'F'),
           },
-          { label: 'Bank reactance', value: formatSI(Math.abs(r.xq), 'Ω') },
-          { label: 'Bank voltage rating', value: formatSI(r.capVoltageRating, 'V'), note: 'minimum' },
-          { label: 'Current after', value: formatSI(r.irmsAfter, 'A'), note: <T k="{currentReduction}% lower" vars={{ currentReduction: (r.currentReduction * 100).toFixed(1) }} /> },
-          { label: 'Cable loss before', value: formatSI(r.lossBefore, 'W') },
-          { label: 'Cable loss after', value: formatSI(r.lossAfter, 'W'), note: <T k="saves {lossSaved}" vars={{ lossSaved: formatSI(r.lossSaved, 'W') }} /> },
-          { label: 'Peak p(t)', value: formatSI(r.pPeak, 'W') },
-          { label: 'Reverse flow peak', value: formatSI(r.pReverse, 'W'), note: 'handed back each cycle' },
-          { label: 'Reactive energy / day', value: `${(r.qEnergyDay / 1000).toFixed(1)} kvarh` },
-          { label: 'After correction', value: `${(r.qEnergyDayAfter / 1000).toFixed(1)} kvarh` },
+          { label: 'reactive-power.bankReactance', value: formatSI(Math.abs(r.xq), 'Ω') },
+          { label: 'reactive-power.bankVoltageRating', value: formatSI(r.capVoltageRating, 'V'), note: 'reactive-power.minimum' },
+          { label: 'reactive-power.currentAfter', value: formatSI(r.irmsAfter, 'A'), note: <T k="reactive-power.lower" vars={{ currentReduction: (r.currentReduction * 100).toFixed(1) }} /> },
+          { label: 'reactive-power.cableLossBefore', value: formatSI(r.lossBefore, 'W') },
+          { label: 'reactive-power.cableLossAfter', value: formatSI(r.lossAfter, 'W'), note: <T k="reactive-power.saves" vars={{ lossSaved: formatSI(r.lossSaved, 'W') }} /> },
+          { label: 'reactive-power.peakPT', value: formatSI(r.pPeak, 'W') },
+          { label: 'reactive-power.reverseFlowPeak', value: formatSI(r.pReverse, 'W'), note: 'reactive-power.handedBackEachCycle' },
+          { label: 'reactive-power.reactiveEnergyDay', value: `${(r.qEnergyDay / 1000).toFixed(1)} kvarh` },
+          { label: 'reactive-power.afterCorrection', value: `${(r.qEnergyDayAfter / 1000).toFixed(1)} kvarh` },
         ]}
       />
 
       {r.targetTooLow && (
         <Warning
-          text="The target power factor is at or below the present one, so there is nothing to correct. Raise the target above {pf}."
+          text="reactive-power.warn1"
           vars={{ pf: pf.toFixed(2) }}
         />
       )}
       {r.needsInductor && !r.targetTooLow && (
         <Warning
-          text="This load already leads, so correcting it needs a shunt *inductor*, not a capacitor. Capacitive loads at scale are unusual: long lightly loaded cables and large filter banks are the usual causes."
+          text="reactive-power.warn2"
         />
       )}
       {r.isMains && (
         <Warning
-          text="These are mains potentials. A correction capacitor stays charged after disconnection and must carry bleed resistors, and it must be rated for at least {capVoltageRating} RMS."
+          text="reactive-power.warn3"
           vars={{ capVoltageRating: formatSI(r.capVoltageRating, 'V') }}
         />
       )}
 
       <Theory
         text={[
-          "With a sinusoidal supply, `S = Vrms·Irms`, `P = S·cos(phi)` and `Q = S·sin(phi)`. Only P does work. Q is energy shuttled into the load's magnetic field and back out every half cycle, and the cable carries it both ways.",
-          "That is what the negative dip in p(t) on the trace is. Instantaneous power is `P + S·cos(2wt - phi)`, so it swings `P ± S`. Once S exceeds P, which is exactly when the power factor drops below 1, the trough goes below zero and power flows backwards.",
-          "Correction adds a shunt reactance that supplies Q locally instead of dragging it down the cable: `Qc = P·(tan(phi1) - tan(phi2))`, giving `C = Qc / (2·pi·f·V²)`. The load still draws the same Q, it just comes from a capacitor a metre away rather than a generator miles away.",
-          "The payoff is I²R. Cable loss falls with the square of current, so dragging power factor from 0.75 to 0.95 cuts current by about 21% and cable loss by about 38%. That is also why utilities bill industrial sites for reactive power: it occupies their conductors without registering on an energy meter.",
+          'reactive-power.theory1',
+          'reactive-power.thatIsWhatThe',
+          'reactive-power.correctionAddsAShunt',
+          'reactive-power.thePayoffIsI',
         ]}
       />
     </SimPage>

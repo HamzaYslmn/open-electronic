@@ -37,7 +37,7 @@ export default function AcImpedance() {
       dt: perSample,
       traces: [
         { label: '|Z|', color: TRACE_COLORS[0], samples: mag },
-        { label: 'phase', color: TRACE_COLORS[3], samples: phase },
+        { label: 'ac-impedance.phase', color: TRACE_COLORS[3], samples: phase },
       ],
     }
   }, [topology, r, l, c, frequency, decades])
@@ -45,26 +45,26 @@ export default function AcImpedance() {
   return (
     <SimPage
       id="ac-impedance"
-      lede="Impedance against frequency for an R, L and C together. The scope sweeps FREQUENCY logarithmically, not time: each horizontal division is a fixed fraction of a decade, centred on the frequency you set. Magnitude is in ohms, phase in degrees."
+      lede="ac-impedance.lede"
       controls={
         <>
           <Segmented
-            label="Topology"
+            label="common.topology"
             value={topology}
             onChange={setTopology}
             options={[
-              { value: 'series', label: 'Series' },
-              { value: 'parallel', label: 'Parallel' },
+              { value: 'series', label: 'common.series' },
+              { value: 'parallel', label: 'common.parallel' },
             ]}
           />
-          <Group label="Components">
-            <Param label="Resistance" unit="Ω" value={r} onChange={setR} min={0.01} max={1e6} />
-            <Param label="Inductance" unit="H" value={l} onChange={setL} min={1e-9} max={10} />
-            <Param label="Capacitance" unit="F" value={c} onChange={setC} min={1e-12} max={1e-2} />
+          <Group label="common.components">
+            <Param label="common.resistance" unit="Ω" value={r} onChange={setR} min={0.01} max={1e6} />
+            <Param label="common.inductance" unit="H" value={l} onChange={setL} min={1e-9} max={10} />
+            <Param label="common.capacitance" unit="F" value={c} onChange={setC} min={1e-12} max={1e-2} />
           </Group>
-          <Group label="Sweep">
-            <Param label="Centre frequency" unit="Hz" value={frequency} onChange={setFrequency} min={1} max={1e9} />
-            <Param label="Decades shown" value={decades} onChange={(v) => setDecades(Math.round(v))} min={1} max={8} log={false} step={1} />
+          <Group label="common.sweep">
+            <Param label="ac-impedance.centreFrequency" unit="Hz" value={frequency} onChange={setFrequency} min={1} max={1e9} />
+            <Param label="ac-impedance.decadesShown" value={decades} onChange={(v) => setDecades(Math.round(v))} min={1} max={8} log={false} step={1} />
           </Group>
         </>
       }
@@ -73,25 +73,25 @@ export default function AcImpedance() {
 
       <ReadoutGrid
         items={[
-          { label: '|Z| at frequency', value: formatSI(readout.magnitude, 'Ω') },
-          { label: 'Phase', value: `${readout.phaseDeg.toFixed(1)}°`, note: readout.character },
-          { label: 'Resistance', value: formatSI(readout.resistance, 'Ω'), note: 'real part' },
-          { label: 'Reactance', value: formatSI(readout.reactance, 'Ω'), note: 'imaginary part' },
-          { label: 'XL', value: formatSI(readout.xl, 'Ω') },
-          { label: 'XC', value: formatSI(readout.xc, 'Ω') },
-          { label: 'Resonance f0', value: formatSI(readout.resonance, 'Hz'), warn: readout.atResonance },
-          { label: 'Q factor', value: readout.q.toFixed(2) },
-          { label: 'Bandwidth', value: formatSI(readout.bandwidth, 'Hz'), note: '-3 dB' },
-          { label: 'Current from 1 V', value: formatSI(readout.admittance, 'A') },
+          { label: 'ac-impedance.zAtFrequency', value: formatSI(readout.magnitude, 'Ω') },
+          { label: 'ac-impedance.phase2', value: `${readout.phaseDeg.toFixed(1)}°`, note: readout.character },
+          { label: 'common.resistance', value: formatSI(readout.resistance, 'Ω'), note: 'ac-impedance.realPart' },
+          { label: 'ac-impedance.reactance', value: formatSI(readout.reactance, 'Ω'), note: 'ac-impedance.imaginaryPart' },
+          { label: 'ac-impedance.xl', value: formatSI(readout.xl, 'Ω') },
+          { label: 'ac-impedance.xc', value: formatSI(readout.xc, 'Ω') },
+          { label: 'common.resonanceF0', value: formatSI(readout.resonance, 'Hz'), warn: readout.atResonance },
+          { label: 'common.qFactor', value: readout.q.toFixed(2) },
+          { label: 'common.bandwidth', value: formatSI(readout.bandwidth, 'Hz'), note: 'ac-impedance.3Db' },
+          { label: 'ac-impedance.currentFrom1V', value: formatSI(readout.admittance, 'A') },
         ]}
       />
 
       <Theory
         text={[
-          "Reactance is frequency dependent: `XL = 2·pi·f·L` rises with frequency and `XC = 1/(2·pi·f·C)` falls. Written as complex impedances they are `+jXL` and `-jXC`, so they subtract rather than add, and at one particular frequency they cancel entirely.",
-          "That is resonance, `f0 = 1/(2·pi·sqrt(LC))`. In series the cancellation leaves only R, so impedance hits a minimum and current peaks. In parallel it is the admittances that cancel, so impedance hits a maximum and the network becomes a tank that draws almost nothing from the source while circulating a large current internally.",
-          "Q measures how sharp that is: `Q = (1/R)·sqrt(L/C)` for series. Bandwidth follows as `f0/Q`. High Q means a narrow, selective peak and a large circulating current; low Q means a broad gentle one.",
-          "The phase trace tells you which element is winning. Below series resonance the capacitor dominates and current leads voltage, giving negative phase. Above it the inductor dominates and current lags. Exactly at f0 the network looks purely resistive, which is what makes it useful for matching and filtering.",
+          'ac-impedance.reactanceIsFrequencyDependent',
+          'ac-impedance.thatIsResonanceF0',
+          'ac-impedance.qMeasuresHowSharp',
+          'ac-impedance.thePhaseTraceTells',
         ]}
       />
     </SimPage>

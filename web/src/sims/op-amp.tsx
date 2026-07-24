@@ -48,7 +48,7 @@ function Schematic({ mode }: { mode: OpAmpMode }) {
   const inverting = summingNodeInput(mode)
   const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 130" aria-label={t('{mode} amplifier', { mode })}>
+    <svg className="schematic" viewBox="0 0 260 130" aria-label={t('op-amp.amplifier')}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         {/* the part itself */}
         <path d="M100 30v70l60-35z" />
@@ -206,12 +206,12 @@ export default function OpAmp() {
     }
 
     const traces: Trace[] = [
-      { label: 'Vin', color: TRACE_COLORS[0], samples: input },
-      { label: 'Vout', color: TRACE_COLORS[1], samples: r.output },
+      { label: 'common.vin', color: TRACE_COLORS[0], samples: input },
+      { label: 'common.vout', color: TRACE_COLORS[1], samples: r.output },
     ]
     // The moving trip point is the whole story of a Schmitt trigger, so plot it.
     if (r.threshold)
-      traces.push({ label: 'Vth', color: TRACE_COLORS[3], samples: r.threshold, quiet: true })
+      traces.push({ label: 'op-amp.vth', color: TRACE_COLORS[3], samples: r.threshold, quiet: true })
 
     return {
       dt,
@@ -245,85 +245,85 @@ export default function OpAmp() {
   const items = [
     ...(isComparator
       ? [
-          { label: 'Upper threshold', value: formatSI(readout.upper, 'V') },
-          { label: 'Lower threshold', value: formatSI(readout.lower, 'V') },
+          { label: 'op-amp.upperThreshold', value: formatSI(readout.upper, 'V') },
+          { label: 'op-amp.lowerThreshold', value: formatSI(readout.lower, 'V') },
           {
-            label: 'Hysteresis band',
+            label: 'op-amp.hysteresisBand',
             value: formatSI(readout.hysteresis, 'V'),
             note: `(R1/(R1+R2) = ${(r1 / (r1 + r2)).toFixed(4)})`,
           },
           {
-            label: 'Edges in window',
+            label: 'op-amp.edgesInWindow',
             value: String(stats.transitions),
-            note: comparatorStuck ? '(never trips)' : '(2 per input cycle when tripping)',
+            note: comparatorStuck ? 'op-amp.neverTrips' : 'op-amp.2PerInputCycle',
             warn: comparatorStuck,
           },
         ]
       : [
           {
-            label: 'Closed-loop gain',
+            label: 'op-amp.closedLoopGain',
             value: `${readout.gain.toFixed(3)} V/V`,
-            note: <T k="({gainDb} dB{inverted})" vars={{ gainDb: readout.gainDb.toFixed(2), inverted: readout.gain < 0 ? ', inverted' : '' }} />,
+            note: <T k="op-amp.db" vars={{ gainDb: readout.gainDb.toFixed(2), inverted: readout.gain < 0 ? 'op-amp.inverted' : '' }} />,
           },
           {
-            label: 'Noise gain',
+            label: 'op-amp.noiseGain',
             value: readout.noiseGain.toFixed(3),
-            note: '(1 + Rf/Rg, sets the bandwidth)',
+            note: 'op-amp.1RfRgSets',
           },
           {
-            label: 'Bandwidth',
+            label: 'common.bandwidth',
             value: formatSI(readout.bandwidth, 'Hz'),
-            note: <T k="(GBW / {noiseGain})" vars={{ noiseGain: readout.noiseGain.toFixed(2) }} />,
+            note: <T k="op-amp.gbw" vars={{ noiseGain: readout.noiseGain.toFixed(2) }} />,
           },
           {
-            label: <T k="Response at {frequency}" vars={{ frequency: formatSI(source.frequency, 'Hz') }} />,
+            label: <T k="op-amp.responseAt" vars={{ frequency: formatSI(source.frequency, 'Hz') }} />,
             value: `${(20 * Math.log10(readout.gainError)).toFixed(2)} dB`,
-            note: <T k="({gainError}% of the DC gain)" vars={{ gainError: (readout.gainError * 100).toFixed(2) }} />,
+            note: <T k="op-amp.ofTheDcGain" vars={{ gainError: (readout.gainError * 100).toFixed(2) }} />,
             warn: readout.gainError < 0.9,
           },
         ]),
     {
-      label: 'Slew demanded',
+      label: 'op-amp.slewDemanded',
       value: formatSI(readout.slewNeeded, 'V/s'),
-      note: <T k="(part does {slewRate}, i.e. {e6} V/µs)" vars={{ slewRate: formatSI(slewRate, 'V/s'), e6: (slewRate / 1e6).toFixed(2) }} />,
+      note: <T k="op-amp.partDoesIE" vars={{ slewRate: formatSI(slewRate, 'V/s'), e6: (slewRate / 1e6).toFixed(2) }} />,
       warn: readout.slewLimited || stats.slewed > 0,
     },
     {
-      label: 'Full power bandwidth',
+      label: 'op-amp.fullPowerBandwidth',
       value: formatSI(readout.fullPowerBw, 'Hz'),
-      note: '(SR / 2·pi·Vpk)',
+      note: 'op-amp.sr2PiVpk',
       warn: source.frequency > readout.fullPowerBw,
     },
     {
-      label: 'Output swing',
+      label: 'common.outputSwing',
       value: formatSI(stats.vpp, 'V') + ' pp',
-      note: <T k="({vmin} to {vmax})" vars={{ vmin: formatSI(stats.vmin, 'V'), vmax: formatSI(stats.vmax, 'V') }} />,
+      note: <T k="op-amp.to" vars={{ vmin: formatSI(stats.vmin, 'V'), vmax: formatSI(stats.vmax, 'V') }} />,
     },
     {
-      label: 'Time on a rail',
+      label: 'op-amp.timeOnARail',
       value: `${(stats.clipped * 100).toFixed(1)} %`,
-      note: <T k="(rails clip at {lo} / {hi})" vars={{ lo: formatSI(readout.lo, 'V'), hi: formatSI(readout.hi, 'V') }} />,
+      note: <T k="op-amp.railsClipAt" vars={{ lo: formatSI(readout.lo, 'V'), hi: formatSI(readout.hi, 'V') }} />,
       warn: stats.clipped > 0,
     },
     ...(mode === 'integrator'
       ? [
           {
-            label: 'Integrator unity gain',
+            label: 'op-amp.integratorUnityGain',
             value: formatSI(readout.integratorUnity, 'Hz'),
-            note: '(1 / 2·pi·Rin·Cf)',
+            note: 'op-amp.12PiRin',
             warn: integratorTooFast,
           },
           {
-            label: 'DC bleed corner',
+            label: 'op-amp.dcBleedCorner',
             value: formatSI(readout.integratorCorner, 'Hz'),
-            note: <T k="(below this it is just a {gain}x inverter)" vars={{ gain: Math.abs(readout.gain).toFixed(1) }} />,
+            note: <T k="op-amp.belowThisItIs" vars={{ gain: Math.abs(readout.gain).toFixed(1) }} />,
           },
         ]
       : [
           {
-            label: 'Input impedance',
+            label: 'common.inputImpedance',
             value: formatSI(readout.inputZ, 'Ω'),
-            note: drivesInputPin(mode) ? '(straight onto the pin)' : '(Rin into a virtual earth)',
+            note: drivesInputPin(mode) ? 'op-amp.straightOntoThePin' : 'op-amp.rinIntoAVirtual',
           },
         ]),
   ]
@@ -331,24 +331,24 @@ export default function OpAmp() {
   return (
     <SimPage
       id="op-amp"
-      lede="Ideal closed-loop gain with the three limits that actually bite: gain bandwidth product, slew rate and output swing. The scope shows Vin against Vout in real time."
+      lede="op-amp.lede"
       controls={
         <>
           <Select
-            label="Configuration"
+            label="op-amp.configuration"
             value={mode}
             onChange={setMode}
             options={OPAMP_MODES}
           />
           <Schematic mode={mode} />
 
-          <Group label="Network">
+          <Group label="op-amp.network">
             {mode !== 'buffer' && !isComparator && (
-              <Param label="Feedback Rf" unit="Ω" value={rf} onChange={setRf} min={100} max={10e6} />
+              <Param label="op-amp.feedbackRf" unit="Ω" value={rf} onChange={setRf} min={100} max={10e6} />
             )}
             {mode !== 'buffer' && !isComparator && (
               <Param
-                label={mode === 'noninverting' ? 'Ground leg Rg' : 'Input Rin'}
+                label={mode === 'noninverting' ? 'op-amp.groundLegRg' : 'op-amp.inputRin'}
                 unit="Ω"
                 value={rin}
                 onChange={setRin}
@@ -357,14 +357,14 @@ export default function OpAmp() {
               />
             )}
             {mode === 'integrator' && (
-              <Param label="Feedback Cf" unit="F" value={cf} onChange={setCf} min={1e-12} max={1e-4} />
+              <Param label="op-amp.feedbackCf" unit="F" value={cf} onChange={setCf} min={1e-12} max={1e-4} />
             )}
             {mode === 'summing' && (
-              <Param label="Input B R2" unit="Ω" value={rin2} onChange={setRin2} min={100} max={10e6} />
+              <Param label="op-amp.inputBR2" unit="Ω" value={rin2} onChange={setRin2} min={100} max={10e6} />
             )}
             {(mode === 'summing' || mode === 'difference') && (
               <Param
-                label={mode === 'summing' ? 'Input B level' : 'Subtracted level'}
+                label={mode === 'summing' ? 'op-amp.inputBLevel' : 'op-amp.subtractedLevel'}
                 unit="V"
                 value={v2}
                 onChange={setV2}
@@ -376,7 +376,7 @@ export default function OpAmp() {
             )}
             {usesBias(mode) && (
               <Param
-                label="Reference Vbias"
+                label="op-amp.referenceVbias"
                 unit="V"
                 value={vbias}
                 onChange={setVbias}
@@ -384,13 +384,13 @@ export default function OpAmp() {
                 max={vpos}
                 log={false}
                 step={0.05}
-                hint="Mid rail on a single supply, 0 V on a split supply."
+                hint="op-amp.midRailOnA"
               />
             )}
             {isComparator && (
               <>
                 <Param
-                  label="Reference Vref"
+                  label="op-amp.referenceVref"
                   unit="V"
                   value={vref}
                   onChange={setVref}
@@ -400,31 +400,31 @@ export default function OpAmp() {
                   step={0.05}
                 />
                 <Param
-                  label="Feedback R1"
+                  label="op-amp.feedbackR1"
                   unit="Ω"
                   value={r1}
                   onChange={setR1}
                   min={100}
                   max={10e6}
-                  hint="Smaller R1 means a wider hysteresis band."
+                  hint="op-amp.smallerR1MeansA"
                 />
-                <Param label="Reference R2" unit="Ω" value={r2} onChange={setR2} min={100} max={10e6} />
+                <Param label="op-amp.referenceR2" unit="Ω" value={r2} onChange={setR2} min={100} max={10e6} />
               </>
             )}
           </Group>
 
-          <Group label="Part and supply">
+          <Group label="op-amp.partAndSupply">
             <Param
-              label="Gain bandwidth"
+              label="op-amp.gainBandwidth"
               unit="Hz"
               value={gbw}
               onChange={setGbw}
               min={1e4}
               max={1e9}
-              hint="MCP6002 is 1 MHz. OPA2340 is 5.5 MHz."
+              hint="op-amp.mcp6002Is1Mhz"
             />
             <Param
-              label="Slew rate"
+              label="op-amp.slewRate"
               unit="V/s"
               value={slewRate}
               onChange={setSlewRate}
@@ -433,16 +433,16 @@ export default function OpAmp() {
               hint={`${(slewRate / 1e6).toFixed(2)} V/µs`}
             />
             <Segmented
-              label="Output stage"
-              value={railToRail ? 'rrl' : 'classic'}
+              label="op-amp.outputStage"
+              value={railToRail ? 'op-amp.rrl' : 'op-amp.classic'}
               onChange={(v) => setRailToRail(v === 'rrl')}
               options={[
-                { value: 'rrl', label: 'Rail to rail' },
-                { value: 'classic', label: 'Classic' },
+                { value: 'rrl', label: 'op-amp.railToRail' },
+                { value: 'classic', label: 'op-amp.classic2' },
               ]}
             />
             <Param
-              label="Positive rail"
+              label="op-amp.positiveRail"
               unit="V"
               value={vpos}
               onChange={setVpos}
@@ -452,7 +452,7 @@ export default function OpAmp() {
               step={0.1}
             />
             <Param
-              label="Negative rail"
+              label="op-amp.negativeRail"
               unit="V"
               value={vneg}
               onChange={setVneg}
@@ -460,7 +460,7 @@ export default function OpAmp() {
               max={0}
               log={false}
               step={0.1}
-              hint="0 V for single supply ESP32 work."
+              hint="op-amp.0VForSingle"
             />
           </Group>
 
@@ -472,13 +472,13 @@ export default function OpAmp() {
 
       {stats.clipped > 0 && (
         <Warning
-          text="The output is on a rail for {clipped}% of the window. Beyond that point the gain formula no longer describes the circuit: reduce the gain, reduce the input, or widen the supply."
+          text="op-amp.warn1"
           vars={{ clipped: (stats.clipped * 100).toFixed(1) }}
         />
       )}
       {(readout.slewLimited || stats.slewed > 0) && (
         <Warning
-          text="Slew limited. The output needs {slewNeeded} but the part only does {slewRate}, so sine waves come out as triangles and the small-signal bandwidth figure no longer applies."
+          text="op-amp.warn2"
           vars={{
             slewNeeded: formatSI(readout.slewNeeded, 'V/s'),
             slewRate: formatSI(amp.slewRate, 'V/s'),
@@ -487,7 +487,7 @@ export default function OpAmp() {
       )}
       {commonMode && (
         <Warning
-          text="The input pin leaves the supply range ({inMin} to {inMax} against rails of {vneg} to {vpos}). Real input stages stop working there and some parts phase invert, so this trace is fiction outside the rails."
+          text="op-amp.warn3"
           vars={{
             inMin: formatSI(stats.inMin, 'V'),
             inMax: formatSI(stats.inMax, 'V'),
@@ -498,13 +498,13 @@ export default function OpAmp() {
       )}
       {biasOffRail && (
         <Warning
-          text="Vbias sits outside the usable output range, so the stage has nowhere to swing. On a single supply set it to half the positive rail, i.e. {vpos}."
+          text="op-amp.warn4"
           vars={{ vpos: formatSI(vpos / 2, 'V') }}
         />
       )}
       {integratorTooFast && (
         <Warning
-          text="The integrator's unity gain frequency ({integratorUnity}) is within a decade of the op-amp's GBW ({gbw}). The op-amp runs out of open-loop gain before the capacitor takes over, so the integration stops being clean. Raise Rin or Cf, or pick a faster part."
+          text="op-amp.warn5"
           vars={{
             integratorUnity: formatSI(readout.integratorUnity, 'Hz'),
             gbw: formatSI(gbw, 'Hz'),
@@ -516,12 +516,12 @@ export default function OpAmp() {
 
       <Theory
         text={[
-          "With enough open-loop gain the inverting pin tracks the non-inverting pin, so the resistor network alone sets the gain: `Av = -Rf/Rin` inverting, `Av = 1 + Rf/Rg` non-inverting, `Av = 1` for a buffer. The summing amp is superposition on one virtual earth, `Vout = -Rf·(V1/R1 + V2/R2)`, and the difference amp is `Vout = Vref + (Rf/Rin)·(V+ - V-)` with matched ratios on both branches.",
-          "Everything here swings about Vbias rather than about 0 V, because on a single 3.3 V supply there is no negative rail to swing into. That means the non-inverting pin of an inverting stage and the Rg leg of a non-inverting stage both return to mid rail, not to ground. Set Vbias to 0 and a split supply and the formulas collapse back to the textbook ones.",
-          "A compensated op-amp holds gain times bandwidth constant, so the closed-loop corner is `BW = GBW / noise gain`. Noise gain is `1 + Rf/Rg` for both topologies, which is why an inverting stage of -10 and a non-inverting stage of +11 have exactly the same bandwidth even though their signal gains differ.",
-          "Bandwidth is a small-signal figure. Large signals hit the slew rate instead: a sine of peak Vp needs `2·pi·f·Vp` volts per second, so the largest undistorted sine is the full power bandwidth `SR / (2·pi·Vp)`. Past it the output turns into a triangle no matter what the gain plot says.",
-          "The comparator is the same part with positive feedback instead of negative. The non-inverting node sits on a divider between Vref through R2 and the output through R1, so `Vth = (Vref·R2 + Vout·R1)/(R1 + R2)`. With R2 much larger than R1 that is the familiar `Vth = Vref ± Vout·R1/(R1+R2)`, and the band is exactly `(Vhigh - Vlow)·R1/(R1+R2)`. Anything smaller than that band cannot make the output chatter.",
-          "The scope trace is a sample-by-sample simulation. Every pole uses exact zero-order-hold discretisation, `y[n] = target + (y[n-1] - target)·e^(-dt/tau)`, so it stays stable at any time base; slew limiting and rail clipping are then applied per sample, which is what puts the flat tops and straight edges on the trace. The integrator is modelled as the practical one, Rf across Cf, so it has a finite DC gain instead of drifting into a rail.",
+          'op-amp.theory1',
+          'op-amp.everythingHereSwingsAbout',
+          'op-amp.aCompensatedOpAmp',
+          'op-amp.bandwidthIsASmall',
+          'op-amp.theComparatorIsThe',
+          'op-amp.theScopeTraceIs',
         ]}
       />
     </SimPage>

@@ -11,7 +11,7 @@ export default function Home() {
     <div className="home">
       <p className="intro">
         {t(
-          '{ready} of {total} simulators built. Every one runs the real formulas in the browser and drives the same live oscilloscope.',
+          'ui.ofSimulatorsBuiltEvery',
           { ready, total: SIMULATORS.length },
         )}
       </p>
@@ -35,7 +35,7 @@ export default function Home() {
                 ) : (
                   <div key={sim.id} className="card planned" aria-disabled="true">
                     <h3>
-                      {t(sim.title)} <span className="badge">{t('planned')}</span>
+                      {t(sim.title)} <span className="badge">{t('ui.planned')}</span>
                     </h3>
                     <p>{t(sim.blurb)}</p>
                     <code>{sim.formula}</code>

@@ -3,7 +3,7 @@ import { GPIO_MAX_MA, VCC, VCC_5V } from '../engine/constants'
 import { ODF_TARGET, ampTrace, analyseAmp, analyseSwitch, switchTrace } from '../engine/bjt'
 import { sweep } from '../engine/signal'
 import { formatSI } from '../engine/units'
-import { T } from '../i18n'
+import { T, useT } from '../i18n'
 import { Group, Segmented, Toggle } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -21,12 +21,13 @@ const DC_SPAN = 1e-3
 type Mode = 'switch' | 'amp'
 
 function Schematic({ mode }: { mode: Mode }) {
+  const t = useT()
   const isSwitch = mode === 'switch'
   return (
     <svg
       className="schematic"
       viewBox="0 0 260 168"
-      aria-label={isSwitch ? 'NPN low side switch' : 'common emitter amplifier'}
+      aria-label={t(isSwitch ? 'bjt-switch.npnLowSideSwitch' : 'bjt-switch.commonEmitterAmplifier')}
     >
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         {/* transistor */}
@@ -143,8 +144,8 @@ export default function BjtSwitch() {
       return {
         dt,
         traces: [
-          { label: 'Vdrive', color: TRACE_COLORS[0], samples },
-          { label: 'Vce', color: TRACE_COLORS[1], samples: vce },
+          { label: 'bjt-switch.vdrive', color: TRACE_COLORS[0], samples },
+          { label: 'bjt-switch.vce', color: TRACE_COLORS[1], samples: vce },
         ],
         sw: analyseSwitch({ ...stage, vDrive: driveHigh }),
         amp: null,
@@ -155,8 +156,8 @@ export default function BjtSwitch() {
     return {
       dt,
       traces: [
-        { label: 'Vb', color: TRACE_COLORS[0], samples: base },
-        { label: 'Vc', color: TRACE_COLORS[1], samples: collector },
+        { label: 'bjt-switch.vb', color: TRACE_COLORS[0], samples: base },
+        { label: 'common.vc', color: TRACE_COLORS[1], samples: collector },
       ],
       sw: null,
       amp: analyseAmp(stage),
@@ -165,12 +166,12 @@ export default function BjtSwitch() {
 
   const modeSwitch = (
     <Segmented
-      label="Operating mode"
+      label="bjt-switch.operatingMode"
       value={mode}
       onChange={setMode}
       options={[
-        { value: 'switch', label: 'Switch' },
-        { value: 'amp', label: 'Amplifier' },
+        { value: 'switch', label: 'bjt-switch.switch2' },
+        { value: 'amp', label: 'bjt-switch.amplifier' },
       ]}
     />
   )
@@ -188,29 +189,29 @@ export default function BjtSwitch() {
     return (
       <SimPage
         id="bjt-switch"
-        lede="NPN low side switch driven from a 3V3 GPIO through RB. The scope shows the drive waveform and the collector voltage against time."
+        lede="bjt-switch.lede"
         controls={
           <>
             {modeSwitch}
             <Schematic mode="switch" />
 
-            <Group label="Base drive">
-              <Param label="Base resistor RB" unit="Ω" value={rb} onChange={setRb} min={10} max={1e6} />
+            <Group label="bjt-switch.baseDrive">
+              <Param label="bjt-switch.baseResistorRb" unit="Ω" value={rb} onChange={setRb} min={10} max={1e6} />
               <Param
-                label="Current gain hFE"
+                label="bjt-switch.currentGainHfe"
                 value={hfe}
                 onChange={setHfe}
                 min={10}
                 max={800}
                 log={false}
                 step={5}
-                hint="Datasheet minimum, not typical. Saturation depends on the worst case."
+                hint="bjt-switch.datasheetMinimumNotTypical"
               />
             </Group>
 
-            <Group label="Load">
+            <Group label="common.load">
               <Param
-                label="Load rail"
+                label="bjt-switch.loadRail"
                 unit="V"
                 value={vLoad}
                 onChange={setVLoad}
@@ -219,10 +220,10 @@ export default function BjtSwitch() {
                 log={false}
                 step={0.1}
               />
-              <Param label="Load resistance" unit="Ω" value={rLoad} onChange={setRLoad} min={1} max={1e5} />
+              <Param label="common.loadResistance" unit="Ω" value={rLoad} onChange={setRLoad} min={1} max={1e5} />
             </Group>
 
-            <SourceControls value={drive} onChange={patchDrive} maxAmplitude={12} label="Drive waveform" />
+            <SourceControls value={drive} onChange={patchDrive} maxAmplitude={12} label="bjt-switch.driveWaveform" />
           </>
         }
       >
@@ -230,7 +231,7 @@ export default function BjtSwitch() {
 
         {sw.state !== 'saturated' && (
           <Warning
-            text="Not saturated at {driveHigh} of drive: hFE·IB gives only {icAvailable} against the {icSat} the load wants, so the device sits in the active region at {vce} and burns {pCollector}. Drop RB to {rbForTarget} or below."
+            text="bjt-switch.warn1"
             vars={{
               driveHigh: formatSI(driveHigh, 'V'),
               icAvailable: formatSI(sw.icAvailable, 'A'),
@@ -243,7 +244,7 @@ export default function BjtSwitch() {
         )}
         {sw.overGpio && (
           <Warning
-            text="Base current is {ib}, past the {GPIO_MAX_MA} mA an ESP32 pin will source. Raise RB or drive the base from a buffer."
+            text="bjt-switch.warn2"
             vars={{ ib: formatSI(sw.ib, 'A'), GPIO_MAX_MA }}
           />
         )}
@@ -251,40 +252,40 @@ export default function BjtSwitch() {
         <ReadoutGrid
           items={[
             {
-              label: 'Base current IB',
+              label: 'bjt-switch.baseCurrentIb',
               value: formatSI(sw.ib, 'A'),
-              note: <T k="min {ibMin}" vars={{ ibMin: formatSI(sw.ibMin, 'A') }} />,
+              note: <T k="bjt-switch.min" vars={{ ibMin: formatSI(sw.ibMin, 'A') }} />,
               warn: sw.overGpio,
             },
             {
-              label: 'Overdrive factor',
+              label: 'bjt-switch.overdriveFactor',
               value: `${sw.odf.toFixed(2)}x`,
               note: stateNote,
               warn: sw.odf < 1,
             },
-            { label: 'Collector current', value: formatSI(sw.ic, 'A') },
-            { label: 'VCE', value: formatSI(sw.vce, 'V'), warn: sw.state !== 'saturated' },
+            { label: 'bjt-switch.collectorCurrent', value: formatSI(sw.ic, 'A') },
+            { label: 'bjt-switch.vce2', value: formatSI(sw.vce, 'V'), warn: sw.state !== 'saturated' },
             {
-              label: 'Transistor dissipation',
+              label: 'bjt-switch.transistorDissipation',
               value: formatSI(sw.pTransistor, 'W'),
-              note: <T k="{pCollector} collector" vars={{ pCollector: formatSI(sw.pCollector, 'W') }} />,
+              note: <T k="bjt-switch.collector" vars={{ pCollector: formatSI(sw.pCollector, 'W') }} />,
             },
-            { label: 'Load power', value: formatSI(sw.pLoad, 'W') },
+            { label: 'bjt-switch.loadPower', value: formatSI(sw.pLoad, 'W') },
             {
-              label: <T k="RB for ODF {ODF_TARGET}" vars={{ ODF_TARGET }} />,
+              label: <T k="bjt-switch.rbForOdf" vars={{ ODF_TARGET }} />,
               value: formatSI(sw.rbForTarget, 'Ω'),
-              note: <T k="now {rb}" vars={{ rb: formatSI(rb, 'Ω') }} />,
+              note: <T k="bjt-switch.now" vars={{ rb: formatSI(rb, 'Ω') }} />,
             },
-            { label: 'RB dissipation', value: formatSI(sw.pBaseResistor, 'W') },
+            { label: 'bjt-switch.rbDissipation', value: formatSI(sw.pBaseResistor, 'W') },
           ]}
         />
 
         <Theory
           text={[
-            "The base resistor sets everything: `IB = (Vin - VBE) / RB` with VBE taken as 0.7 V. The transistor can then deliver `IC = hFE·IB`, but the load only asks for `IC(sat) = (Vload - VCEsat) / RL`. Whichever is smaller wins.",
-            "The overdrive factor is the ratio, `ODF = IB·hFE / IC(load)`. Below 1 the transistor never saturates and sits in the active region dropping volts across itself. Design for ODF of about {ODF_TARGET} so worst case hFE, cold silicon and a heavier load still leave it hard on.",
-            "Saturated dissipation is `P = VCEsat·IC + VBE·IB`, a few milliwatts here. In the active region VCE is volts rather than 0.2 V and the same current turns into heat, which is how switching transistors die.",
-            "The trace is a per-sample algebraic solve. There is no storage element in this model, so edges are instant: a real device adds a turn-off storage time of hundreds of nanoseconds, which is exactly what heavy overdrive makes worse.",
+            'bjt-switch.theBaseResistorSets',
+            'bjt-switch.theOverdriveFactorIs',
+            'bjt-switch.saturatedDissipationIsP',
+            'bjt-switch.theTraceIsA',
           ]} vars={{ ODF_TARGET }}
         />
       </SimPage>
@@ -299,15 +300,15 @@ export default function BjtSwitch() {
   return (
     <SimPage
       id="bjt-switch"
-      lede="Voltage divider biased common emitter on the 3V3 rail. The scope shows the base voltage and the inverted collector output against time."
+      lede="bjt-switch.lede2"
       controls={
         <>
           {modeSwitch}
           <Schematic mode="amp" />
 
-          <Group label="Supply and bias">
+          <Group label="bjt-switch.supplyAndBias">
             <Param
-              label="Supply VCC"
+              label="bjt-switch.supplyVcc"
               unit="V"
               value={vcc}
               onChange={setVcc}
@@ -316,15 +317,15 @@ export default function BjtSwitch() {
               log={false}
               step={0.1}
             />
-            <Param label="R1 (rail to base)" unit="Ω" value={r1} onChange={setR1} min={1e3} max={1e6} />
-            <Param label="R2 (base to gnd)" unit="Ω" value={r2} onChange={setR2} min={1e3} max={1e6} />
+            <Param label="bjt-switch.r1RailToBase" unit="Ω" value={r1} onChange={setR1} min={1e3} max={1e6} />
+            <Param label="bjt-switch.r2BaseToGnd" unit="Ω" value={r2} onChange={setR2} min={1e3} max={1e6} />
           </Group>
 
-          <Group label="Stage">
-            <Param label="Collector RC" unit="Ω" value={rc} onChange={setRc} min={100} max={1e5} />
-            <Param label="Emitter RE" unit="Ω" value={re} onChange={setRe} min={10} max={1e4} />
+          <Group label="bjt-switch.stage">
+            <Param label="bjt-switch.collectorRc" unit="Ω" value={rc} onChange={setRc} min={100} max={1e5} />
+            <Param label="bjt-switch.emitterRe" unit="Ω" value={re} onChange={setRe} min={10} max={1e4} />
             <Param
-              label="Current gain hFE"
+              label="bjt-switch.currentGainHfe"
               value={hfe}
               onChange={setHfe}
               min={10}
@@ -332,10 +333,10 @@ export default function BjtSwitch() {
               log={false}
               step={5}
             />
-            <Toggle label="Bypass RE with a capacitor" value={bypassed} onChange={setBypassed} />
+            <Toggle label="bjt-switch.bypassReWithA" value={bypassed} onChange={setBypassed} />
           </Group>
 
-          <SourceControls value={ac} onChange={patchAc} maxAmplitude={2} label="Input signal" />
+          <SourceControls value={ac} onChange={patchAc} maxAmplitude={2} label="bjt-switch.inputSignal" />
         </>
       }
     >
@@ -343,25 +344,25 @@ export default function BjtSwitch() {
 
       {q.region === 'saturated' && (
         <Warning
-          text="Biased into saturation: VCE is pinned at {vce} and there is no headroom left to swing. Lower RC or R2, or raise RE."
+          text="bjt-switch.warn3"
           vars={{ vce: formatSI(q.vce, 'V') }}
         />
       )}
       {q.region === 'cutoff' && (
         <Warning
-          text="Cut off: the divider only puts {vth} on the base, under the 0.7 V the junction needs. Raise R2 or lower R1."
+          text="bjt-switch.warn4"
           vars={{ vth: formatSI(q.vth, 'V') }}
         />
       )}
       {q.region === 'active' && !q.stiff && (
         <Warning
-          text="Divider is not stiff: it bleeds only {stiffness}x IB, so the bias point moves with hFE and temperature. Aim for 10x, i.e. lower R1 and R2 together."
+          text="bjt-switch.warn5"
           vars={{ stiffness: q.stiffness.toFixed(1) }}
         />
       )}
       {q.region === 'active' && clipping && (
         <Warning
-          text="Input of {amplitude} peak exceeds the {maxInput} this Q point can amplify without clipping, which is the flat top on the trace."
+          text="bjt-switch.warn6"
           vars={{ amplitude: formatSI(ac.amplitude, 'V'), maxInput: formatSI(q.maxInput, 'V') }}
         />
       )}
@@ -369,38 +370,38 @@ export default function BjtSwitch() {
       <ReadoutGrid
         items={[
           {
-            label: 'Quiescent IC',
+            label: 'bjt-switch.quiescentIc',
             value: formatSI(q.ic, 'A'),
-            note: <T k="IB {ib}" vars={{ ib: formatSI(q.ib, 'A') }} />,
+            note: <T k="bjt-switch.ib" vars={{ ib: formatSI(q.ib, 'A') }} />,
           },
           {
-            label: 'VCE',
+            label: 'bjt-switch.vce2',
             value: formatSI(q.vce, 'V'),
             note: regionNote,
             warn: q.region !== 'active',
           },
           {
-            label: 'VB / VE / VC',
+            label: 'bjt-switch.vbVeVc',
             value: `${q.vb.toFixed(2)} / ${q.ve.toFixed(2)} / ${q.vc.toFixed(2)} V`,
           },
           {
-            label: 'Voltage gain Av',
+            label: 'bjt-switch.voltageGainAv',
             value: `${q.av.toFixed(1)}x`,
-            note: Number.isFinite(q.avDb) ? <T k="{avDb} dB, inverting" vars={{ avDb: q.avDb.toFixed(1) }} /> : 'no gain',
+            note: Number.isFinite(q.avDb) ? <T k="bjt-switch.dbInverting" vars={{ avDb: q.avDb.toFixed(1) }} /> : 'bjt-switch.noGain',
           },
-          { label: 'Emitter re', value: formatSI(q.reSmall, 'Ω'), note: 'VT / IE' },
-          { label: 'Input impedance', value: formatSI(q.zin, 'Ω') },
-          { label: 'Output impedance', value: formatSI(q.zout, 'Ω'), note: 'RC, ro ignored' },
+          { label: 'bjt-switch.emitterRe2', value: formatSI(q.reSmall, 'Ω'), note: 'bjt-switch.vtIe' },
+          { label: 'common.inputImpedance', value: formatSI(q.zin, 'Ω') },
+          { label: 'common.outputImpedance', value: formatSI(q.zout, 'Ω'), note: 'bjt-switch.rcRoIgnored' },
           {
-            label: 'Max input (peak)',
+            label: 'bjt-switch.maxInputPeak',
             value: formatSI(q.maxInput, 'V'),
-            note: <T k="swing {swing}" vars={{ swing: formatSI(q.swing, 'V') }} />,
+            note: <T k="bjt-switch.swing" vars={{ swing: formatSI(q.swing, 'V') }} />,
             warn: clipping,
           },
           {
-            label: 'Divider stiffness',
+            label: 'bjt-switch.dividerStiffness',
             value: Number.isFinite(q.stiffness) ? `${q.stiffness.toFixed(0)}x IB` : 'n/a',
-            note: <T k="{dividerCurrent} bleed" vars={{ dividerCurrent: formatSI(q.dividerCurrent, 'A') }} />,
+            note: <T k="bjt-switch.bleed" vars={{ dividerCurrent: formatSI(q.dividerCurrent, 'A') }} />,
             warn: !q.stiff,
           },
         ]}
@@ -408,10 +409,10 @@ export default function BjtSwitch() {
 
       <Theory
         text={[
-          "The divider is solved as its Thevenin equivalent, `VTH = VCC·R2/(R1+R2)` and `RTH = R1||R2`, so the base loop gives `IB = (VTH - VBE) / (RTH + (hFE+1)·RE)`. That is the exact answer, not the \"assume IB is negligible\" shortcut, which is why a floppy divider shows up here as a shifted Q point instead of reading correct.",
-          "From there `IC = hFE·IB`, `IE = (hFE+1)·IB` and `VCE = VCC - IC·RC - IE·RE`. Put VCE somewhere near the middle of the rail so the output can swing both ways.",
-          "Midband gain is `Av = -RC / (RE + re)` where `re = VT/IE` is the intrinsic emitter resistance, about 26 mV over the emitter current. With RE much larger than re this is the familiar `-RC/RE`, set by resistors and therefore stable. Bypassing RE shorts it at signal frequencies, leaving `-RC/re`: much more gain, but now it moves with bias current and temperature.",
-          "Output swing is limited by whichever end runs out first, the rail at `IC·RC` above the Q point or saturation at `VCE - VCEsat` below it. The trace applies the midband gain sample by sample and clips there, so it shows the headroom honestly, though a real stage clips softly at cutoff and the coupling capacitor rolls off the low end.",
+          'bjt-switch.theDividerIsSolved',
+          'bjt-switch.fromThereIcHfe',
+          'bjt-switch.midbandGainIsAv',
+          'bjt-switch.outputSwingIsLimited',
         ]}
       />
     </SimPage>

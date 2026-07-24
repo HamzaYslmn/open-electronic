@@ -1,3 +1,4 @@
+import type { Key } from '../i18n'
 /**
  * RF geometry and link budgets, shared by the antenna and link-budget pages.
  * Both start from the same wavelength arithmetic.
@@ -20,21 +21,21 @@ export function wavelength(frequency: number): number {
  * a trace on FR-4 nearer 0.5 because half the field is in the laminate.
  */
 export const VELOCITY_FACTORS = [
-  { value: 'wire', label: 'Bare wire, 0.95', vf: 0.95 },
-  { value: 'coax', label: 'Coax dielectric, 0.66', vf: 0.66 },
-  { value: 'pcb', label: 'PCB microstrip, 0.55', vf: 0.55 },
-  { value: 'free', label: 'Free space, 1.00', vf: 1.0 },
+  { value: 'opt.wire', label: 'opt.bareWire095', vf: 0.95 },
+  { value: 'opt.coax', label: 'opt.coaxDielectric066', vf: 0.66 },
+  { value: 'opt.pcb', label: 'opt.pcbMicrostrip055', vf: 0.55 },
+  { value: 'opt.free', label: 'opt.freeSpace100', vf: 1.0 },
 ] as const
 
-export type BandPreset = { label: string; frequency: number }
+export type BandPreset = { label: Key; frequency: number }
 
 export const BANDS: BandPreset[] = [
-  { label: 'LoRa 433 MHz', frequency: 433e6 },
-  { label: 'LoRa 868 MHz (EU)', frequency: 868e6 },
-  { label: 'LoRa 915 MHz (US)', frequency: 915e6 },
-  { label: 'GPS L1 1575 MHz', frequency: 1575.42e6 },
-  { label: 'WiFi/BLE 2.4 GHz', frequency: 2450e6 },
-  { label: 'WiFi 5 GHz', frequency: 5500e6 },
+  { label: 'opt.lora433Mhz', frequency: 433e6 },
+  { label: 'opt.lora868MhzEu', frequency: 868e6 },
+  { label: 'opt.lora915MhzUs', frequency: 915e6 },
+  { label: 'opt.gpsL11575Mhz', frequency: 1575.42e6 },
+  { label: 'opt.wifiBle24', frequency: 2450e6 },
+  { label: 'opt.wifi5Ghz', frequency: 5500e6 },
 ]
 
 export type AntennaReadout = {
@@ -100,7 +101,7 @@ export function rangeForLoss(lossDb: number, frequency: number): number {
 }
 
 export type RadioPreset = {
-  label: string
+  label: Key
   /** Receiver sensitivity, dBm. */
   sensitivity: number
   /** Typical transmit power, dBm. */
@@ -109,12 +110,12 @@ export type RadioPreset = {
 
 /** Sensitivities from the SX1276 and typical ESP32 WiFi datasheets. */
 export const RADIOS: Record<string, RadioPreset> = {
-  'lora-sf7': { label: 'LoRa SF7 125 kHz', sensitivity: -123, txPower: 14 },
-  'lora-sf9': { label: 'LoRa SF9 125 kHz', sensitivity: -129, txPower: 14 },
-  'lora-sf12': { label: 'LoRa SF12 125 kHz', sensitivity: -137, txPower: 14 },
-  'wifi-11b': { label: 'WiFi 802.11b 1 Mbps', sensitivity: -98, txPower: 20 },
-  'wifi-11n': { label: 'WiFi 802.11n MCS7', sensitivity: -72, txPower: 14 },
-  ble: { label: 'BLE 1 Mbps', sensitivity: -97, txPower: 4 },
+  'lora-sf7': { label: 'opt.loraSf7125Khz', sensitivity: -123, txPower: 14 },
+  'lora-sf9': { label: 'opt.loraSf9125Khz', sensitivity: -129, txPower: 14 },
+  'lora-sf12': { label: 'opt.loraSf12125Khz', sensitivity: -137, txPower: 14 },
+  'wifi-11b': { label: 'opt.wifi80211b1', sensitivity: -98, txPower: 20 },
+  'wifi-11n': { label: 'opt.wifi80211nMcs7', sensitivity: -72, txPower: 14 },
+  ble: { label: 'opt.ble1Mbps', sensitivity: -97, txPower: 4 },
 }
 
 export const RADIO_OPTIONS = Object.entries(RADIOS).map(([value, r]) => ({

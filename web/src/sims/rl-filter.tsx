@@ -23,7 +23,7 @@ function Schematic({ mode }: { mode: RLMode }) {
   const shunt = mode === 'lowpass' ? 'R' : 'L'
   const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 110" aria-label={t('{mode} RL network', { mode })}>
+    <svg className="schematic" viewBox="0 0 260 110" aria-label={t('rl-filter.rlNetwork')}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         <circle cx="24" cy="34" r="10" />
         <path d="M18 34a6 6 0 0 1 12 0M24 24V14M24 44v36h212M34 34h36" />
@@ -81,8 +81,8 @@ export default function RLFilter() {
     return {
       dt,
       traces: [
-        { label: 'Vin', color: TRACE_COLORS[0], samples: input },
-        { label: 'Vout', color: TRACE_COLORS[1], samples: out },
+        { label: 'common.vin', color: TRACE_COLORS[0], samples: input },
+        { label: 'common.vout', color: TRACE_COLORS[1], samples: out },
         {
           label: mode === 'lowpass' ? 'V(L)' : 'V(R)',
           color: TRACE_COLORS[2],
@@ -111,40 +111,40 @@ export default function RLFilter() {
   return (
     <SimPage
       id="rl-filter"
-      lede="The dual of the RC filter: swap the capacitor for an inductor and the corner moves to R/L. Winding resistance is part of the model, because it is what stops real RL filters behaving like the textbook."
+      lede="rl-filter.lede"
       controls={
         <>
           <Segmented
-            label="Filter topology"
+            label="common.filterTopology"
             value={mode}
             onChange={setMode}
             options={[
-              { value: 'lowpass', label: 'Low pass' },
-              { value: 'highpass', label: 'High pass' },
+              { value: 'lowpass', label: 'common.lowPass' },
+              { value: 'highpass', label: 'common.highPass' },
             ]}
           />
           <Schematic mode={mode} />
 
-          <Group label="Components">
-            <Param label="Resistor" unit="Ω" value={r} onChange={setR} min={1} max={1e6} />
-            <Param label="Inductor" unit="H" value={l} onChange={setL} min={1e-9} max={10} />
+          <Group label="common.components">
+            <Param label="common.resistor" unit="Ω" value={r} onChange={setR} min={1} max={1e6} />
+            <Param label="common.inductor" unit="H" value={l} onChange={setL} min={1e-9} max={10} />
             <Param
-              label="Winding resistance"
+              label="rl-filter.windingResistance"
               unit="Ω"
               value={rw}
               onChange={setRw}
               min={1e-3}
               max={1e3}
-              hint="Coil DCR. Slide to the bottom for the ideal case."
+              hint="rl-filter.coilDcrSlideTo"
             />
             <Param
-              label="Saturation current"
+              label="common.saturationCurrent"
               unit="A"
               value={isat}
               onChange={setIsat}
               min={1e-3}
               max={20}
-              hint="Datasheet Isat. Past this the core gives up and L collapses."
+              hint="rl-filter.datasheetIsatPastThis"
             />
           </Group>
 
@@ -156,13 +156,13 @@ export default function RLFilter() {
 
       {saturating && (
         <Warning
-          text="Peak coil current {ipk} is past the {isat} saturation rating. A saturated core loses inductance, so the real corner climbs and this trace is no longer valid. Raise R, pick a bigger core, or cut the drive."
+          text="rl-filter.warn1"
           vars={{ ipk: formatSI(ipk, 'A'), isat: formatSI(isat, 'A') }}
         />
       )}
       {overGpio && (
         <Warning
-          text="Peak current {ipk} exceeds the {GPIO_MAX_MA} mA an ESP32 pin can source. Drive this network from a buffer or a MOSFET, not straight off a GPIO."
+          text="rl-filter.warn2"
           vars={{ ipk: formatSI(ipk, 'A'), GPIO_MAX_MA }}
         />
       )}
@@ -170,39 +170,39 @@ export default function RLFilter() {
       <ReadoutGrid
         items={[
           {
-            label: 'Cutoff fc',
+            label: 'common.cutoffFc',
             value: formatSI(readout.fc, 'Hz'),
-            note: <T k="(R total {rTotal})" vars={{ rTotal: formatSI(readout.rTotal, 'Ω') }} />,
+            note: <T k="rl-filter.rTotal" vars={{ rTotal: formatSI(readout.rTotal, 'Ω') }} />,
           },
-          { label: 'Time constant', value: formatSI(readout.tau, 's') },
+          { label: 'common.timeConstant', value: formatSI(readout.tau, 's') },
           {
-            label: 'Rise time (10-90%)',
+            label: 'common.riseTime1090',
             value: formatSI(RISE_TIME_TAUS * readout.tau, 's'),
           },
           {
-            label: <T k="Gain at {frequency}" vars={{ frequency: formatSI(source.frequency, 'Hz') }} />,
+            label: <T k="common.gainAt" vars={{ frequency: formatSI(source.frequency, 'Hz') }} />,
             value: `${readout.gainDb.toFixed(2)} dB`,
             note: `(${readout.gain.toFixed(4)}x)`,
           },
-          { label: 'Phase shift', value: `${readout.phase.toFixed(1)}°` },
+          { label: 'common.phaseShift', value: `${readout.phase.toFixed(1)}°` },
           {
-            label: 'f / fc',
+            label: 'common.fFc',
             value: ratio < 0.01 ? ratio.toExponential(1) : ratio.toFixed(2),
             note: band,
           },
-          { label: 'Reactance XL', value: formatSI(readout.xl, 'Ω') },
-          { label: 'Source load |Z|', value: formatSI(readout.z, 'Ω') },
+          { label: 'common.reactanceXl', value: formatSI(readout.xl, 'Ω') },
+          { label: 'common.sourceLoadZ', value: formatSI(readout.z, 'Ω') },
           {
-            label: 'Peak coil current',
+            label: 'common.peakCoilCurrent',
             value: formatSI(ipk, 'A'),
-            note: <T k="(Isat {isat})" vars={{ isat: formatSI(isat, 'A') }} />,
+            note: <T k="rl-filter.isat" vars={{ isat: formatSI(isat, 'A') }} />,
             warn: saturating || overGpio,
           },
           {
-            label: mode === 'lowpass' ? 'Passband loss (DCR)' : 'DC feedthrough (DCR)',
+            label: mode === 'lowpass' ? 'rl-filter.passbandLossDcr' : 'rl-filter.dcFeedthroughDcr',
             value: Number.isFinite(readout.parasiticDb)
               ? `${readout.parasiticDb.toFixed(2)} dB`
-              : '-∞ dB',
+              : 'rl-filter.db',
             warn: mode === 'lowpass' ? readout.parasiticDb < -1 : readout.parasiticDb > -20,
           },
         ]}
@@ -210,10 +210,10 @@ export default function RLFilter() {
 
       <Theory
         text={[
-          "An inductor opposes a change in current the way a capacitor opposes a change in voltage, so the whole RC page maps across: `tau = L / R` instead of `R·C`, and `fc = R / (2·pi·L)` instead of `1 / (2·pi·R·C)`. Reactance runs the other way, `XL = 2·pi·f·L` rises with frequency while `Xc` falls, which is why the output across the resistor is the low pass here and the high pass there.",
-          "Magnitude is `|H| = R / |Z|` for the low pass and `sqrt(Rw² + XL²) / |Z|` for the high pass, with `|Z| = sqrt((R + Rw)² + XL²)`. With a lossless winding those collapse to the familiar `1 / sqrt(1 + (f/fc)²)` and `(f/fc) / sqrt(1 + (f/fc)²)`, and phase to `-atan(f/fc)` and `90° - atan(f/fc)`.",
-          "Winding resistance is in series with everything, so it never drops out. It raises the corner (fc uses R + Rw), costs the low pass some passband, and leaves the high pass a DC feedthrough floor of `Rw / (R + Rw)`. That, plus core saturation and self-resonance, is why filters at signal level are built from capacitors and inductors are kept for power work.",
-          "The scope trace is not the transfer function. The solver integrates the loop current, `L·di/dt = v - i·(R + Rw)`, with exact zero-order-hold discretisation, `i[n] = i∞ + (i[n-1] - i∞)·e^(-dt/tau)`. That is stable at any step size, and the two element voltages come straight out of KVL, so `V(R) + V(L)` equals Vin sample for sample.",
+          'rl-filter.anInductorOpposesA',
+          'rl-filter.magnitudeIsHR',
+          'rl-filter.windingResistanceIsIn',
+          'rl-filter.theScopeTraceIs',
         ]}
       />
     </SimPage>

@@ -1,3 +1,4 @@
+import type { Key } from '../i18n'
 /**
  * ESP32 LEDC peripheral timing, shared by the PWM resolution and servo pages.
  *
@@ -113,7 +114,7 @@ export function analyseLedc(
 export const SERVO_FRAME_HZ = 50
 
 export type ServoSpec = {
-  label: string
+  label: Key
   /** Pulse width at the minimum angle, seconds. */
   minPulse: number
   /** Pulse width at the maximum angle, seconds. */
@@ -123,9 +124,9 @@ export type ServoSpec = {
 }
 
 export const SERVO_TYPES: Record<string, ServoSpec> = {
-  standard: { label: 'Standard 1.0 to 2.0 ms', minPulse: 1000e-6, maxPulse: 2000e-6, travel: 180 },
-  extended: { label: 'Extended 0.5 to 2.5 ms', minPulse: 500e-6, maxPulse: 2500e-6, travel: 180 },
-  narrow: { label: 'Narrow 1.0 to 2.0 ms, 90 deg', minPulse: 1000e-6, maxPulse: 2000e-6, travel: 90 },
+  standard: { label: 'opt.standard10To', minPulse: 1000e-6, maxPulse: 2000e-6, travel: 180 },
+  extended: { label: 'opt.extended05To', minPulse: 500e-6, maxPulse: 2500e-6, travel: 180 },
+  narrow: { label: 'opt.narrow10To', minPulse: 1000e-6, maxPulse: 2000e-6, travel: 90 },
 }
 
 export const SERVO_OPTIONS = Object.entries(SERVO_TYPES).map(([value, s]) => ({

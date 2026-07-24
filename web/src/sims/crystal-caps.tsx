@@ -24,48 +24,48 @@ export default function CrystalCaps() {
   return (
     <SimPage
       id="crystal-caps"
-      lede="A crystal is cut to hit its marked frequency only when it sees a specific capacitance. Get the load capacitors wrong and it still oscillates, just at the wrong frequency, which is why a clock that drifts is usually a capacitor problem rather than a crystal fault."
+      lede="crystal-caps.lede"
       controls={
         <>
-          <Group label="Crystal">
-            <Param label="Frequency" unit="Hz" value={frequency} onChange={setFrequency} min={32768} max={50e6} />
-            <Param label="Specified CL" unit="F" value={clSpec} onChange={setClSpec} min={4e-12} max={40e-12} />
-            <Param label="Motional Cm" unit="F" value={cMotional} onChange={setCMotional} min={1e-16} max={5e-14} />
-            <Param label="Shunt C0" unit="F" value={cShunt} onChange={setCShunt} min={5e-13} max={1e-11} />
+          <Group label="crystal-caps.crystal">
+            <Param label="common.frequency" unit="Hz" value={frequency} onChange={setFrequency} min={32768} max={50e6} />
+            <Param label="crystal-caps.specifiedCl" unit="F" value={clSpec} onChange={setClSpec} min={4e-12} max={40e-12} />
+            <Param label="crystal-caps.motionalCm" unit="F" value={cMotional} onChange={setCMotional} min={1e-16} max={5e-14} />
+            <Param label="crystal-caps.shuntC0" unit="F" value={cShunt} onChange={setCShunt} min={5e-13} max={1e-11} />
           </Group>
-          <Group label="Board">
-            <Param label="Stray per pin" unit="F" value={cStray} onChange={setCStray} min={0.5e-12} max={15e-12} />
+          <Group label="crystal-caps.board">
+            <Param label="crystal-caps.strayPerPin" unit="F" value={cStray} onChange={setCStray} min={0.5e-12} max={15e-12} />
           </Group>
         </>
       }
     >
       <ReadoutGrid
         items={[
-          { label: 'C1 = C2 ideal', value: formatSI(r.cLoad, 'F'), warn: r.strayTooHigh },
-          { label: 'Nearest standard', value: formatSI(r.cStandard, 'F') },
-          { label: 'Load actually seen', value: formatSI(r.actualCL, 'F'), note: <T k="spec {clSpec}" vars={{ clSpec: formatSI(clSpec, 'F') }} /> },
+          { label: 'crystal-caps.c1C2Ideal', value: formatSI(r.cLoad, 'F'), warn: r.strayTooHigh },
+          { label: 'crystal-caps.nearestStandard', value: formatSI(r.cStandard, 'F') },
+          { label: 'crystal-caps.loadActuallySeen', value: formatSI(r.actualCL, 'F'), note: <T k="crystal-caps.spec" vars={{ clSpec: formatSI(clSpec, 'F') }} /> },
           {
-            label: 'Frequency error',
+            label: 'crystal-caps.frequencyError',
             value: `${r.errorPpm.toFixed(2)} ppm`,
             warn: r.outOfSpec,
           },
-          { label: 'Absolute error', value: formatSI(r.errorHz, 'Hz') },
+          { label: 'crystal-caps.absoluteError', value: formatSI(r.errorHz, 'Hz') },
           {
-            label: 'Clock drift',
-            value: <T k="{secondsPerDay} s/day" vars={{ secondsPerDay: secondsPerDay.toFixed(2) }} />,
-            note: <T k="{secondsPerDay} s/year" vars={{ secondsPerDay: (secondsPerDay * 365).toFixed(0) }} />,
+            label: 'crystal-caps.clockDrift',
+            value: <T k="crystal-caps.sDay" vars={{ secondsPerDay: secondsPerDay.toFixed(2) }} />,
+            note: <T k="crystal-caps.sYear" vars={{ secondsPerDay: (secondsPerDay * 365).toFixed(0) }} />,
           },
         ]}
       />
 
       {r.strayTooHigh && (
         <Warning
-          text="Stray capacitance alone already exceeds the specified load, so no external capacitors can bring it down: the crystal will always run slow. Shorten the tracks, remove ground pour from under them, or choose a crystal specified for a higher CL."
+          text="crystal-caps.warn1"
         />
       )}
       {r.outOfSpec && !r.strayTooHigh && (
         <Warning
-          text="{errorPpm} ppm is a drift of {secondsPerDay} seconds a day. For a real-time clock that is far too much. Pick capacitors closer to the ideal value, or trim one of them."
+          text="crystal-caps.warn2"
           vars={{
             errorPpm: r.errorPpm.toFixed(1),
             secondsPerDay: Math.abs(secondsPerDay).toFixed(1),
@@ -75,10 +75,10 @@ export default function CrystalCaps() {
 
       <Theory
         text={[
-          "The oscillator sees the two load capacitors in series, plus whatever the pins and tracks contribute: `CL = C1·C2/(C1+C2) + Cstray`. With C1 = C2 that simplifies to `C1/2 + Cstray`, so `C1 = C2 = 2·(CL - Cstray)`.",
-          "Stray capacitance is not a rounding error here. Two or three picofarads per pin is typical for a small package with short tracks, and against a 12.5 pF specified load that is a quarter of the budget. Ignoring it is the single most common reason a design runs fast or slow by tens of ppm.",
-          "The pull follows from the crystal's motional capacitance: `df/f = Cm/2 · (1/(C0+CL_actual) - 1/(C0+CL_spec))`. Too much load pulls the frequency down, too little pulls it up. Cm is tiny, femtofarads, which is exactly why a crystal is stable at all: the load has only a weak grip on it.",
-          "For a 32.768 kHz timekeeping crystal, 20 ppm is about 1.7 seconds a day, or ten minutes a year. If that matters, either trim the capacitors or use a temperature compensated module: temperature drift will typically dwarf the load error anyway, since a watch crystal has a parabolic tempco of about -0.035 ppm per °C squared.",
+          'crystal-caps.theory1',
+          'crystal-caps.strayCapacitanceIsNot',
+          'crystal-caps.thePullFollowsFrom',
+          'crystal-caps.forA32768',
         ]}
       />
     </SimPage>

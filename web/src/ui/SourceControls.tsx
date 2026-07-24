@@ -2,6 +2,7 @@ import { useCallback, useState } from 'react'
 import { VCC } from '../engine/constants'
 import { WAVE_KINDS } from '../engine/signal'
 import type { Source, WaveKind } from '../engine/signal'
+import type { Key } from '../i18n'
 import Param from './Param'
 import { Group, Segmented, Select } from './Controls'
 
@@ -38,7 +39,7 @@ export type SourceControlsProps = {
   onChange: (patch: Partial<SourceState>) => void
   /** Largest peak amplitude the slider allows. */
   maxAmplitude?: number
-  label?: string
+  label?: Key
 }
 
 /** The stimulus controls shared by every time-domain simulator. */
@@ -46,22 +47,22 @@ export default function SourceControls({
   value,
   onChange,
   maxAmplitude = 50,
-  label = 'Source',
+  label = 'common.source',
 }: SourceControlsProps) {
   const isLogic = Math.abs(value.offset - value.amplitude) < 1e-9
 
   return (
     <Group label={label}>
       <Select
-        label="Waveform"
+        label="ui.waveform"
         value={value.kind}
         onChange={(kind: WaveKind) => onChange({ kind })}
         options={WAVE_KINDS}
       />
 
       <Segmented
-        label="Signal swing"
-        value={isLogic ? 'logic' : 'bipolar'}
+        label="ui.signalSwing"
+        value={isLogic ? 'ui.logic' : 'ui.bipolar'}
         onChange={(mode) =>
           onChange(
             mode === 'logic'
@@ -70,14 +71,14 @@ export default function SourceControls({
           )
         }
         options={[
-          { value: 'logic', label: '0 to 3V3' },
-          { value: 'bipolar', label: 'Bipolar' },
+          { value: 'logic', label: 'ui.0To3v3' },
+          { value: 'bipolar', label: 'ui.bipolar2' },
         ]}
       />
 
       {value.kind !== 'dc' && (
         <Param
-          label="Frequency"
+          label="common.frequency"
           unit="Hz"
           value={value.frequency}
           onChange={(frequency) => onChange({ frequency })}
@@ -86,7 +87,7 @@ export default function SourceControls({
         />
       )}
       <Param
-        label={value.kind === 'dc' ? 'Step height' : 'Amplitude (peak)'}
+        label={value.kind === 'dc' ? 'ui.stepHeight' : 'ui.amplitudePeak'}
         unit="V"
         value={value.amplitude}
         onChange={(amplitude) => onChange({ amplitude })}
@@ -94,7 +95,7 @@ export default function SourceControls({
         max={maxAmplitude}
       />
       <Param
-        label="DC offset"
+        label="common.dcOffset"
         unit="V"
         value={value.offset}
         onChange={(offset) => onChange({ offset })}
@@ -105,7 +106,7 @@ export default function SourceControls({
       />
       {value.kind === 'pwm' && (
         <Param
-          label="Duty"
+          label="common.duty"
           value={value.duty ?? 0.5}
           onChange={(duty) => onChange({ duty })}
           min={0.01}
@@ -116,7 +117,7 @@ export default function SourceControls({
       )}
       {value.kind !== 'dc' && (
         <Param
-          label="Cycles shown"
+          label="common.cyclesShown"
           value={value.cycles}
           onChange={(cycles) => onChange({ cycles: Math.round(cycles) })}
           min={1}

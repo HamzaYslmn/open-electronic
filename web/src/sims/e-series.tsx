@@ -10,7 +10,7 @@ import {
 } from '../engine/eseries'
 import type { Combo, SeriesName } from '../engine/eseries'
 import { formatSI } from '../engine/units'
-import { T } from '../i18n'
+import { T, sym } from '../i18n'
 import { Group, Segmented } from '../ui/Controls'
 import Param from '../ui/Param'
 import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
@@ -63,12 +63,12 @@ export default function ESeries() {
   return (
     <SimPage
       id="e-series"
-      lede="Calculators hand you numbers like 26.36 kΩ. Stock does not. This picks the closest preferred value and the two-resistor pairs that get closer."
+      lede="e-series.lede"
       controls={
         <>
-          <Group label="Target">
+          <Group label="common.target">
             <Param
-              label="Resistance"
+              label="common.resistance"
               unit="Ω"
               value={target}
               onChange={setTarget}
@@ -76,16 +76,16 @@ export default function ESeries() {
               // Past R_MAX on purpose: the search pool stops at 10 MOhm, and
               // asking for more should say so rather than silently clamp.
               max={100 * R_MAX}
-              hint="Type the raw number your divider or current limit asked for."
+              hint="e-series.typeTheRawNumber"
             />
           </Group>
 
-          <Group label="Preferred series">
+          <Group label="e-series.preferredSeries">
             <Segmented
-              label="E series"
+              label="e-series.eSeries"
               value={series}
               onChange={setSeries}
-              options={SERIES_NAMES.map((s) => ({ value: s, label: s }))}
+              options={SERIES_NAMES.map((s) => ({ value: s, label: sym(s) }))}
             />
             <p className="param-hint">
               {r.steps} values per decade at {span(r.tolerance)}{' '}
@@ -98,67 +98,67 @@ export default function ESeries() {
       <ReadoutGrid
         items={[
           {
-            label: 'Nearest standard value',
+            label: 'e-series.nearestStandardValue',
             value: formatSI(r.single, 'Ω'),
             note: pct(r.singleError),
             warn: !r.inBand,
           },
           {
-            label: 'Neighbours',
+            label: 'e-series.neighbours',
             value: `${formatSI(r.below, 'Ω')} / ${formatSI(r.above, 'Ω')}`,
             note: `(${pct(r.below / target - 1, 1)} / ${pct(r.above / target - 1, 1)})`,
           },
           {
-            label: <T k="Tolerance band at {tolerance}" vars={{ tolerance: span(r.tolerance) }} />,
+            label: <T k="e-series.toleranceBandAt" vars={{ tolerance: span(r.tolerance) }} />,
             value: `${formatSI(r.bandLow, 'Ω')} to ${formatSI(r.bandHigh, 'Ω')}`,
-            note: r.inBand ? '(target covered)' : '(target outside)',
+            note: r.inBand ? 'e-series.targetCovered' : 'e-series.targetOutside',
           },
           {
-            label: 'Two in series',
+            label: 'e-series.twoInSeries',
             value: comboValue(r.seriesPair, '+'),
             note: comboNote(r.seriesPair),
             warn: r.seriesPair === null,
           },
           {
-            label: 'Two in parallel',
+            label: 'e-series.twoInParallel',
             value: comboValue(r.parallelPair, '||'),
             note: comboNote(r.parallelPair),
             warn: r.parallelPair === null,
           },
           {
-            label: 'Best of the three',
-            value: best && Math.abs(best.error) < Math.abs(r.singleError) ? 'pair' : 'single part',
+            label: 'e-series.bestOfTheThree',
+            value: best && Math.abs(best.error) < Math.abs(r.singleError) ? 'e-series.pair' : 'e-series.singlePart',
             note:
               best && Math.abs(best.error) < Math.abs(r.singleError)
-                ? <T k="{error} against {singleError}" vars={{ error: pct(best.error), singleError: pct(r.singleError) }} />
-                : 'no pair beats the single value',
+                ? <T k="e-series.against" vars={{ error: pct(best.error), singleError: pct(r.singleError) }} />
+                : 'e-series.noPairBeatsThe',
           },
           {
-            label: <T k="Worst case for {series}" vars={{ series }} />,
+            label: <T k="e-series.worstCaseFor" vars={{ series }} />,
             value: span(r.worstCase, 1),
             note:
               r.worstCase > r.tolerance
-                ? <T k="(widest gap, past the {tolerance} grade)" vars={{ tolerance: span(r.tolerance) }} />
-                : <T k="(widest gap, inside the {tolerance} grade)" vars={{ tolerance: span(r.tolerance) }} />,
+                ? <T k="e-series.widestGapPastThe" vars={{ tolerance: span(r.tolerance) }} />
+                : <T k="e-series.widestGapInsideThe" vars={{ tolerance: span(r.tolerance) }} />,
           },
           {
-            label: 'Step ratio',
+            label: 'e-series.stepRatio',
             value: `${(10 ** (1 / r.steps)).toFixed(4)}x`,
-            note: <T k="(10^(1/{steps}), half step {halfStep})" vars={{ steps: r.steps, halfStep: span(r.halfStep, 2) }} />,
+            note: <T k="e-series.101HalfStep" vars={{ steps: r.steps, halfStep: span(r.halfStep, 2) }} />,
           },
         ]}
       />
 
       {r.outOfRange && (
         <Warning
-          text="{target} is outside the 1 Ω to 10 MΩ range searched here, so the answers above are clamped to the end of the table rather than extrapolated. Real stock does go further, but not in a form you would put in a divider."
+          text="e-series.warn1"
           vars={{ target: formatSI(target, 'Ω') }}
         />
       )}
 
       {!r.inBand && !r.outOfRange && (
         <Warning
-          text="No {series} part covers {target}: even at its {tolerance} grade, {single} only reaches {bandLow} to {bandHigh}. Use a pair, move to a finer series, or redesign around a value the series actually has."
+          text="e-series.warn2"
           vars={{
             series,
             target: formatSI(target, 'Ω'),
@@ -172,11 +172,11 @@ export default function ESeries() {
 
       <Theory
         text={[
-          "A preferred series splits each decade into N logarithmic steps, so `value = 10^(k/N)` for `k = 0..N-1`, rounded to two significant figures for E6, E12 and E24 and three for E48 and E96. Each step is a fixed ratio of `10^(1/N)`, which is why the same mantissas repeat from ohms to megohms. Error against a target is `(Rstd - Rtarget) / Rtarget`.",
-          "E48 and E96 are exactly that rounding. E6, E12 and E24 are not: IEC 60063 keeps the historical 27, 33, 39, 47 and 82 where the arithmetic gives 26.1, 31.6, 38.3, 46.4 and 82.5. That is why E24 has a 13 to 15 gap worth 7.1% while its grade is only 5%.",
-          "The tolerance grades exist to close those gaps. The worst target sits at the midpoint of a gap `[a, b]`, an error of `(b - a) / (b + a)` away from either neighbour: exactly 20% for E6, so a 20% part always covers it. Every finer grade leaves a sliver open, E24 worst at 7.1% against a 5% part, so some targets sit between two parts whichever one you buy. That is what the tolerance band readout is checking.",
-          "Pairs are searched over the whole 1 Ω to 10 MΩ table. Both `a + b` and `a·b / (a + b)` rise monotonically with b, so for each a the best partner is the table entry nearest the exact one, which makes the search a binary search per candidate rather than every pair. Parts are kept within {maxRatio}x of each other: past that the smaller one trims the result by less than the larger one's own tolerance, so the pair is a fiction.",
-          "{series} mantissas: `{mantissas}`",
+          'e-series.theory1',
+          'e-series.e48AndE96Are',
+          'e-series.theToleranceGradesExist',
+          'e-series.pairsAreSearchedOver',
+          'e-series.mantissas',
         ]}
         vars={{
           maxRatio: r.maxRatio,

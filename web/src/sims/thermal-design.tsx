@@ -34,17 +34,17 @@ const MARGIN_TARGET_K = 20
 const PACKAGES = [
   {
     value: 'sot223',
-    label: 'SOT-223 (AMS1117) on copper pour',
+    label: 'thermal-design.sot223Ams1117On',
     rjc: 15,
     rcs: 0.01,
     rsa: 45,
     cth: 2,
   },
-  { value: 'sot23', label: 'SOT-23 small signal, free air', rjc: 75, rcs: 0.01, rsa: 175, cth: 0.3 },
-  { value: 'dpak', label: 'DPAK on 1 sq inch copper', rjc: 3, rcs: 0.01, rsa: 47, cth: 3 },
-  { value: 'to220-air', label: 'TO-220 bare, free air', rjc: 5, rcs: 0.01, rsa: 60, cth: 2 },
-  { value: 'to220-sink', label: 'TO-220 bolted to a small sink', rjc: 5, rcs: 0.5, rsa: 5, cth: 20 },
-  { value: 'to247-sink', label: 'TO-247 on a large sink', rjc: 0.7, rcs: 0.3, rsa: 1, cth: 200 },
+  { value: 'sot23', label: 'thermal-design.sot23SmallSignal', rjc: 75, rcs: 0.01, rsa: 175, cth: 0.3 },
+  { value: 'dpak', label: 'thermal-design.dpakOn1Sq', rjc: 3, rcs: 0.01, rsa: 47, cth: 3 },
+  { value: 'to220-air', label: 'thermal-design.to220BareFree', rjc: 5, rcs: 0.01, rsa: 60, cth: 2 },
+  { value: 'to220-sink', label: 'thermal-design.to220BoltedTo', rjc: 5, rcs: 0.5, rsa: 5, cth: 20 },
+  { value: 'to247-sink', label: 'thermal-design.to247OnA', rjc: 0.7, rcs: 0.3, rsa: 1, cth: 200 },
 ] as const
 
 type PackageId = (typeof PACKAGES)[number]['value']
@@ -104,10 +104,10 @@ export default function ThermalDesign() {
       r,
       efficiency: pOut > 0 ? pOut / (pOut + power) : 0,
       traces: [
-        { label: 'Tj', color: TRACE_COLORS[1], samples: t.tj.map(kelvinToCelsius), quiet: true },
-        { label: 'Tcase', color: TRACE_COLORS[0], samples: t.tc.map(kelvinToCelsius), quiet: true },
-        { label: 'Tsink', color: TRACE_COLORS[2], samples: t.ts.map(kelvinToCelsius), quiet: true },
-        { label: 'Tj max', color: TRACE_COLORS[4], samples: limit, quiet: true },
+        { label: 'thermal-design.tj', color: TRACE_COLORS[1], samples: t.tj.map(kelvinToCelsius), quiet: true },
+        { label: 'thermal-design.tcase', color: TRACE_COLORS[0], samples: t.tc.map(kelvinToCelsius), quiet: true },
+        { label: 'thermal-design.tsink', color: TRACE_COLORS[2], samples: t.ts.map(kelvinToCelsius), quiet: true },
+        { label: 'common.tjMax', color: TRACE_COLORS[4], samples: limit, quiet: true },
       ],
     }
   }, [mode, watts, vin, vout, iout, rjc, rcs, rsa, cth, ambientC, tjMaxC])
@@ -115,23 +115,23 @@ export default function ThermalDesign() {
   return (
     <SimPage
       id="thermal-design"
-      lede="Junction temperature through the Rjc, Rcs, Rsa chain. The scope shows the warm-up from a cold start, so the horizontal axis is time in seconds, not a waveform: the die steps up instantly and then rides the heatsink as it soaks."
+      lede="thermal-design.lede"
       controls={
         <>
           <Segmented
-            label="Where the heat comes from"
+            label="thermal-design.whereTheHeatComes"
             value={mode}
             onChange={setMode}
             options={[
-              { value: 'ldo', label: 'Linear regulator' },
-              { value: 'watts', label: 'Direct watts' },
+              { value: 'ldo', label: 'thermal-design.linearRegulator' },
+              { value: 'watts', label: 'thermal-design.directWatts' },
             ]}
           />
 
           {mode === 'ldo' ? (
-            <Group label="Regulator">
+            <Group label="thermal-design.regulator">
               <Param
-                label="Input"
+                label="thermal-design.input"
                 unit="V"
                 value={vin}
                 onChange={setVin}
@@ -141,7 +141,7 @@ export default function ThermalDesign() {
                 step={0.1}
               />
               <Param
-                label="Output"
+                label="common.output"
                 unit="V"
                 value={vout}
                 onChange={setVout}
@@ -151,30 +151,30 @@ export default function ThermalDesign() {
                 step={0.1}
               />
               <Param
-                label="Load current"
+                label="common.loadCurrent"
                 unit="A"
                 value={iout}
                 onChange={setIout}
                 min={1e-3}
                 max={5}
-                hint="ESP32 peaks near 500 mA on a WiFi transmit burst."
+                hint="thermal-design.esp32PeaksNear500"
               />
             </Group>
           ) : (
-            <Group label="Load">
-              <Param label="Dissipation" unit="W" value={watts} onChange={setWatts} min={0.01} max={500} />
+            <Group label="common.load">
+              <Param label="common.dissipation" unit="W" value={watts} onChange={setWatts} min={0.01} max={500} />
             </Group>
           )}
 
-          <Group label="Thermal path">
+          <Group label="common.thermalPath">
             <Select
-              label="Load typical package"
+              label="thermal-design.loadTypicalPackage"
               value={pkg}
               onChange={loadPackage}
               options={PACKAGES}
             />
             <Param
-              label="Rjc junction to case"
+              label="thermal-design.rjcJunctionToCase"
               unit="K/W"
               value={rjc}
               onChange={setRjc}
@@ -182,16 +182,16 @@ export default function ThermalDesign() {
               max={200}
             />
             <Param
-              label="Rcs interface"
+              label="thermal-design.rcsInterface"
               unit="K/W"
               value={rcs}
               onChange={setRcs}
               min={0.01}
               max={10}
-              hint="Grease 0.2, pad 0.5, dry contact 1.0 on a TO-220. Use 0.01 for a soldered tab."
+              hint="thermal-design.grease02Pad"
             />
             <Param
-              label="Rsa sink to air"
+              label="thermal-design.rsaSinkToAir"
               unit="K/W"
               value={rsa}
               onChange={setRsa}
@@ -199,19 +199,19 @@ export default function ThermalDesign() {
               max={500}
             />
             <Param
-              label="Sink heat capacity"
+              label="thermal-design.sinkHeatCapacity"
               unit="J/K"
               value={cth}
               onChange={setCth}
               min={0.1}
               max={10000}
-              hint="Mass times specific heat. Aluminium is 897 J/(kg·K), so 20 g is 18 J/K."
+              hint="thermal-design.massTimesSpecificHeat"
             />
           </Group>
 
-          <Group label="Limits">
+          <Group label="thermal-design.limits">
             <Param
-              label="Ambient"
+              label="common.ambient"
               unit="°C"
               value={ambientC}
               onChange={setAmbientC}
@@ -219,10 +219,10 @@ export default function ThermalDesign() {
               max={85}
               log={false}
               step={1}
-              hint="Inside a sealed enclosure, 20 K above the room is normal."
+              hint="thermal-design.insideASealedEnclosure"
             />
             <Param
-              label="Tj max"
+              label="common.tjMax"
               unit="°C"
               value={tjMaxC}
               onChange={setTjMaxC}
@@ -230,7 +230,7 @@ export default function ThermalDesign() {
               max={200}
               log={false}
               step={5}
-              hint="125 °C for most silicon, 150 to 175 °C for power MOSFETs."
+              hint="thermal-design.125CForMost"
             />
           </Group>
         </>
@@ -241,58 +241,58 @@ export default function ThermalDesign() {
       <ReadoutGrid
         items={[
           {
-            label: 'Junction Tj',
+            label: 'thermal-design.junctionTj',
             value: degC(r.tj),
-            note: <T k="({rise} K over ambient)" vars={{ rise: r.rise.toFixed(1) }} />,
+            note: <T k="thermal-design.kOverAmbient" vars={{ rise: r.rise.toFixed(1) }} />,
             warn: r.overTemp,
           },
-          { label: 'Case Tc', value: degC(r.tc) },
+          { label: 'thermal-design.caseTc', value: degC(r.tc) },
           {
-            label: 'Sink Ts',
+            label: 'thermal-design.sinkTs',
             value: degC(r.ts),
             note:
-              kelvinToCelsius(r.ts) > TOUCH_LIMIT_C ? '(will burn on contact)' : '(safe to touch)',
+              kelvinToCelsius(r.ts) > TOUCH_LIMIT_C ? 'thermal-design.willBurnOnContact' : 'thermal-design.safeToTouch',
           },
           {
-            label: 'Dissipation',
+            label: 'common.dissipation',
             value: formatSI(power, 'W'),
-            note: mode === 'ldo' ? <T k="({efficiency}% efficient)" vars={{ efficiency: (efficiency * 100).toFixed(0) }} /> : undefined,
+            note: mode === 'ldo' ? <T k="thermal-design.efficient" vars={{ efficiency: (efficiency * 100).toFixed(0) }} /> : undefined,
           },
-          { label: 'Rth junction to air', value: formatSI(r.rTotal, 'K/W') },
+          { label: 'thermal-design.rthJunctionToAir', value: formatSI(r.rTotal, 'K/W') },
           {
-            label: 'Margin to Tj max',
+            label: 'thermal-design.marginToTjMax',
             value: `${r.margin.toFixed(1)} K`,
-            note: r.margin >= MARGIN_TARGET_K ? undefined : <T k="(aim for {MARGIN_TARGET_K} K)" vars={{ MARGIN_TARGET_K }} />,
+            note: r.margin >= MARGIN_TARGET_K ? undefined : <T k="thermal-design.aimForK" vars={{ MARGIN_TARGET_K }} />,
             warn: r.margin < MARGIN_TARGET_K,
           },
           {
-            label: 'Rsa required',
-            value: r.sinkImpossible ? 'none exists' : formatSI(r.requiredRsa, 'K/W'),
-            note: <T k="(to sit on {tjMaxC} °C)" vars={{ tjMaxC: tjMaxC.toFixed(0) }} />,
+            label: 'thermal-design.rsaRequired',
+            value: r.sinkImpossible ? 'thermal-design.noneExists' : formatSI(r.requiredRsa, 'K/W'),
+            note: <T k="thermal-design.toSitOnC" vars={{ tjMaxC: tjMaxC.toFixed(0) }} />,
             warn: r.sinkImpossible,
           },
           {
-            label: 'Power ceiling',
+            label: 'thermal-design.powerCeiling',
             value: formatSI(r.maxPower, 'W'),
-            note: <T k="(at {ambientC} °C ambient)" vars={{ ambientC: ambientC.toFixed(0) }} />,
+            note: <T k="thermal-design.atCAmbient" vars={{ ambientC: ambientC.toFixed(0) }} />,
           },
           {
-            label: 'Budget used',
+            label: 'thermal-design.budgetUsed',
             value: `${(r.utilisation * 100).toFixed(0)}%`,
-            note: '(of the ambient to Tj max span)',
+            note: 'thermal-design.ofTheAmbientTo',
             warn: r.utilisation > 1,
           },
           {
-            label: 'Sink time constant',
+            label: 'thermal-design.sinkTimeConstant',
             value: formatSI(r.tau, 's'),
-            note: '(63% of the rise)',
+            note: 'thermal-design.63OfTheRise',
           },
         ]}
       />
 
       {r.overTemp && r.sinkImpossible && (
         <Warning
-          text="{tj} junction against a {tjMaxC} °C limit, and Rjc + Rcs alone already spend the whole budget at {power}. No heatsink can fix this: cut the dissipation below {maxPower}, improve the mounting, or move to a package with a lower Rjc."
+          text="thermal-design.warn1"
           vars={{
             tj: degC(r.tj),
             tjMaxC: tjMaxC.toFixed(0),
@@ -303,7 +303,7 @@ export default function ThermalDesign() {
       )}
       {r.overTemp && !r.sinkImpossible && (
         <Warning
-          text="{tj} junction against a {tjMaxC} °C limit. Needs a sink of {requiredRsa} or better just to reach the limit, so target roughly {e} for {MARGIN_TARGET_K} K of margin, or drop the power below {maxPower}."
+          text="thermal-design.warn2"
           vars={{
             tj: degC(r.tj),
             tjMaxC: tjMaxC.toFixed(0),
@@ -316,23 +316,23 @@ export default function ThermalDesign() {
       )}
       {!r.overTemp && r.margin < MARGIN_TARGET_K && (
         <Warning
-          text="Only {margin} K of margin. Tj max is an absolute maximum, not an operating point: leave {MARGIN_TARGET_K} K or more for part spread, a hot enclosure and a blocked airflow path."
+          text="thermal-design.warn3"
           vars={{ margin: r.margin.toFixed(1), MARGIN_TARGET_K }}
         />
       )}
       {mode === 'ldo' && vout > vin && (
         <Warning
-          text="Output is above the input, so this regulator is in dropout and the model does not apply. A linear regulator can only step down."
+          text="thermal-design.warn4"
         />
       )}
 
       <Theory
         text={[
-          "Heat flow is the electrical analogy: power is current, temperature rise is voltage, thermal resistance in K/W is resistance. The three legs sit in series, so `Tj = Ta + P·(Rjc + Rcs + Rsa)`. Rjc comes from the package, Rcs from the mounting interface, Rsa from the heatsink and the air moving over it.",
-          "Turn it round to size the sink: `Rsa_required = (Tjmax - Ta)/P - Rjc - Rcs`. If that is zero or negative the package and the interface have already used the whole budget, and no heatsink helps. The matching power ceiling is `Pmax = (Tjmax - Ta)/Rth(j-a)`.",
-          "A kelvin and a degree Celsius are the same size, so every resistance, rise and margin on this page is identical in either scale. Only the absolute temperatures differ.",
-          "The trace is a transient, not a waveform. The sink carries essentially all the heat capacity, so it is the single pole: `tau = Rsa·Cth` and `Ts(t) = Ts(∞) + (Ta - Ts(∞))·e^(-t/tau)`, integrated with the same exact zero-order-hold step the RC page uses so it stays stable at any dt. The die and the interface hold almost no heat next to a lump of aluminium, so on this time base the junction just sits `P·(Rjc + Rcs)` above the sink, which is why it jumps at t = 0 and then crawls. Real sinks are multi-pole, so treat the early part of the curve as indicative and the endpoint as the answer.",
-          "A linear regulator throws the whole voltage difference away as heat: `P = (Vin - Vout)·Iout + Vin·Iq`. Dropping 5 V to 3.3 V at 500 mA burns 0.85 W, which is why a bare SOT-223 AMS1117 runs hot on an ESP32 board and a switching regulator does not.",
+          'thermal-design.theory1',
+          'thermal-design.turnItRoundTo',
+          'thermal-design.aKelvinAndA',
+          'thermal-design.theTraceIsA',
+          'thermal-design.aLinearRegulatorThrows',
         ]}
       />
     </SimPage>

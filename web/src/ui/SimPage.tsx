@@ -1,8 +1,7 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { SIMULATORS } from '../catalog'
-import { useT } from '../i18n'
-import { USE_CASES } from '../useCases'
+import { hasKey, useMaybeKey, useT } from '../i18n'
 
 export type SimPageProps = {
   /** Catalog id. Title and blurb are read from the catalog so they exist once. */
@@ -20,30 +19,29 @@ export type SimPageProps = {
  * scope is above the fold on a phone, while the grid still places controls on
  * the right at desktop width.
  *
- * The "Where is it used?" card is rendered here from USE_CASES rather than
- * written into each sim, so every page gets one and adding a simulator means
- * adding one string.
+ * The "Where is it used?" card comes straight from the dictionary under
+ * `<id>.use`, so every page gets one and adding a simulator means adding one
+ * string rather than an entry in a separate table.
  */
 export default function SimPage({ id, lede, controls, children }: SimPageProps) {
   const t = useT()
+  const tx = useMaybeKey()
   const sim = SIMULATORS.find((s) => s.id === id)
-  const useCase = USE_CASES[id]
+  const useCase = `${id}.use`
+
+  if (!sim) return null
 
   return (
     <div className="sim">
       <nav className="crumbs">
-        <Link to="/">{t('Catalogue')}</Link> / {t(sim?.category ?? '')} /{' '}
-        {t(sim?.title ?? '')}
+        <Link to="/">{t('ui.catalogue')}</Link> / {t(sim.category)} / {t(sim.title)}
       </nav>
-      <h1>{sim ? t(sim.title) : id}</h1>
-      {/* A string lede goes through the dictionary; a ReactNode is passed as is. */}
-      <p className="lede">
-        {typeof lede === 'string' ? t(lede) : (lede ?? t(sim?.blurb ?? ''))}
-      </p>
+      <h1>{t(sim.title)}</h1>
+      <p className="lede">{(tx(lede) as ReactNode) ?? t(sim.blurb)}</p>
 
-      {useCase && (
+      {hasKey(useCase) && (
         <details className="usecase" open>
-          <summary>{t('Where is it used?')}</summary>
+          <summary>{t('ui.whereIsItUsed')}</summary>
           <p>{t(useCase)}</p>
         </details>
       )}

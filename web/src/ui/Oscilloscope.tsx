@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { formatSI } from '../engine/units'
 import { useT } from '../i18n'
+import type { Key } from '../i18n'
 import { PAD, clampView, drawScope, stepScale, zoomView } from './scopeDraw'
 import type { Trace, View } from './scopeDraw'
 
@@ -25,12 +26,15 @@ export type OscilloscopeProps = {
  * while a slider is moving.
  */
 export default function Oscilloscope({
-  traces,
+  traces: given,
   dt,
   unit = 'V',
   height = 340,
 }: OscilloscopeProps) {
   const t = useT()
+  // Trace labels are dictionary keys. Resolving them once here means the canvas
+  // legend and the channel buttons both work in finished text.
+  const traces = given.map((tr) => ({ ...tr, label: t(tr.label as Key) }))
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const wrapRef = useRef<HTMLDivElement>(null)
 
@@ -211,18 +215,18 @@ export default function Oscilloscope({
       </div>
 
       <div className="scope-panel">
-        <Knob label="Timebase">
-          <button onClick={() => zoomBy(2, 0.5)} title={t('Zoom out')}>
+        <Knob label="ui.timebase">
+          <button onClick={() => zoomBy(2, 0.5)} title={t('ui.zoomOut')}>
             &minus;
           </button>
           <span className="knob-value">{zoom > 1.001 ? `${zoom.toFixed(1)}x` : '1x'}</span>
-          <button onClick={() => zoomBy(0.5, 0.5)} title={t('Zoom in')}>
+          <button onClick={() => zoomBy(0.5, 0.5)} title={t('ui.zoomIn')}>
             +
           </button>
         </Knob>
 
-        <Knob label="Volts / div">
-          <button onClick={() => nudgeVpd(1)} title={t('Coarser')}>
+        <Knob label="ui.voltsDiv">
+          <button onClick={() => nudgeVpd(1)} title={t('ui.coarser')}>
             &minus;
           </button>
           <button
@@ -231,13 +235,13 @@ export default function Oscilloscope({
           >
             {voltsPerDiv === null ? 'AUTO' : formatSI(voltsPerDiv, unit, 2)}
           </button>
-          <button onClick={() => nudgeVpd(-1)} title={t('Finer')}>
+          <button onClick={() => nudgeVpd(-1)} title={t('ui.finer')}>
             +
           </button>
         </Knob>
 
         <div className="knob wide">
-          <span className="knob-label">{t('Trace {px} px', { px: thickness.toFixed(1) })}</span>
+          <span className="knob-label">{t('ui.tracePx', { px: thickness.toFixed(1) })}</span>
           <input
             type="range"
             min={1}
@@ -245,11 +249,11 @@ export default function Oscilloscope({
             step={0.2}
             value={thickness}
             onChange={(e) => setThickness(Number(e.target.value))}
-            aria-label={t('Trace thickness')}
+            aria-label={t('ui.traceThickness')}
           />
         </div>
 
-        <Knob label="Channels">
+        <Knob label="ui.channels">
           {traces.map((trace) => (
             <button
               key={trace.label}
@@ -268,13 +272,13 @@ export default function Oscilloscope({
       </div>
 
       <p className="scope-hint">
-        {t('Scroll or pinch to zoom the time base, drag to pan, double click to reset.')}
+        {t('ui.scrollOrPinchTo')}
       </p>
     </div>
   )
 }
 
-function Knob({ label, children }: { label?: string; children: React.ReactNode }) {
+function Knob({ label, children }: { label?: Key; children: React.ReactNode }) {
   const t = useT()
   return (
     <div className="knob">

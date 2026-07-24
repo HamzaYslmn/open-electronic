@@ -4,7 +4,7 @@ import Sidebar from './ui/Sidebar'
 import { READY, simPath } from './catalog'
 import Home from './ui/Home'
 import { LANGS, LangContext, STORAGE_KEY, loadLang, translate } from './i18n'
-import type { Lang } from './i18n'
+import type { Key, Lang } from './i18n'
 
 export default function App() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -23,7 +23,7 @@ export default function App() {
   }, [lang])
 
   const ctx = useMemo(() => ({ lang, setLang }), [lang, loaded])
-  const t = (key: string) => translate(lang, key)
+  const t = (key: Key) => translate(lang, key)
 
   return (
     <LangContext.Provider value={ctx}>
@@ -32,7 +32,7 @@ export default function App() {
           <button
             className="menu-toggle"
             onClick={() => setMenuOpen((v) => !v)}
-            aria-label={t('Toggle simulator list')}
+            aria-label={t('ui.toggleSimulatorList')}
             aria-expanded={menuOpen}
           >
             <svg viewBox="0 0 20 20" aria-hidden="true">
@@ -46,9 +46,9 @@ export default function App() {
             Open Electronic
           </Link>
           <span className="tagline">
-            {t('Simulators and calculators for electronics engineers')}
+            {t('ui.simulatorsAndCalculatorsFor')}
           </span>
-          <div className="lang" role="group" aria-label="Language">
+          <div className="lang" role="group" aria-label="ui.language">
             {LANGS.map((l) => (
               <button
                 key={l.value}
@@ -65,7 +65,7 @@ export default function App() {
         <div className="scrim" onClick={() => setMenuOpen(false)} aria-hidden={!menuOpen} />
 
         <main>
-          <Suspense fallback={<p className="notice">{t('Loading simulator...')}</p>}>
+          <Suspense fallback={<p className="notice">{t('ui.loadingSimulator')}</p>}>
             <Routes>
               <Route path="/" element={<Home />} />
               {READY.map((sim) =>
@@ -77,7 +77,7 @@ export default function App() {
                 path="*"
                 element={
                   <p className="notice">
-                    {t('Not built yet.')} <Link to="/">{t('Back to the catalogue')}</Link>
+                    {t('common.notBuiltYet')} <Link to="/">{t('ui.backToTheCatalogue')}</Link>
                   </p>
                 }
               />

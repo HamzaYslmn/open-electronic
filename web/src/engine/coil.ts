@@ -1,3 +1,5 @@
+import { sym } from '../i18n'
+import type { Key } from '../i18n'
 /**
  * Series RL coil driven by a low-side switch: a relay, a solenoid, a motor
  * winding, anything with an iron core hanging off a GPIO through a transistor.
@@ -28,10 +30,10 @@ export const V_SWITCH_SAT = 0.2
 
 export type Protection = 'none' | 'silicon' | 'schottky'
 
-export const PROTECTION_OPTIONS: ReadonlyArray<{ value: Protection; label: string }> = [
-  { value: 'none', label: 'None' },
-  { value: 'silicon', label: '1N4001' },
-  { value: 'schottky', label: '1N5819' },
+export const PROTECTION_OPTIONS: ReadonlyArray<{ value: Protection; label: Key }> = [
+  { value: 'none', label: 'opt.none' },
+  { value: 'silicon', label: sym('1N4001') },
+  { value: 'schottky', label: sym('1N5819') },
 ]
 
 /** Forward drop of the freewheel diode. Zero means no clamp is fitted. */

@@ -3,7 +3,7 @@ import { analyse, curve, memberVoltages } from '../engine/capacitor'
 import type { CapMode, CurveMode } from '../engine/capacitor'
 import { GPIO_MAX_MA, VCC } from '../engine/constants'
 import { formatSI } from '../engine/units'
-import { T, useT } from '../i18n'
+import { T, sym, useT } from '../i18n'
 import { Group, Segmented, Toggle } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import Param from '../ui/Param'
@@ -16,7 +16,7 @@ const N = 8192
 function Schematic({ mode }: { mode: CapMode }) {
   const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 110" aria-label={t('capacitors in {mode}', { mode })}>
+    <svg className="schematic" viewBox="0 0 260 110" aria-label={t('capacitor.capacitorsIn')}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         <circle cx="24" cy="34" r="10" />
         <path d="M18 34a6 6 0 0 1 12 0M24 24V14M24 44v36h212M34 34h36" />
@@ -78,9 +78,9 @@ export default function Capacitor() {
     return {
       dt,
       traces: [
-        { label: 'Vc', color: TRACE_COLORS[0], samples: vc },
-        { label: 'V across R', color: TRACE_COLORS[1], samples: vr },
-        { label: 'Target', color: TRACE_COLORS[3], samples: new Float64Array(N).fill(target) },
+        { label: 'common.vc', color: TRACE_COLORS[0], samples: vc },
+        { label: 'capacitor.vAcrossR', color: TRACE_COLORS[1], samples: vr },
+        { label: 'common.target', color: TRACE_COLORS[3], samples: new Float64Array(N).fill(target) },
       ],
       readout,
       members: memberVoltages(values, mode, supply),
@@ -98,33 +98,33 @@ export default function Capacitor() {
   return (
     <SimPage
       id="capacitor"
-      lede="Combine a bank, read its stored energy, and watch it charge or discharge through a resistor. The scope axis is time from the switch closing."
+      lede="capacitor.lede"
       controls={
         <>
           <Segmented
-            label="Bank topology"
+            label="capacitor.bankTopology"
             value={mode}
             onChange={setMode}
             options={[
-              { value: 'parallel', label: 'Parallel' },
-              { value: 'series', label: 'Series' },
+              { value: 'parallel', label: 'common.parallel' },
+              { value: 'series', label: 'common.series' },
             ]}
           />
           <Schematic mode={mode} />
 
-          <Group label="Bank">
-            <Param label="C1" unit="F" value={c1} onChange={setC1} min={1e-12} max={1e-1} />
-            <Param label="C2" unit="F" value={c2} onChange={setC2} min={1e-12} max={1e-1} />
-            <Toggle label="Third capacitor" value={useThird} onChange={setUseThird} />
+          <Group label="capacitor.bank">
+            <Param label={sym('C1')} unit="F" value={c1} onChange={setC1} min={1e-12} max={1e-1} />
+            <Param label={sym('C2')} unit="F" value={c2} onChange={setC2} min={1e-12} max={1e-1} />
+            <Toggle label="capacitor.thirdCapacitor" value={useThird} onChange={setUseThird} />
             {useThird && (
-              <Param label="C3" unit="F" value={c3} onChange={setC3} min={1e-12} max={1e-1} />
+              <Param label={sym('C3')} unit="F" value={c3} onChange={setC3} min={1e-12} max={1e-1} />
             )}
           </Group>
 
-          <Group label="Circuit">
-            <Param label="Series resistor" unit="Ω" value={r} onChange={setR} min={1} max={10e6} />
+          <Group label="common.circuit">
+            <Param label="common.seriesResistor" unit="Ω" value={r} onChange={setR} min={1} max={10e6} />
             <Param
-              label={curveMode === 'charge' ? 'Supply' : 'Starting voltage'}
+              label={curveMode === 'charge' ? 'common.supply' : 'capacitor.startingVoltage'}
               unit="V"
               value={supply}
               onChange={setSupply}
@@ -135,18 +135,18 @@ export default function Capacitor() {
             />
           </Group>
 
-          <Group label="Curve">
+          <Group label="capacitor.curve">
             <Segmented
-              label="Direction"
+              label="capacitor.direction"
               value={curveMode}
               onChange={setCurveMode}
               options={[
-                { value: 'charge', label: 'Charge' },
-                { value: 'discharge', label: 'Discharge' },
+                { value: 'charge', label: 'capacitor.charge' },
+                { value: 'discharge', label: 'capacitor.discharge' },
               ]}
             />
             <Param
-              label="Target voltage"
+              label="capacitor.targetVoltage"
               unit="V"
               value={target}
               onChange={setTarget}
@@ -154,7 +154,7 @@ export default function Capacitor() {
               max={50}
               log={false}
               step={0.01}
-              hint="ESP32 input-high threshold is about 2.48 V on a 3V3 rail."
+              hint="capacitor.esp32InputHighThreshold"
             />
           </Group>
         </>
@@ -165,48 +165,48 @@ export default function Capacitor() {
       <ReadoutGrid
         items={[
           {
-            label: 'Bank capacitance',
+            label: 'capacitor.bankCapacitance',
             value: formatSI(readout.total, 'F'),
-            note: <T k="({values} in {mode})" vars={{ values: values.length, mode }} />,
+            note: <T k="capacitor.in" vars={{ values: values.length, mode }} />,
           },
-          { label: 'Time constant', value: formatSI(readout.tau, 's'), note: '(R·C)' },
+          { label: 'common.timeConstant', value: formatSI(readout.tau, 's'), note: '(R·C)' },
           {
-            label: curveMode === 'charge' ? 'Time to reach target' : 'Time to fall to target',
+            label: curveMode === 'charge' ? 'capacitor.timeToReachTarget' : 'capacitor.timeToFallTo',
             value: formatSI(readout.tTarget, 's'),
-            note: readout.reachable ? undefined : '(never, target is past the asymptote)',
+            note: readout.reachable ? undefined : 'capacitor.neverTargetIsPast',
             warn: !readout.reachable,
           },
-          { label: '10-90% transition', value: formatSI(readout.tRise, 's'), note: '(2.197·tau)' },
-          { label: 'Settled (5 tau)', value: formatSI(readout.tSettle, 's'), note: '(99.3%)' },
+          { label: 'capacitor.1090Transition', value: formatSI(readout.tRise, 's'), note: 'capacitor.2197Tau' },
+          { label: 'capacitor.settled5Tau', value: formatSI(readout.tSettle, 's'), note: '(99.3%)' },
           {
-            label: 'Stored energy',
+            label: 'capacitor.storedEnergy',
             value: formatSI(readout.e, 'J'),
-            note: <T k="at {supply}" vars={{ supply: formatSI(supply, 'V') }} />,
+            note: <T k="capacitor.at" vars={{ supply: formatSI(supply, 'V') }} />,
           },
           {
-            label: 'Energy at target',
+            label: 'capacitor.energyAtTarget',
             value: formatSI(readout.eTarget, 'J'),
-            note: <T k="({e}% of full)" vars={{ e: ((readout.eTarget / readout.e) * 100 || 0).toFixed(1) }} />,
+            note: <T k="capacitor.ofFull" vars={{ e: ((readout.eTarget / readout.e) * 100 || 0).toFixed(1) }} />,
           },
-          { label: 'Stored charge', value: formatSI(readout.q, 'C') },
+          { label: 'capacitor.storedCharge', value: formatSI(readout.q, 'C') },
           {
-            label: 'Peak current',
+            label: 'common.peakCurrent',
             value: formatSI(readout.peakCurrent, 'A'),
-            note: '(at t = 0, V/R)',
+            note: 'capacitor.atT0V',
             warn: gpioOver,
           },
           {
-            label: 'Loss in R per charge',
+            label: 'capacitor.lossInRPer',
             value: formatSI(readout.eResistor, 'J'),
-            note: '(equals the stored energy, whatever R is)',
+            note: 'capacitor.equalsTheStoredEnergy',
           },
           {
-            label: 'Highest member voltage',
+            label: 'capacitor.highestMemberVoltage',
             value: formatSI(readout.maxMemberVoltage, 'V'),
             note:
               mode === 'series'
                 ? `(${members.map((v) => formatSI(v, 'V')).join(' / ')})`
-                : '(full rail on every member)',
+                : 'capacitor.fullRailOnEvery',
             warn: unevenSplit,
           },
         ]}
@@ -214,20 +214,20 @@ export default function Capacitor() {
 
       {gpioOver && (
         <Warning
-          text="Inrush is {peakCurrent}, over the {GPIO_MAX_MA} mA an ESP32 GPIO is rated for. An uncharged capacitor is a short circuit at t = 0, so drive it through a bigger resistor or a transistor."
+          text="capacitor.warn1"
           vars={{ peakCurrent: formatSI(readout.peakCurrent, 'A'), GPIO_MAX_MA }}
         />
       )}
 
       {overRail && curveMode === 'charge' && (
         <Warning
-          text="The target is above the supply, so the curve never reaches it. Nothing above the rail is reachable through a passive RC."
+          text="capacitor.warn2"
         />
       )}
 
       {unevenSplit && (
         <Warning
-          text="The string is unbalanced. Series capacitors share charge, not voltage, so the smallest member sits at {maxMemberVoltage} of the applied {supply} instead of an even {values}. Check it against its voltage rating, or add balancing resistors across each cap."
+          text="capacitor.warn3"
           vars={{
             maxMemberVoltage: formatSI(readout.maxMemberVoltage, 'V'),
             supply: formatSI(supply, 'V'),
@@ -238,12 +238,12 @@ export default function Capacitor() {
 
       <Theory
         text={[
-          "Parallel capacitors add plate area, so `C = C1 + C2 + ...`. In series every capacitor carries the same charge and the voltages add, so `1/C = 1/C1 + 1/C2 + ...` and the total is smaller than the smallest member.",
-          "Stored energy is `E = 0.5·C·V²` and stored charge is `Q = C·V`. Energy is quadratic in voltage, so half the rail holds a quarter of the energy.",
-          "Charging through R follows `v(t) = V·(1 - e^(-t/RC))` and discharging follows `v(t) = V0·e^(-t/RC)`. Inverting the first gives `t = -R·C·ln(1 - v/V)`, which is where the time-to-target figure comes from. One tau is 63.2%, two is 86.5%, five is 99.3%, and the rail itself is an asymptote the curve never actually touches.",
-          "The scope samples those closed forms directly rather than integrating, so the trace is exact at any zoom and cannot go unstable when dt exceeds tau.",
-          "Charging a capacitor through a resistor always dissipates `0.5·C·V²` in that resistor, exactly as much as ends up stored, no matter how large or small R is. That is why linear charging tops out at 50% efficient and why switchers exist.",
-          "In a series string the voltage divides inversely with capacitance, `Vi = V·Ctotal/Ci`, so the smallest capacitor takes the most volts. That is the usual failure mode when caps are stacked for a higher working voltage.",
+          'capacitor.theory1',
+          'capacitor.storedEnergyIsE',
+          'capacitor.chargingThroughRFollows',
+          'capacitor.theScopeSamplesThose',
+          'capacitor.chargingACapacitorThrough',
+          'capacitor.inASeriesString',
         ]}
       />
     </SimPage>

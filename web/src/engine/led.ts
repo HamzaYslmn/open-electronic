@@ -1,3 +1,4 @@
+import type { Key } from '../i18n'
 /**
  * LED series resistor sizing.
  *
@@ -33,15 +34,15 @@ export const VF_SPREAD_V = 0.1
  * Typical forward voltages at 20 mA for 5 mm through-hole parts. Real parts
  * vary by bin, so these are starting points, not datasheet guarantees.
  */
-export const LED_TYPES: ReadonlyArray<{ id: string; label: string; vf: number }> = [
-  { id: 'ir', label: 'Infrared 940 nm', vf: 1.2 },
-  { id: 'red', label: 'Red', vf: 2.0 },
-  { id: 'amber', label: 'Amber / yellow', vf: 2.1 },
-  { id: 'green-gap', label: 'Green (GaP, older)', vf: 2.2 },
-  { id: 'green', label: 'Green (InGaN)', vf: 3.0 },
-  { id: 'blue', label: 'Blue', vf: 3.2 },
-  { id: 'white', label: 'White', vf: 3.2 },
-  { id: 'uv', label: 'UV 395 nm', vf: 3.4 },
+export const LED_TYPES: ReadonlyArray<{ id: string; label: Key; vf: number }> = [
+  { id: 'ir', label: 'opt.infrared940Nm', vf: 1.2 },
+  { id: 'red', label: 'opt.red', vf: 2.0 },
+  { id: 'amber', label: 'opt.amberYellow', vf: 2.1 },
+  { id: 'green-gap', label: 'opt.greenGapOlder', vf: 2.2 },
+  { id: 'green', label: 'opt.greenIngan', vf: 3.0 },
+  { id: 'blue', label: 'opt.blue', vf: 3.2 },
+  { id: 'white', label: 'common.white', vf: 3.2 },
+  { id: 'uv', label: 'opt.uv395Nm', vf: 3.4 },
 ]
 
 /** Nearest E24 value, measured on relative error since tolerance is a ratio. */

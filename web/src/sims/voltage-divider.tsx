@@ -2,25 +2,26 @@ import { useMemo, useState } from 'react'
 import { VCC } from '../engine/constants'
 import { analyse, ADC_MAX_SOURCE_OHMS, STIFF_LOAD_RATIO } from '../engine/divider'
 import { formatSI } from '../engine/units'
-import { T, useT } from '../i18n'
+import { T, sym, useT } from '../i18n'
+import type { Key } from '../i18n'
 import { Group, Select, Toggle } from '../ui/Controls'
 import Param from '../ui/Param'
 import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
 import SimPage from '../ui/SimPage'
 
 /** Package power ratings, the number the fab actually sells you. */
-const PACKAGES = [
-  { value: '0.0625', label: '0402 (1/16 W)' },
-  { value: '0.1', label: '0603 (1/10 W)' },
-  { value: '0.125', label: '0805 (1/8 W)' },
-  { value: '0.25', label: '1206 or axial (1/4 W)' },
-  { value: '0.5', label: 'Axial (1/2 W)' },
+const PACKAGES: ReadonlyArray<{ value: string; label: Key }> = [
+  { value: '0.0625', label: sym('0402 (1/16 W)') },
+  { value: '0.1', label: sym('0603 (1/10 W)') },
+  { value: '0.125', label: sym('0805 (1/8 W)') },
+  { value: '0.25', label: 'voltage-divider.1206OrAxial1' },
+  { value: '0.5', label: 'voltage-divider.axial12W' },
 ]
 
 function Schematic({ loaded }: { loaded: boolean }) {
   const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 145" aria-label={t('Resistive voltage divider')}>
+    <svg className="schematic" viewBox="0 0 260 145" aria-label={t('voltage-divider.resistiveVoltageDivider')}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         <circle cx="100" cy="12" r="4" />
         <path d="M100 16v18" />
@@ -84,14 +85,14 @@ export default function VoltageDivider() {
   return (
     <SimPage
       id="voltage-divider"
-      lede="Two resistors and a tap. The unloaded answer is the easy part: what matters is the output impedance, and how much the thing you hang on the tap drags it down."
+      lede="voltage-divider.lede"
       controls={
         <>
           <Schematic loaded={loaded} />
 
-          <Group label="Supply">
+          <Group label="common.supply">
             <Param
-              label="Vin"
+              label="common.vin"
               unit="V"
               value={vin}
               onChange={setVin}
@@ -99,14 +100,14 @@ export default function VoltageDivider() {
               max={60}
               log={false}
               step={0.05}
-              hint="Defaults to the 3V3 ESP32 rail."
+              hint="voltage-divider.defaultsToThe3v3"
             />
           </Group>
 
-          <Group label="Divider">
-            <Param label="R1 (top)" unit="Ω" value={r1} onChange={setR1} min={1} max={10e6} />
+          <Group label="common.divider">
+            <Param label="common.r1Top" unit="Ω" value={r1} onChange={setR1} min={1} max={10e6} />
             <Param
-              label="R2 (bottom)"
+              label="common.r2Bottom"
               unit="Ω"
               value={r2}
               onChange={setR2}
@@ -114,23 +115,23 @@ export default function VoltageDivider() {
               max={10e6}
             />
             <Select
-              label="Resistor package"
+              label="voltage-divider.resistorPackage"
               value={rating}
               onChange={setRating}
               options={PACKAGES}
             />
           </Group>
 
-          <Group label="Load">
-            <Toggle label="Load connected" value={loaded} onChange={setLoaded} />
+          <Group label="common.load">
+            <Toggle label="voltage-divider.loadConnected" value={loaded} onChange={setLoaded} />
             <Param
-              label="RL"
+              label="voltage-divider.rl"
               unit="Ω"
               value={rl}
               onChange={setRl}
               min={1}
               max={100e6}
-              hint="Input resistance of whatever the tap drives."
+              hint="voltage-divider.inputResistanceOfWhatever"
             />
           </Group>
         </>
@@ -139,76 +140,76 @@ export default function VoltageDivider() {
       <ReadoutGrid
         items={[
           {
-            label: 'Vout unloaded',
+            label: 'voltage-divider.voutUnloaded',
             value: formatSI(r.vout, 'V'),
-            note: <T k="(ratio {ratio})" vars={{ ratio: r.ratio.toFixed(4) }} />,
+            note: <T k="voltage-divider.ratio" vars={{ ratio: r.ratio.toFixed(4) }} />,
           },
           {
-            label: 'Vout loaded',
+            label: 'voltage-divider.voutLoaded',
             value: formatSI(r.voutLoaded, 'V'),
-            note: loaded ? `(R2||RL = ${formatSI(r.r2Effective, 'Ω')})` : '(no load)',
+            note: loaded ? `(R2||RL = ${formatSI(r.r2Effective, 'Ω')})` : 'voltage-divider.noLoad',
             warn: r.errorPct < -5,
           },
           {
-            label: 'Load error',
+            label: 'voltage-divider.loadError',
             value: errorText,
             note: `(${formatSI(r.errorV, 'V')})`,
             warn: r.errorPct < -5,
           },
           {
-            label: 'Output impedance',
+            label: 'common.outputImpedance',
             value: formatSI(r.zout, 'Ω'),
             note: '(R1||R2)',
             warn: r.adcUnfriendly,
           },
           {
-            label: 'RL / Zout',
+            label: 'voltage-divider.rlZout',
             value: !Number.isFinite(r.stiffness)
               ? '∞'
               : r.stiffness < 100
                 ? r.stiffness.toFixed(2)
                 : r.stiffness.toExponential(1),
-            note: !loaded ? '(no load)' : stiff ? '(stiff enough)' : '(load dominates)',
+            note: !loaded ? 'voltage-divider.noLoad' : stiff ? 'voltage-divider.stiffEnough' : 'voltage-divider.loadDominates',
             warn: loaded && !stiff,
           },
           {
-            label: 'Quiescent current',
+            label: 'voltage-divider.quiescentCurrent',
             value: formatSI(r.iQuiescent, 'A'),
-            note: '(string alone)',
+            note: 'voltage-divider.stringAlone',
           },
-          { label: 'Supply current', value: formatSI(r.iSupply, 'A') },
-          { label: 'Load current', value: formatSI(r.iLoad, 'A') },
+          { label: 'common.supplyCurrent', value: formatSI(r.iSupply, 'A') },
+          { label: 'common.loadCurrent', value: formatSI(r.iLoad, 'A') },
           {
-            label: 'Power in R1',
+            label: 'voltage-divider.powerInR1',
             value: formatSI(r.pR1, 'W'),
-            note: <T k="({rating}% of rating)" vars={{ rating: ((100 * r.pR1) / Number(rating)).toFixed(1) }} />,
+            note: <T k="voltage-divider.ofRating" vars={{ rating: ((100 * r.pR1) / Number(rating)).toFixed(1) }} />,
             warn: r.pR1 > Number(rating),
           },
           {
-            label: 'Power in R2',
+            label: 'voltage-divider.powerInR2',
             value: formatSI(r.pR2, 'W'),
-            note: <T k="({rating}% of rating)" vars={{ rating: ((100 * r.pR2) / Number(rating)).toFixed(1) }} />,
+            note: <T k="voltage-divider.ofRating" vars={{ rating: ((100 * r.pR2) / Number(rating)).toFixed(1) }} />,
             warn: r.pR2 > Number(rating),
           },
-          { label: 'Power in load', value: formatSI(r.pLoad, 'W') },
+          { label: 'voltage-divider.powerInLoad', value: formatSI(r.pLoad, 'W') },
           {
-            label: 'Total from supply',
+            label: 'voltage-divider.totalFromSupply',
             value: formatSI(r.pTotal, 'W'),
-            note: <T k="({pTotal} per hour)" vars={{ pTotal: formatSI(r.pTotal * 3600, 'J') }} />,
+            note: <T k="voltage-divider.perHour" vars={{ pTotal: formatSI(r.pTotal * 3600, 'J') }} />,
           },
         ]}
       />
 
       {r.overPower && (
         <Warning
-          text="One of the resistors is over its {rating} rating. Raise both values or move to a bigger package: the model is still linear, the part is not."
+          text="voltage-divider.warn1"
           vars={{ rating: formatSI(Number(rating), 'W') }}
         />
       )}
 
       {r.adcUnfriendly && (
         <Warning
-          text="Zout is {zout}, above the {ADC_MAX_SOURCE_OHMS} the ESP32 ADC wants. The sample-and-hold cap will not settle inside the sampling window, so readings come out low. Lower both resistors or buffer the tap with an op-amp follower."
+          text="voltage-divider.warn2"
           vars={{
             zout: formatSI(r.zout, 'Ω'),
             ADC_MAX_SOURCE_OHMS: formatSI(ADC_MAX_SOURCE_OHMS, 'Ω'),
@@ -218,17 +219,17 @@ export default function VoltageDivider() {
 
       {!stiff && loaded && (
         <Warning
-          text="RL is only {stiffness}x Zout, so this is not a voltage source, it is a resistor network. Design around the loaded number or drop both divider values."
+          text="voltage-divider.warn3"
           vars={{ stiffness: r.stiffness.toFixed(1) }}
         />
       )}
 
       <Theory
         text={[
-          "With nothing on the tap the current is the same in both legs, so `Vout = Vin·R2/(R1+R2)`. Only the ratio sets the voltage: 1k/1k and 1M/1M both give half the rail, but one wastes 1000x the current.",
-          "Looking back into the tap with the supply shorted, R1 and R2 appear in parallel, so the Thevenin source impedance is `Zout = R1·R2/(R1+R2)`. That is the whole reason a divider is not a regulator.",
-          "Hang RL on it and the lower leg becomes `R2||RL`, giving `Vout = Vin·(R2||RL)/(R1 + R2||RL)`. Equivalently the source divides against its own impedance: `Vout·RL/(RL + Zout)`. The error is therefore `-Zout/(Zout + RL)`, which is -50% at RL = Zout, -9.1% at 10x and -1% at 100x.",
-          "Power is `I²R` in R1 and `V²/R` in the shunt legs, and the three add up to `Vin·I`. The design tension is fixed: low resistances give a stiff output and burn current forever, high resistances sip current and collapse under any real load.",
+          'voltage-divider.theory1',
+          'voltage-divider.lookingBackIntoThe',
+          'voltage-divider.hangRlOnIt',
+          'voltage-divider.powerIsIR',
         ]}
       />
     </SimPage>

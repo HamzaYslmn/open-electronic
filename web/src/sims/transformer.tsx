@@ -25,39 +25,39 @@ export default function Transformer() {
   return (
     <SimPage
       id="transformer"
-      lede="Turns ratio sets voltage, and its square sets impedance. Winding resistance is what turns a textbook ideal transformer into one whose output sags the moment you load it."
+      lede="transformer.lede"
       controls={
         <>
-          <Group label="Windings">
-            <Param label="Primary voltage" unit="V" value={vPrimary} onChange={setVPrimary} min={1} max={1000} />
-            <Param label="Primary turns" value={np} onChange={(v) => setNp(Math.round(v))} min={1} max={100_000} />
-            <Param label="Secondary turns" value={ns} onChange={(v) => setNs(Math.round(v))} min={1} max={100_000} />
+          <Group label="transformer.windings">
+            <Param label="transformer.primaryVoltage" unit="V" value={vPrimary} onChange={setVPrimary} min={1} max={1000} />
+            <Param label="transformer.primaryTurns" value={np} onChange={(v) => setNp(Math.round(v))} min={1} max={100_000} />
+            <Param label="transformer.secondaryTurns" value={ns} onChange={(v) => setNs(Math.round(v))} min={1} max={100_000} />
           </Group>
-          <Group label="Losses and rating">
-            <Param label="Primary resistance" unit="Ω" value={rPrimary} onChange={setRPrimary} min={0} max={2000} log={false} step={1} />
-            <Param label="Secondary resistance" unit="Ω" value={rSecondary} onChange={setRSecondary} min={0} max={100} log={false} step={0.1} />
-            <Param label="VA rating" unit="VA" value={vaRating} onChange={setVaRating} min={1} max={5000} />
+          <Group label="transformer.lossesAndRating">
+            <Param label="transformer.primaryResistance" unit="Ω" value={rPrimary} onChange={setRPrimary} min={0} max={2000} log={false} step={1} />
+            <Param label="transformer.secondaryResistance" unit="Ω" value={rSecondary} onChange={setRSecondary} min={0} max={100} log={false} step={0.1} />
+            <Param label="transformer.vaRating" unit="VA" value={vaRating} onChange={setVaRating} min={1} max={5000} />
           </Group>
-          <Group label="Load">
-            <Param label="Load resistance" unit="Ω" value={load} onChange={setLoad} min={0.1} max={100_000} />
+          <Group label="common.load">
+            <Param label="common.loadResistance" unit="Ω" value={load} onChange={setLoad} min={0.1} max={100_000} />
           </Group>
         </>
       }
     >
       <ReadoutGrid
         items={[
-          { label: 'Turns ratio', value: `${t.ratio.toFixed(2)} : 1` },
-          { label: 'Secondary, no load', value: formatSI(t.vSecondaryNoLoad, 'V') },
-          { label: 'Secondary, loaded', value: formatSI(t.vSecondaryLoaded, 'V') },
-          { label: 'Secondary current', value: formatSI(t.iSecondary, 'A') },
-          { label: 'Primary current', value: formatSI(t.iPrimary, 'A') },
-          { label: 'Reflected impedance', value: formatSI(t.reflected, 'Ω'), note: 'seen by the primary' },
-          { label: 'Apparent power', value: formatSI(t.va, 'VA'), note: <T k="rated {vaRating} VA" vars={{ vaRating }} />, warn: t.overRated },
-          { label: 'Primary copper loss', value: formatSI(t.lossPrimary, 'W') },
-          { label: 'Secondary copper loss', value: formatSI(t.lossSecondary, 'W') },
-          { label: 'Efficiency', value: `${(t.efficiency * 100).toFixed(1)}%`, note: 'copper loss only' },
+          { label: 'transformer.turnsRatio', value: `${t.ratio.toFixed(2)} : 1` },
+          { label: 'transformer.secondaryNoLoad', value: formatSI(t.vSecondaryNoLoad, 'V') },
+          { label: 'transformer.secondaryLoaded', value: formatSI(t.vSecondaryLoaded, 'V') },
+          { label: 'transformer.secondaryCurrent', value: formatSI(t.iSecondary, 'A') },
+          { label: 'transformer.primaryCurrent', value: formatSI(t.iPrimary, 'A') },
+          { label: 'transformer.reflectedImpedance', value: formatSI(t.reflected, 'Ω'), note: 'transformer.seenByThePrimary' },
+          { label: 'transformer.apparentPower', value: formatSI(t.va, 'VA'), note: <T k="transformer.ratedVa" vars={{ vaRating }} />, warn: t.overRated },
+          { label: 'transformer.primaryCopperLoss', value: formatSI(t.lossPrimary, 'W') },
+          { label: 'transformer.secondaryCopperLoss', value: formatSI(t.lossSecondary, 'W') },
+          { label: 'common.efficiency', value: `${(t.efficiency * 100).toFixed(1)}%`, note: 'transformer.copperLossOnly' },
           {
-            label: 'Regulation',
+            label: 'transformer.regulation',
             value: `${(t.regulation * 100).toFixed(1)}%`,
             warn: t.poorRegulation,
           },
@@ -66,23 +66,23 @@ export default function Transformer() {
 
       {t.overRated && (
         <Warning
-          text="{VA} exceeds the {vaRating} VA rating. The windings will overheat, and since the rating is thermal rather than magnetic it may run for a while before failing, which is what makes it dangerous."
+          text="transformer.warn1"
           vars={{ VA: formatSI(t.va, 'VA'), vaRating }}
         />
       )}
       {t.poorRegulation && (
         <Warning
-          text="{regulation}% regulation means the output sags badly under load. Small transformers are much worse than large ones here, which is why a 5 VA part marked 12 V often measures 15 V unloaded."
+          text="transformer.warn2"
           vars={{ regulation: (t.regulation * 100).toFixed(0) }}
         />
       )}
 
       <Theory
         text={[
-          "The defining relations are `Vs = Vp·Ns/Np` and `Is = Ip·Np/Ns`. Voltage steps down while current steps up, so apparent power is conserved: a transformer moves energy, it does not make it.",
-          "The consequence people forget is impedance. A load Zs on the secondary appears to the primary as `(Np/Ns)²·Zs`. That square is why transformers match impedances as well as voltages, and it is the entire basis of valve amplifier output stages and RF matching networks.",
-          "Regulation is what winding resistance costs you. Current through the secondary resistance, plus the primary resistance reflected across the same ratio, drops voltage in proportion to load. So the no-load voltage is always higher than the nameplate, and a small transformer can read 25% high when unloaded.",
-          "This model covers copper loss only. Real transformers also have core loss from hysteresis and eddy currents, which is roughly constant with load and dominates at light load, plus leakage inductance that worsens regulation further at higher frequencies. The VA rating is a thermal limit covering all of it together.",
+          'transformer.theory1',
+          'transformer.theConsequencePeopleForget',
+          'transformer.regulationIsWhatWinding',
+          'transformer.thisModelCoversCopper',
         ]}
       />
     </SimPage>

@@ -1,3 +1,4 @@
+import type { Key } from '../i18n'
 /**
  * Battery pack discharge under a constant load.
  *
@@ -37,7 +38,7 @@ export const JOULES_PER_WH = 3600
 export type Chemistry = 'lipo' | 'liion' | 'nimh' | 'lifepo4' | 'lead'
 
 export type ChemistrySpec = {
-  label: string
+  label: Key
   /** Marketing nominal voltage per cell, the number on the label. */
   nominal: number
   /** Fully charged open-circuit voltage per cell. */
@@ -76,7 +77,7 @@ export type ChemistrySpec = {
  */
 export const CHEMISTRIES: Record<Chemistry, ChemistrySpec> = {
   lipo: {
-    label: 'LiPo pouch',
+    label: 'opt.lipoPouch',
     nominal: 3.7,
     full: 4.2,
     cutoff: 3.0,
@@ -90,7 +91,7 @@ export const CHEMISTRIES: Record<Chemistry, ChemistrySpec> = {
     maxCRate: 5,
   },
   liion: {
-    label: 'Li-ion 18650',
+    label: 'opt.liIon18650',
     nominal: 3.6,
     full: 4.2,
     cutoff: 2.5,
@@ -104,7 +105,7 @@ export const CHEMISTRIES: Record<Chemistry, ChemistrySpec> = {
     maxCRate: 2,
   },
   nimh: {
-    label: 'NiMH',
+    label: 'opt.nimh',
     nominal: 1.2,
     full: 1.4,
     cutoff: 1.0,
@@ -118,7 +119,7 @@ export const CHEMISTRIES: Record<Chemistry, ChemistrySpec> = {
     maxCRate: 2,
   },
   lifepo4: {
-    label: 'LiFePO4',
+    label: 'opt.lifepo4',
     nominal: 3.2,
     full: 3.65,
     cutoff: 2.5,
@@ -135,7 +136,7 @@ export const CHEMISTRIES: Record<Chemistry, ChemistrySpec> = {
     maxCRate: 3,
   },
   lead: {
-    label: 'Lead acid (SLA)',
+    label: 'opt.leadAcidSla',
     nominal: 2.0,
     full: 2.12,
     cutoff: 1.75,

@@ -1,20 +1,23 @@
 import { createContext, useContext } from 'react'
+import { en } from './en'
+import type { Key } from './en'
 
 /**
- * Deliberately minimal i18n.
+ * Deliberately small i18n.
  *
- * The English source string is the lookup key. That keeps call sites readable
- * (`t('Frequency')`, not `t('param.freq')`), removes any chance of a key naming
- * scheme drifting from the text it names, and makes the fallback automatic:
- * an untranslated string renders as English rather than as a raw key.
+ * `en.ts` holds the English text under short stable keys, `tr.ts` holds the
+ * Turkish under the same keys. Rewording a sentence is an edit to one value; it
+ * cannot break the link to its translation, because the key does not change.
  *
- * en.ts is the generated inventory of those keys: the checklist a translator
- * works from, and what coverage.test.ts diffs tr.ts against. Nothing imports it
- * at runtime, because the key already is the English text, so shipping it would
- * cost 68 kB gzipped to say nothing.
+ * `tr.ts` is typed `Record<Key, string>`, so a missing or misspelt translation
+ * is a compile error. `t()` takes a `Key`, so a typo at a call site is too.
+ * That is the whole safety net: there is nothing to scan and nothing to keep in
+ * sync by hand.
  *
- * Adding a language means adding one map next to tr.ts and one line in LOADERS.
+ * Adding a language means one file next to tr.ts and one line in LOADERS.
  */
+
+export type { Key }
 
 export type Lang = 'en' | 'tr'
 
@@ -25,13 +28,12 @@ export const LANGS: ReadonlyArray<{ value: Lang; label: string }> = [
   { value: 'tr', label: 'TR' },
 ]
 
-/** English needs no map: the key is already the English text. */
-const DICTS: Record<Lang, Record<string, string>> = { en: {}, tr: {} }
-
 /**
  * A language pack is a third of a megabyte of prose, so it is fetched only when
- * someone actually selects that language. English visitors download none of it.
+ * someone selects that language. English ships with the app as en.ts.
  */
+const packs: Partial<Record<Lang, Record<string, string>>> = {}
+
 const LOADERS: Record<Lang, (() => Promise<Record<string, string>>) | null> = {
   en: null,
   tr: () => import('./tr').then((m) => m.tr),
@@ -39,32 +41,30 @@ const LOADERS: Record<Lang, (() => Promise<Record<string, string>>) | null> = {
 
 export async function loadLang(lang: Lang): Promise<void> {
   const load = LOADERS[lang]
-  if (!load || Object.keys(DICTS[lang]).length > 0) return
-  DICTS[lang] = await load()
+  if (!load || packs[lang]) return
+  packs[lang] = await load()
 }
 
+/** The translated text, falling back to English until the pack has loaded. */
+const lookup = (lang: Lang, key: string): string | undefined =>
+  packs[lang]?.[key] ?? (en as Record<string, string>)[key]
+
 /**
- * Translate, falling back to English, which is the key itself.
- * `{name}` placeholders are filled from `vars`, so a translated sentence can
- * reorder them freely, which Turkish word order frequently needs.
+ * `{name}` placeholders are filled from `vars`, so a translation can reorder
+ * them, which Turkish word order frequently needs. A placeholder holding a key
+ * is itself translated, which lets a page choose between whole phrases instead
+ * of gluing fragments together.
  */
-export function translate(lang: Lang, key: string, vars?: Vars): string {
-  // A JSX string attribute keeps the newlines and indentation it was written
-  // with, so collapse whitespace before looking up. Without this, any prose
-  // wrapped across lines in source would silently miss its entry.
-  const lookup = key.replace(/\s+/g, ' ').trim()
-  const text = DICTS[lang][lookup] ?? key
+export function translate(lang: Lang, key: Key, vars?: Vars): string {
+  const text = lookup(lang, key) ?? key
   if (!vars) return text
 
   const fill = (s: string) =>
     s.replace(/\{(\w+)\}/g, (whole, name: string) => {
       if (!(name in vars)) return whole
       const value = vars[name]
-      // A string placeholder is usually a phrase chosen by the page ("below 0 V"),
-      // so it gets translated too. A formatted number has no entry and passes
-      // through unchanged.
       if (typeof value !== 'string') return String(value)
-      return DICTS[lang][value.replace(/\s+/g, ' ').trim()] ?? value
+      return lookup(lang, value) ?? value
     })
 
   // Twice, because a phrase supplied as a placeholder may carry placeholders of
@@ -77,10 +77,10 @@ export const LangContext = createContext<{
   setLang: (l: Lang) => void
 }>({ lang: 'en', setLang: () => {} })
 
-/** `const t = useT()` then `t('Catalogue')` or `t('{n} built', { n: 3 })`. */
-export function useT(): (key: string, vars?: Vars) => string {
+/** `const t = useT()` then `t('common.frequency')` or `t('home.built', { n: 3 })`. */
+export function useT(): (key: Key, vars?: Vars) => string {
   const { lang } = useContext(LangContext)
-  return (key: string, vars?: Vars) => translate(lang, key, vars)
+  return (key: Key, vars?: Vars) => translate(lang, key, vars)
 }
 
 export function useLang() {
@@ -88,11 +88,10 @@ export function useLang() {
 }
 
 /**
- * Translated text for a slot that takes a node rather than a string, which is
- * how a readout note or a Param hint interpolates a live value without the
- * calling page needing the hook.
+ * Translation for a slot that takes a node rather than a string, which is how a
+ * readout note interpolates a live value without the page needing the hook.
  */
-export function T({ k, vars }: { k: string; vars?: Vars }) {
+export function T({ k, vars }: { k: Key; vars?: Vars }) {
   return <>{useT()(k, vars)}</>
 }
 
@@ -100,7 +99,7 @@ export function T({ k, vars }: { k: string; vars?: Vars }) {
 const RICH = /(`[^`]+`|\*[^*]+\*)/g
 
 /** Prose with inline formulas, used by Warning and Theory. */
-export function Prose({ text, vars }: { text: string; vars?: Vars }) {
+export function Prose({ text, vars }: { text: Key; vars?: Vars }) {
   const parts = useT()(text, vars).split(RICH)
   return (
     <>
@@ -115,6 +114,26 @@ export function Prose({ text, vars }: { text: string; vars?: Vars }) {
       )}
     </>
   )
+}
+
+/**
+ * A label that is a symbol rather than prose: R1, C2, 10%, IRLZ44N. It reads
+ * the same in every language, so it needs no entry. Explicit, so that a real
+ * sentence cannot reach the screen untranslated by accident.
+ */
+export const sym = (text: string) => text as Key
+
+/** Narrows a computed key, e.g. the `<id>.use` a simulator page looks for. */
+export const hasKey = (key: string): key is Key => key in en
+
+/**
+ * A slot that may hold a key, a formatted number or an element. Only a known
+ * key is translated; anything else is already display-ready.
+ */
+export function useMaybeKey() {
+  const t = useT()
+  return (value: unknown) =>
+    typeof value === 'string' && value in en ? t(value as Key) : value
 }
 
 export const STORAGE_KEY = 'open-electronic-lang'

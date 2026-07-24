@@ -41,9 +41,9 @@ export default function I2cPullup() {
       r,
       dt,
       traces: [
-        { label: 'SDA', color: TRACE_COLORS[0], samples: chosen },
+        { label: 'i2c-pullup.sda', color: TRACE_COLORS[0], samples: chosen },
         ...(Number.isFinite(r.rRecommended)
-          ? [{ label: 'ideal R', color: TRACE_COLORS[2], samples: recommended }]
+          ? [{ label: 'i2c-pullup.idealR', color: TRACE_COLORS[2], samples: recommended }]
           : []),
       ],
     }
@@ -52,16 +52,16 @@ export default function I2cPullup() {
   return (
     <SimPage
       id="i2c-pullup"
-      lede="I2C is open drain: devices only pull down, so a resistor has to pull back up and the bus capacitance fights it. The scope shows the rising edge after a device releases the line, against the edge an ideally sized pull-up would give."
+      lede="i2c-pullup.lede"
       controls={
         <>
-          <Group label="Bus">
-            <Select label="Speed" value={speed} onChange={setSpeed} options={I2C_SPEED_OPTIONS} />
-            <Param label="Bus capacitance" unit="F" value={busC} onChange={setBusC} min={10e-12} max={1e-9} />
-            <Param label="Supply" unit="V" value={vcc} onChange={setVcc} min={1.8} max={5.5} log={false} step={0.1} />
+          <Group label="common.bus">
+            <Select label="i2c-pullup.speed" value={speed} onChange={setSpeed} options={I2C_SPEED_OPTIONS} />
+            <Param label="i2c-pullup.busCapacitance" unit="F" value={busC} onChange={setBusC} min={10e-12} max={1e-9} />
+            <Param label="common.supply" unit="V" value={vcc} onChange={setVcc} min={1.8} max={5.5} log={false} step={0.1} />
           </Group>
-          <Group label="Pull-up">
-            <Param label="Resistor" unit="Ω" value={rPullup} onChange={setRPullup} min={200} max={100_000} />
+          <Group label="common.pullUp">
+            <Param label="common.resistor" unit="Ω" value={rPullup} onChange={setRPullup} min={200} max={100_000} />
           </Group>
         </>
       }
@@ -70,30 +70,30 @@ export default function I2cPullup() {
 
       <ReadoutGrid
         items={[
-          { label: 'Minimum R', value: formatSI(r.rMin, 'Ω'), note: 'from the 3 mA sink limit' },
-          { label: 'Maximum R', value: formatSI(r.rMax, 'Ω'), note: 'from the rise-time limit' },
+          { label: 'i2c-pullup.minimumR', value: formatSI(r.rMin, 'Ω'), note: 'i2c-pullup.fromThe3Ma' },
+          { label: 'i2c-pullup.maximumR', value: formatSI(r.rMax, 'Ω'), note: 'i2c-pullup.fromTheRiseTime' },
           {
-            label: 'Recommended',
-            value: Number.isFinite(r.rRecommended) ? formatSI(r.rRecommended, 'Ω') : 'none',
+            label: 'i2c-pullup.recommended',
+            value: Number.isFinite(r.rRecommended) ? formatSI(r.rRecommended, 'Ω') : 'common.none',
             warn: r.windowEmpty,
           },
           {
-            label: 'Rise time',
+            label: 'common.riseTime',
             value: formatSI(r.rise, 's'),
-            note: <T k="limit {maxRise}" vars={{ maxRise: formatSI(r.spec.maxRise, 's') }} />,
+            note: <T k="i2c-pullup.limit" vars={{ maxRise: formatSI(r.spec.maxRise, 's') }} />,
             warn: r.tooSlow,
           },
           {
-            label: 'Rise vs bit period',
+            label: 'i2c-pullup.riseVsBitPeriod',
             value: `${(r.riseFraction * 100).toFixed(1)}%`,
             warn: r.riseFraction > 0.3,
           },
-          { label: 'Sink current', value: formatSI(r.sinkCurrent, 'A'), note: 'while held low' },
-          { label: 'Power per line', value: formatSI(r.lowPower, 'W'), note: 'static, when low' },
+          { label: 'i2c-pullup.sinkCurrent', value: formatSI(r.sinkCurrent, 'A'), note: 'i2c-pullup.whileHeldLow' },
+          { label: 'i2c-pullup.powerPerLine', value: formatSI(r.lowPower, 'W'), note: 'i2c-pullup.staticWhenLow' },
           {
-            label: 'Bus capacitance',
+            label: 'i2c-pullup.busCapacitance',
             value: formatSI(busC, 'F'),
-            note: <T k="limit {maxCapacitance}" vars={{ maxCapacitance: formatSI(r.spec.maxCapacitance, 'F') }} />,
+            note: <T k="i2c-pullup.limit2" vars={{ maxCapacitance: formatSI(r.spec.maxCapacitance, 'F') }} />,
             warn: r.overCapacitance,
           },
         ]}
@@ -101,12 +101,12 @@ export default function I2cPullup() {
 
       {r.windowEmpty && (
         <Warning
-          text="No resistance satisfies both limits here: the value needed to meet the rise time is already below the value a device can pull low. Shorten the bus, remove devices, or drop to a slower speed. This is the point where you need an active bus buffer."
+          text="i2c-pullup.warn1"
         />
       )}
       {!r.windowEmpty && r.outOfWindow && (
         <Warning
-          text="{rPullup} is outside the {rMin} to {rMax} window. Too small and devices cannot hold a valid low, too large and the edge is too slow for the clock."
+          text="i2c-pullup.warn2"
           vars={{
             rPullup: formatSI(rPullup, 'Ω'),
             rMin: formatSI(r.rMin, 'Ω'),
@@ -116,17 +116,17 @@ export default function I2cPullup() {
       )}
       {r.overCapacitance && (
         <Warning
-          text="Bus capacitance is past the {maxCapacitance} the specification allows at this speed. Each device contributes roughly 10 pF and wiring adds about 1 pF per cm, so long ribbon runs add up fast."
+          text="i2c-pullup.warn3"
           vars={{ maxCapacitance: formatSI(r.spec.maxCapacitance, 'F') }}
         />
       )}
 
       <Theory
         text={[
-          "Open drain means a device can only pull the line down. Releasing it leaves the bus capacitance to be charged through the pull-up, so the rising edge is an RC curve while the falling edge is nearly instant. Everything about pull-up sizing follows from that asymmetry.",
-          "The floor comes from the low level: a device must sink enough current to hold the line under {I2C_VOL} V, and the specification only guarantees 3 mA. So `Rmin = (Vcc - 0.4) / 3mA`, about 970 Ω at 3.3 V.",
-          "The ceiling comes from the edge: `Rmax = tr / (0.8473·Cb)`. The 0.8473 is `ln(0.7/0.3)`, from the 30% to 70% points the specification measures between.",
-          "The window spans decades, so the sensible choice is the geometric mean rather than the arithmetic one. 4.7 kΩ is the traditional default and it is fine for a short 100 kHz bus, but at 400 kHz with any real cable length it is often too weak, which is the usual cause of an I2C bus that works on the bench and fails with a longer lead.",
+          'i2c-pullup.theory1',
+          'i2c-pullup.theFloorComesFrom',
+          'i2c-pullup.theCeilingComesFrom',
+          'i2c-pullup.theWindowSpansDecades',
         ]} vars={{ I2C_VOL }}
       />
     </SimPage>

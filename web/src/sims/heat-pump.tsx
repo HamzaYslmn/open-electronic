@@ -38,62 +38,62 @@ export default function HeatPump() {
   return (
     <SimPage
       id="heat-pump"
-      lede="A heat pump moves heat rather than making it, so it can deliver several kilowatts of heat per kilowatt of electricity. The ceiling is Carnot, set purely by the temperature lift."
+      lede="heat-pump.lede"
       controls={
         <>
-          <Group label="Temperatures">
-            <Param label="Flow (hot side)" unit="°C" value={flowC} onChange={setFlowC} min={20} max={80} log={false} step={1} />
-            <Param label="Outdoor (cold side)" unit="°C" value={outdoorC} onChange={setOutdoorC} min={-25} max={25} log={false} step={1} />
-            <Param label="Design outdoor" unit="°C" value={designOutdoorC} onChange={setDesignOutdoorC} min={-25} max={10} log={false} step={1} />
+          <Group label="heat-pump.temperatures">
+            <Param label="heat-pump.flowHotSide" unit="°C" value={flowC} onChange={setFlowC} min={20} max={80} log={false} step={1} />
+            <Param label="heat-pump.outdoorColdSide" unit="°C" value={outdoorC} onChange={setOutdoorC} min={-25} max={25} log={false} step={1} />
+            <Param label="heat-pump.designOutdoor" unit="°C" value={designOutdoorC} onChange={setDesignOutdoorC} min={-25} max={10} log={false} step={1} />
           </Group>
 
-          <Group label="Machine">
-            <Param label="Second-law efficiency" value={eta} onChange={setEta} min={0.2} max={0.8} log={false} step={0.01} />
-            <Param label="Electrical input" unit="W" value={electricalW} onChange={setElectricalW} min={100} max={20000} />
+          <Group label="heat-pump.machine">
+            <Param label="heat-pump.secondLawEfficiency" value={eta} onChange={setEta} min={0.2} max={0.8} log={false} step={0.01} />
+            <Param label="heat-pump.electricalInput" unit="W" value={electricalW} onChange={setElectricalW} min={100} max={20000} />
           </Group>
 
-          <Group label="Running cost">
-            <Param label="Tariff per kWh" value={tariff} onChange={setTariff} min={0.01} max={1} log={false} step={0.01} />
-            <Param label="Season heat demand" unit="kWh" value={seasonKwh} onChange={setSeasonKwh} min={500} max={40000} />
+          <Group label="heat-pump.runningCost">
+            <Param label="heat-pump.tariffPerKwh" value={tariff} onChange={setTariff} min={0.01} max={1} log={false} step={0.01} />
+            <Param label="heat-pump.seasonHeatDemand" unit="kWh" value={seasonKwh} onChange={setSeasonKwh} min={500} max={40000} />
           </Group>
         </>
       }
     >
       <ReadoutGrid
         items={[
-          { label: 'Temperature lift', value: `${r.liftK.toFixed(1)} K` },
-          { label: 'Carnot ceiling', value: r.carnot.toFixed(2), note: 'Th/(Th-Tc)' },
-          { label: 'Real COP', value: r.cop.toFixed(2), note: <T k="{eta}% of Carnot" vars={{ eta: (eta * 100).toFixed(0) }} /> },
-          { label: 'Heat delivered', value: formatSI(r.heatW, 'W') },
-          { label: 'Lifted from outside', value: formatSI(r.absorbedW, 'W'), note: 'the free part' },
-          { label: 'Cost per kWh heat', value: money(r.heatCostPerKwh) },
-          { label: 'Resistive equivalent', value: money(r.resistiveCostPerKwh), note: 'the tariff itself' },
-          { label: 'Saving at this point', value: `${(r.savingFraction * 100).toFixed(0)}%` },
-          { label: 'Seasonal COP', value: r.scop.toFixed(2) },
-          { label: 'Seasonal electricity', value: `${(r.seasonalElectricityJ / J_PER_KWH).toFixed(0)} kWh` },
-          { label: 'Seasonal cost', value: money(r.seasonalCost) },
-          { label: 'Resistive season', value: money(r.resistiveSeasonalCost) },
-          { label: 'Seasonal saving', value: money(r.seasonalSaving), note: `${(r.seasonalSavingFraction * 100).toFixed(0)}%` },
-          { label: 'Runtime to cover season', value: `${(r.runtimeS / 3600).toFixed(0)} h` },
+          { label: 'heat-pump.temperatureLift', value: `${r.liftK.toFixed(1)} K` },
+          { label: 'heat-pump.carnotCeiling', value: r.carnot.toFixed(2), note: 'heat-pump.thThTc' },
+          { label: 'heat-pump.realCop', value: r.cop.toFixed(2), note: <T k="heat-pump.ofCarnot" vars={{ eta: (eta * 100).toFixed(0) }} /> },
+          { label: 'heat-pump.heatDelivered', value: formatSI(r.heatW, 'W') },
+          { label: 'heat-pump.liftedFromOutside', value: formatSI(r.absorbedW, 'W'), note: 'heat-pump.theFreePart' },
+          { label: 'heat-pump.costPerKwhHeat', value: money(r.heatCostPerKwh) },
+          { label: 'heat-pump.resistiveEquivalent', value: money(r.resistiveCostPerKwh), note: 'heat-pump.theTariffItself' },
+          { label: 'heat-pump.savingAtThisPoint', value: `${(r.savingFraction * 100).toFixed(0)}%` },
+          { label: 'heat-pump.seasonalCop', value: r.scop.toFixed(2) },
+          { label: 'heat-pump.seasonalElectricity', value: `${(r.seasonalElectricityJ / J_PER_KWH).toFixed(0)} kWh` },
+          { label: 'heat-pump.seasonalCost', value: money(r.seasonalCost) },
+          { label: 'heat-pump.resistiveSeason', value: money(r.resistiveSeasonalCost) },
+          { label: 'heat-pump.seasonalSaving', value: money(r.seasonalSaving), note: `${(r.seasonalSavingFraction * 100).toFixed(0)}%` },
+          { label: 'heat-pump.runtimeToCoverSeason', value: `${(r.runtimeS / 3600).toFixed(0)} h` },
         ]}
       />
 
       {r.noLift && (
         <Warning
-          text="The cold side is at or above the hot side, so there is no lift to perform and the COP is undefined. Raise the flow temperature or lower the outdoor temperature."
+          text="heat-pump.warn1"
         />
       )}
       {r.liftK > 55 && !r.noLift && (
         <Warning
-          text="A lift over about 55 K is outside what most domestic refrigerants manage. Real machines cut out or fall back to a resistive heater here, so treat this COP as optimistic."
+          text="heat-pump.warn2"
         />
       )}
 
       <Theory
         text={[
-          "The Carnot ceiling for heating is `COP = Th / (Th - Tc)`, with both temperatures in kelvin. Only the difference matters, which is why a heat pump feeding underfloor pipes at 35 °C thrashes one feeding radiators at 65 °C: the lift is smaller, so the ceiling is higher.",
-          "Real machines reach a fraction of Carnot, here the second-law efficiency, typically 0.4 to 0.6 for domestic units. So `COP = eta · Th/(Th - Tc)` and the heat delivered is `Qh = COP · W`.",
-          "A COP of 3 means a kWh of heat costs a third of the tariff, so the saving against a resistive heater is `1 - 1/COP`. That is the number that decides whether the machine pays back, and it collapses on the coldest days precisely when demand peaks, which is why the seasonal figure matters more than the headline one.",
+          'heat-pump.theory1',
+          'heat-pump.realMachinesReachA',
+          'heat-pump.aCopOf3',
         ]}
       />
     </SimPage>

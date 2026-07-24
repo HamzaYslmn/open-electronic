@@ -1,3 +1,5 @@
+import { sym } from '../i18n'
+import type { Key } from '../i18n'
 /**
  * Analogue front ends that end at the ESP32 ADC: the converter itself, NTC
  * thermistors and current shunts. All three share the same quantisation and
@@ -19,7 +21,7 @@ export const toCelsius = (k: number) => k - KELVIN_OFFSET
 export type Attenuation = '0' | '2.5' | '6' | '11'
 
 export type AttenSpec = {
-  label: string
+  label: Key
   /** Nominal full-scale input, V. */
   fullScale: number
   /** Range the datasheet actually guarantees as linear, V. */
@@ -29,10 +31,10 @@ export type AttenSpec = {
 
 /** ESP32 ADC attenuation settings, from the datasheet's recommended ranges. */
 export const ATTENUATIONS: Record<Attenuation, AttenSpec> = {
-  '0': { label: '0 dB', fullScale: 1.1, usableLow: 0.1, usableHigh: 0.95 },
-  '2.5': { label: '2.5 dB', fullScale: 1.5, usableLow: 0.1, usableHigh: 1.25 },
-  '6': { label: '6 dB', fullScale: 2.2, usableLow: 0.15, usableHigh: 1.75 },
-  '11': { label: '11 dB', fullScale: 3.9, usableLow: 0.15, usableHigh: 3.1 },
+  '0': { label: 'opt.0Db', fullScale: 1.1, usableLow: 0.1, usableHigh: 0.95 },
+  '2.5': { label: 'opt.25Db', fullScale: 1.5, usableLow: 0.1, usableHigh: 1.25 },
+  '6': { label: 'opt.6Db', fullScale: 2.2, usableLow: 0.15, usableHigh: 1.75 },
+  '11': { label: 'opt.11Db', fullScale: 3.9, usableLow: 0.15, usableHigh: 3.1 },
 }
 
 export const ATTENUATION_OPTIONS = (Object.keys(ATTENUATIONS) as Attenuation[]).map(
@@ -206,7 +208,7 @@ export function analyseNtc(
 export type SenseMethod = 'shunt' | 'acs712-5' | 'acs712-20' | 'acs712-30' | 'ina219'
 
 export type SenseSpec = {
-  label: string
+  label: Key
   /** Volts out per amp in. Zero means the shunt path computes it. */
   sensitivity: number
   /** Full scale current the part supports, A. */
@@ -216,11 +218,11 @@ export type SenseSpec = {
 }
 
 export const SENSE_METHODS: Record<SenseMethod, SenseSpec> = {
-  shunt: { label: 'Shunt + amplifier', sensitivity: 0, range: Infinity, offset: 0 },
-  'acs712-5': { label: 'ACS712 5 A', sensitivity: 0.185, range: 5, offset: VCC / 2 },
-  'acs712-20': { label: 'ACS712 20 A', sensitivity: 0.1, range: 20, offset: VCC / 2 },
-  'acs712-30': { label: 'ACS712 30 A', sensitivity: 0.066, range: 30, offset: VCC / 2 },
-  ina219: { label: 'INA219 (digital)', sensitivity: 0, range: Infinity, offset: 0 },
+  shunt: { label: 'opt.shuntAmplifier', sensitivity: 0, range: Infinity, offset: 0 },
+  'acs712-5': { label: sym('ACS712 5 A'), sensitivity: 0.185, range: 5, offset: VCC / 2 },
+  'acs712-20': { label: sym('ACS712 20 A'), sensitivity: 0.1, range: 20, offset: VCC / 2 },
+  'acs712-30': { label: sym('ACS712 30 A'), sensitivity: 0.066, range: 30, offset: VCC / 2 },
+  ina219: { label: 'opt.ina219Digital', sensitivity: 0, range: Infinity, offset: 0 },
 }
 
 export const SENSE_OPTIONS = (Object.keys(SENSE_METHODS) as SenseMethod[]).map((value) => ({

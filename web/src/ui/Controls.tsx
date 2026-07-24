@@ -1,16 +1,15 @@
 import { useId } from 'react'
 import type { ReactNode } from 'react'
 import { useT } from '../i18n'
+import type { Key } from '../i18n'
 
 /**
- * Every label in this file goes through the dictionary here rather than at the
- * call site, so a simulator page passes plain English and gets translation for
- * free. Symbols and part numbers (R1, Vin, 1N4148) simply have no entry and
- * fall through unchanged.
+ * Labels are dictionary keys, translated here rather than at the call site, so
+ * a page cannot forget and a typo is a compile error.
  */
 
 /** Section heading inside the controls column. */
-export function Group({ label, children }: { label: string; children: ReactNode }) {
+export function Group({ label, children }: { label: Key; children: ReactNode }) {
   const t = useT()
   return (
     <>
@@ -23,8 +22,8 @@ export function Group({ label, children }: { label: string; children: ReactNode 
 export type SegmentedProps<T extends string> = {
   value: T
   onChange: (next: T) => void
-  options: ReadonlyArray<{ value: T; label: string }>
-  label?: string
+  options: ReadonlyArray<{ value: T; label: Key }>
+  label?: Key
 }
 
 /** Mutually exclusive mode switch, e.g. low pass against high pass. */
@@ -51,10 +50,10 @@ export function Segmented<T extends string>({
 }
 
 export type SelectProps<T extends string> = {
-  label: string
+  label: Key
   value: T
   onChange: (next: T) => void
-  options: ReadonlyArray<{ value: T; label: string }>
+  options: ReadonlyArray<{ value: T; label: Key }>
 }
 
 /** Labelled dropdown, for lists too long to be a Segmented. */
@@ -81,7 +80,7 @@ export function Toggle({
   value,
   onChange,
 }: {
-  label: string
+  label: Key
   value: boolean
   onChange: (next: boolean) => void
 }) {

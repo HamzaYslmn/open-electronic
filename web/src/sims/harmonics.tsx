@@ -11,7 +11,8 @@ import {
 import type { Harmonic, PresetKind } from '../engine/harmonics'
 import { timeBase } from '../engine/signal'
 import { formatSI } from '../engine/units'
-import { T } from '../i18n'
+import { T, sym } from '../i18n'
+import type { Key } from '../i18n'
 import { Group, Segmented, Toggle } from '../ui/Controls'
 import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
 import type { Trace } from '../ui/Oscilloscope'
@@ -25,11 +26,11 @@ const N = 8192
 /** Peak volts per harmonic slider. Ten at full travel is well past the rail. */
 const MAX_AMPLITUDE = 2
 
-const PRESET_OPTIONS: ReadonlyArray<{ value: PresetKind | 'custom'; label: string }> = [
-  { value: 'sine', label: 'Sine' },
-  { value: 'square', label: 'Square' },
-  { value: 'triangle', label: 'Triangle' },
-  { value: 'sawtooth', label: 'Saw' },
+const PRESET_OPTIONS: ReadonlyArray<{ value: PresetKind | 'custom'; label: Key }> = [
+  { value: 'sine', label: 'common.sine' },
+  { value: 'square', label: 'common.square' },
+  { value: 'triangle', label: 'common.triangle' },
+  { value: 'sawtooth', label: 'harmonics.saw' },
 ]
 
 export default function Harmonics() {
@@ -66,7 +67,7 @@ export default function Harmonics() {
     )
     const list: Trace[] = [
       {
-        label: 'Sum',
+        label: 'harmonics.sum',
         color: TRACE_COLORS[0],
         samples: synthesise(shaped, freq, dc, N, dt),
       },
@@ -78,7 +79,7 @@ export default function Harmonics() {
     ]
     if (kind !== 'custom' && !zeroPhase) {
       list.push({
-        label: 'Ideal',
+        label: 'harmonics.ideal',
         color: TRACE_COLORS[3],
         samples: synthesiseIdeal(kind, shaped[0].amplitude, freq, dc, N, dt),
       })
@@ -91,21 +92,21 @@ export default function Harmonics() {
   return (
     <SimPage
       id="harmonics"
-      lede="Add up to ten sine waves, each an integer multiple of one fundamental, and watch the sum take shape. Horizontal axis is time."
+      lede="harmonics.lede"
       controls={
         <>
           <Segmented
-            label="Fourier series preset"
+            label="harmonics.fourierSeriesPreset"
             value={kind}
             onChange={applyPreset}
             options={PRESET_OPTIONS}
           />
 
-          <Group label="Harmonic amplitudes">
+          <Group label="harmonics.harmonicAmplitudes">
             {harmonics.map((h, i) => (
               <Param
                 key={i}
-                label={i === 0 ? 'H1 fundamental' : `H${i + 1}`}
+                label={i === 0 ? 'harmonics.h1Fundamental' : sym(`H${i + 1}`)}
                 unit="V"
                 value={h.amplitude}
                 onChange={(v) => setAmplitude(i, v)}
@@ -116,12 +117,12 @@ export default function Harmonics() {
                 hint={formatSI((i + 1) * freq, 'Hz')}
               />
             ))}
-            <Toggle label="Force every phase to 0" value={zeroPhase} onChange={setZeroPhase} />
+            <Toggle label="harmonics.forceEveryPhaseTo" value={zeroPhase} onChange={setZeroPhase} />
           </Group>
 
-          <Group label="Fundamental">
+          <Group label="harmonics.fundamental">
             <Param
-              label="Frequency f0"
+              label="harmonics.frequencyF0"
               unit="Hz"
               value={freq}
               onChange={setFreq}
@@ -129,7 +130,7 @@ export default function Harmonics() {
               max={100e3}
             />
             <Param
-              label="DC offset"
+              label="common.dcOffset"
               unit="V"
               value={dc}
               onChange={setDc}
@@ -139,7 +140,7 @@ export default function Harmonics() {
               step={0.05}
             />
             <Param
-              label="Cycles shown"
+              label="common.cyclesShown"
               value={cycles}
               onChange={(v) => setCycles(Math.round(v))}
               min={1}
@@ -156,73 +157,73 @@ export default function Harmonics() {
       <ReadoutGrid
         items={[
           {
-            label: 'THD',
+            label: 'harmonics.thd',
             value: Number.isFinite(readout.thd)
               ? `${(readout.thd * 100).toFixed(2)} %`
-              : 'undefined',
+              : 'harmonics.undefined',
             note: Number.isFinite(readout.thd)
-              ? <T k="({distortion} of harmonics 2 to 10)" vars={{ distortion: formatSI(readout.distortion, 'V') }} />
-              : '(no fundamental to compare against)',
+              ? <T k="harmonics.ofHarmonics2To" vars={{ distortion: formatSI(readout.distortion, 'V') }} />
+              : 'harmonics.noFundamentalToCompare',
             warn: !Number.isFinite(readout.thd),
           },
           {
-            label: 'THD-R',
+            label: 'harmonics.thdR',
             value: `${(readout.thdR * 100).toFixed(2)} %`,
-            note: '(as a share of total rms)',
+            note: 'harmonics.asAShareOf',
           },
           {
-            label: 'Crest factor',
+            label: 'harmonics.crestFactor',
             value: readout.crest.toFixed(3),
-            note: '(sine 1.414, triangle 1.732)',
+            note: 'harmonics.sine1414Triangle',
           },
-          { label: 'RMS, AC only', value: formatSI(readout.rmsAc, 'V') },
+          { label: 'harmonics.rmsAcOnly', value: formatSI(readout.rmsAc, 'V') },
           {
-            label: 'RMS, with DC',
+            label: 'harmonics.rmsWithDc',
             value: formatSI(readout.rmsTotal, 'V'),
-            note: <T k="(DC {dc})" vars={{ dc: formatSI(dc, 'V') }} />,
+            note: <T k="harmonics.dc" vars={{ dc: formatSI(dc, 'V') }} />,
           },
           {
-            label: 'Peak to peak',
+            label: 'harmonics.peakToPeak',
             value: formatSI(readout.vmax - readout.vmin, 'V'),
-            note: <T k="(peak {peakAc})" vars={{ peakAc: formatSI(readout.peakAc, 'V') }} />,
+            note: <T k="harmonics.peak" vars={{ peakAc: formatSI(readout.peakAc, 'V') }} />,
           },
           {
-            label: 'Swing',
+            label: 'harmonics.swing',
             value: `${formatSI(readout.vmin, 'V')} to ${formatSI(readout.vmax, 'V')}`,
-            note: <T k="(rail headroom {headroom})" vars={{ headroom: formatSI(readout.headroom, 'V') }} />,
+            note: <T k="harmonics.railHeadroom" vars={{ headroom: formatSI(readout.headroom, 'V') }} />,
             warn: clips,
           },
           {
-            label: 'Occupied bandwidth',
+            label: 'harmonics.occupiedBandwidth',
             value: formatSI(readout.top * freq, 'Hz'),
-            note: <T k="({active} active, top is H{top})" vars={{ active: readout.active, top: readout.top }} />,
+            note: <T k="harmonics.activeTopIsH" vars={{ active: readout.active, top: readout.top }} />,
           },
         ]}
       />
 
       {clips && (
         <Warning
-          text="The sum swings {swing}. A single-supply DAC or a filtered PWM pin cannot produce that, the real output would flat-top and add distortion this model does not include. Trim the amplitudes or move the DC offset."
+          text="harmonics.warn1"
           vars={{
             // Whole phrases rather than glued fragments, so each one is a key a
             // translation can put wherever its own grammar needs it.
             swing:
               readout.clipsLow && readout.clipsHigh
-                ? 'below 0 V and above the supply rail'
+                ? 'harmonics.below0VAnd'
                 : readout.clipsLow
-                  ? 'below 0 V'
-                  : 'above the supply rail',
+                  ? 'harmonics.below0V'
+                  : 'harmonics.aboveTheSupplyRail',
           }}
         />
       )}
 
       <Theory
         text={[
-          "Every periodic waveform is a sum of sines at integer multiples of one fundamental: `v(t) = Vdc + sum Vn·sin(2·pi·n·f0·t + phi_n)`. Each slider sets one Vn. The scope evaluates that sum directly, so there is no solver and no step-size limit.",
-          "The presets are the classic series. Square is odd harmonics at `1/n` all in phase, sawtooth is every harmonic at `1/n` with alternating sign, triangle is odd harmonics at `1/n²` with alternating sign. Their ideal peaks are `V1·pi/4`, `V1·pi/2` and `V1·pi²/8`, which is the amber trace.",
-          "Distortion is the energy that is not the fundamental: `THD = sqrt(V2² + V3² + ... ) / V1`. An ideal square is 48.3%, a triangle 12.1%. Ten terms only get part of the way there. THD-R divides by the total rms instead, so it can never exceed 100%, which is what a meter reads.",
-          "By Parseval the rms is `sqrt(sum Vn² / 2)` and depends only on the amplitudes, never on phase. The peak does depend on phase, so crest factor does too: flip the phase toggle on a sawtooth and the rms will not move.",
-          "Truncating at a step leaves ringing that never goes away. The overshoot converges to 8.95% of the jump, i.e. 1.179 times the flat top, which is why a square built from harmonics reads a crest factor near 1.18 instead of the ideal 1.0. Adding terms narrows the ripple, it does not shrink it.",
+          'harmonics.theory1',
+          'harmonics.thePresetsAreThe',
+          'harmonics.distortionIsTheEnergy',
+          'harmonics.byParsevalTheRms',
+          'harmonics.truncatingAtAStep',
         ]}
       />
     </SimPage>

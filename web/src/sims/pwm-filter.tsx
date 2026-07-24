@@ -21,7 +21,7 @@ type View = 'ripple' | 'startup'
 function Schematic() {
   const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 110" aria-label={t('ESP32 GPIO into an RC low pass')}>
+    <svg className="schematic" viewBox="0 0 260 110" aria-label={t('pwm-filter.esp32GpioIntoAn')}>
       <g fill="none" stroke="currentColor" strokeWidth="1.5">
         <rect x="8" y="20" width="34" height="28" />
         <path d="M42 34h28M25 48v32h199" />
@@ -97,10 +97,10 @@ export default function PwmFilter() {
       showInput,
       traces: [
         ...(showInput
-          ? [{ label: 'Vpwm', color: TRACE_COLORS[0], samples: input }]
+          ? [{ label: 'pwm-filter.vpwm', color: TRACE_COLORS[0], samples: input }]
           : []),
-        { label: 'Vout', color: TRACE_COLORS[1], samples: out },
-        { label: 'Target', color: TRACE_COLORS[2], samples: target },
+        { label: 'common.vout', color: TRACE_COLORS[1], samples: out },
+        { label: 'common.target', color: TRACE_COLORS[2], samples: target },
       ],
     }
   }, [vs, r, c, f, dutyPct, bits, view, cycles])
@@ -117,28 +117,28 @@ export default function PwmFilter() {
   return (
     <SimPage
       id="pwm-filter"
-      lede="An ESP32 GPIO toggling into an RC network, i.e. a one-bit DAC. Horizontal axis is time: the ripple view frames a few switching periods, the startup view frames the full 5 tau charging curve. Hide Vpwm on the scope to see the ripple at its own scale."
+      lede="pwm-filter.lede"
       controls={
         <>
           <Segmented
-            label="Scope window"
+            label="pwm-filter.scopeWindow"
             value={view}
             onChange={setView}
             options={[
-              { value: 'ripple', label: 'Ripple' },
-              { value: 'startup', label: 'Startup' },
+              { value: 'ripple', label: 'common.ripple' },
+              { value: 'startup', label: 'pwm-filter.startup' },
             ]}
           />
           <Schematic />
 
-          <Group label="Filter">
-            <Param label="Resistor" unit="Ω" value={r} onChange={setR} min={100} max={1e6} />
-            <Param label="Capacitor" unit="F" value={c} onChange={setC} min={1e-9} max={1e-3} />
+          <Group label="common.filter">
+            <Param label="common.resistor" unit="Ω" value={r} onChange={setR} min={100} max={1e6} />
+            <Param label="common.capacitor" unit="F" value={c} onChange={setC} min={1e-9} max={1e-3} />
           </Group>
 
-          <Group label="PWM">
+          <Group label="common.pwm2">
             <Param
-              label="Frequency"
+              label="common.frequency"
               unit="Hz"
               value={f}
               onChange={setF}
@@ -146,7 +146,7 @@ export default function PwmFilter() {
               max={200e3}
             />
             <Param
-              label="Duty"
+              label="common.duty"
               unit="%"
               value={dutyPct}
               onChange={setDutyPct}
@@ -156,7 +156,7 @@ export default function PwmFilter() {
               step={0.1}
             />
             <Param
-              label="Duty resolution"
+              label="pwm-filter.dutyResolution"
               unit="bit"
               value={bits}
               onChange={(v) => setBits(Math.round(v))}
@@ -166,7 +166,7 @@ export default function PwmFilter() {
               step={1}
             />
             <Param
-              label="Supply"
+              label="common.supply"
               unit="V"
               value={vs}
               onChange={setVs}
@@ -177,7 +177,7 @@ export default function PwmFilter() {
             />
             {view === 'ripple' && (
               <Param
-                label="Cycles shown"
+                label="common.cyclesShown"
                 value={cycles}
                 onChange={(v) => setCycles(Math.round(v))}
                 min={1}
@@ -194,82 +194,82 @@ export default function PwmFilter() {
 
       {readout.smoothing !== 'good' && (
         <Warning
-          text="fc sits only {ratio}x below f_pwm. Aim for {FC_RATIO_GOOD}x (40 dB on the switching fundamental); under {FC_RATIO_MIN}x the RC is not smoothing, it is just rounding the edges. Raise f_pwm or raise R·C."
+          text="pwm-filter.warn1"
           vars={{ ratio: readout.ratio.toFixed(1), FC_RATIO_GOOD, FC_RATIO_MIN }}
         />
       )}
       {!readout.bitsOk && (
         <Warning
-          text="The LEDC timer cannot do {bits} bits at {f}. 2^bits · f must stay under the 80 MHz APB clock, so {maxBits} bits is the ceiling here. The driver will reject the config."
+          text="pwm-filter.warn2"
           vars={{ bits, f: formatSI(f, 'Hz'), maxBits: readout.maxBits }}
         />
       )}
       {!readout.gpioOk && (
         <Warning
-          text="Peak pin current is {gpioPeakA} at power-on, when the capacitor is still empty. That is past the 12 mA an ESP32 GPIO is rated for. Raise R."
+          text="pwm-filter.warn3"
           vars={{ gpioPeakA: formatSI(readout.gpioPeakA, 'A') }}
         />
       )}
       {!showInput && (
         <Warning
-          text="One PWM period is shorter than a scope sample at this time base, so the Vpwm trace is omitted rather than drawn aliased. Vout is a closed-form solution, so it stays exact."
+          text="pwm-filter.warn4"
         />
       )}
 
       <ReadoutGrid
         items={[
           {
-            label: 'Mean output',
+            label: 'pwm-filter.meanOutput',
             value: formatSI(readout.vavg, 'V'),
             note: `(D = ${(readout.dutyEff * 100).toFixed(2)}%)`,
           },
           {
-            label: 'Ripple Vpp',
+            label: 'pwm-filter.rippleVpp',
             value: formatSI(readout.vpp, 'V'),
-            note: <T k="({ripplePercent}% of Vout)" vars={{ ripplePercent: readout.ripplePercent.toFixed(2) }} />,
+            note: <T k="pwm-filter.ofVout" vars={{ ripplePercent: readout.ripplePercent.toFixed(2) }} />,
             warn: readout.smoothing === 'poor',
           },
           {
-            label: 'Ripple on the ADC',
+            label: 'pwm-filter.rippleOnTheAdc',
             value: `${readout.rippleLsb >= 10 ? Math.round(readout.rippleLsb) : readout.rippleLsb.toFixed(2)} LSB`,
-            note: <T k="(12-bit step {ADC_LSB})" vars={{ ADC_LSB: formatSI(ADC_LSB, 'V') }} />,
+            note: <T k="pwm-filter.12BitStep" vars={{ ADC_LSB: formatSI(ADC_LSB, 'V') }} />,
             warn: readout.rippleLsb > 4,
           },
           {
-            label: 'Usable resolution',
+            label: 'common.usableResolution',
             value: `${readout.effectiveBits > 24 ? '>24' : readout.effectiveBits.toFixed(1)} bit`,
-            note: '(ripple limited)',
+            note: 'pwm-filter.rippleLimited',
           },
           {
-            label: 'Settling to 1%',
+            label: 'common.settlingTo1',
             value: formatSI(readout.settle1pc, 's'),
-            note: <T k="(5·tau = {settle5tau})" vars={{ settle5tau: formatSI(readout.settle5tau, 's') }} />,
+            note: <T k="pwm-filter.5Tau" vars={{ settle5tau: formatSI(readout.settle5tau, 's') }} />,
           },
           {
-            label: 'Cutoff fc',
+            label: 'common.cutoffFc',
             value: formatSI(readout.fc, 'Hz'),
-            note: <T k="(tau = {tau})" vars={{ tau: formatSI(readout.tau, 's') }} />,
+            note: <T k="pwm-filter.tau" vars={{ tau: formatSI(readout.tau, 's') }} />,
           },
           {
-            label: 'f_pwm / fc',
+            label: 'pwm-filter.fPwmFc',
             value: `${readout.ratio < 10 ? readout.ratio.toFixed(2) : Math.round(readout.ratio)}x`,
             note: band,
             warn: readout.smoothing === 'poor',
           },
           {
-            label: 'Attenuation at f_pwm',
+            label: 'pwm-filter.attenuationAtFPwm',
             value: `${readout.attenDb.toFixed(1)} dB`,
           },
           {
-            label: 'Duty step',
+            label: 'pwm-filter.dutyStep',
             value: formatSI(readout.dutyStepV, 'V'),
-            note: <T k="({bits} bit, max {maxBits} at this f)" vars={{ bits, maxBits: readout.maxBits }} />,
+            note: <T k="pwm-filter.bitMaxAtThis" vars={{ bits, maxBits: readout.maxBits }} />,
             warn: !readout.bitsOk,
           },
           {
-            label: 'Peak pin current',
+            label: 'pwm-filter.peakPinCurrent',
             value: formatSI(readout.gpioPeakA, 'A'),
-            note: '(power-on, cap empty)',
+            note: 'pwm-filter.powerOnCapEmpty',
             warn: !readout.gpioOk,
           },
         ]}
@@ -277,10 +277,10 @@ export default function PwmFilter() {
 
       <Theory
         text={[
-          "An RC low pass has unity gain at DC and the rectangle's average is `D·Vs`, so the settled output is `Vout = D·Vs` no matter what R and C are. R and C only decide how much of the switching gets through.",
-          "Ripple is usually quoted as `Vpp ≈ Vs·D·(1-D) / (f·R·C)`, which is the small-ripple limit. This page solves it exactly: with `a = e^(-D·T/tau)` and `b = e^(-(1-D)·T/tau)`, matching charge against discharge over one period gives `Vpp = Vs·(1-a)(1-b) / (1-a·b)`. The two agree to a fraction of a percent once tau is more than about ten switching periods, and the approximation reads high below that. Worst-case ripple is always at 50% duty.",
-          "The trace is the closed-form response, `y(t) = y_ss(t) + (y0 - y_ss(0))·e^(-t/tau)`, i.e. the periodic steady state plus one decaying exponential. That is exact for a linear time-invariant filter, so it cannot go unstable at any time base.",
-          "The tradeoff is the whole point: ripple falls as `1/(R·C)` and settling rises as `5·R·C`, so trading one for the other buys nothing. Raising f_pwm is the only free win, up to the point where the LEDC timer runs out of duty resolution, since `2^bits · f` must stay under the 80 MHz APB clock.",
+          'pwm-filter.anRcLowPass',
+          'pwm-filter.rippleIsUsuallyQuoted',
+          'pwm-filter.theTraceIsThe',
+          'pwm-filter.theTradeoffIsThe',
         ]}
       />
     </SimPage>

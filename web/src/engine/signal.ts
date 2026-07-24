@@ -1,3 +1,4 @@
+import type { Key } from '../i18n'
 /**
  * Source waveform generation. All generators are pure functions of time so any
  * simulator can resample them at whatever dt its solver needs.
@@ -5,13 +6,13 @@
 
 export type WaveKind = 'sine' | 'square' | 'triangle' | 'sawtooth' | 'dc' | 'pwm'
 
-export const WAVE_KINDS: ReadonlyArray<{ value: WaveKind; label: string }> = [
-  { value: 'sine', label: 'Sine' },
-  { value: 'square', label: 'Square' },
-  { value: 'triangle', label: 'Triangle' },
-  { value: 'sawtooth', label: 'Sawtooth' },
-  { value: 'pwm', label: 'PWM' },
-  { value: 'dc', label: 'DC step' },
+export const WAVE_KINDS: ReadonlyArray<{ value: WaveKind; label: Key }> = [
+  { value: 'sine', label: 'common.sine' },
+  { value: 'square', label: 'common.square' },
+  { value: 'triangle', label: 'common.triangle' },
+  { value: 'sawtooth', label: 'opt.sawtooth' },
+  { value: 'pwm', label: 'common.pwm2' },
+  { value: 'dc', label: 'opt.dcStep' },
 ]
 
 export type Source = {
