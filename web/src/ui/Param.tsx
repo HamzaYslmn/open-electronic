@@ -15,6 +15,8 @@ export type ParamProps = {
   log?: boolean
   /** Linear step. Ignored when log is set. */
   step?: number
+  /** Round the emitted value to a whole number, for counts: turns, bits, LEDs. */
+  int?: boolean
   /** A key, a formatted number, or a node. Only a key is translated. */
   hint?: ReactNode
 }
@@ -36,12 +38,14 @@ export default function Param({
   max,
   log = true,
   step,
+  int,
   hint,
 }: ParamProps) {
   const id = useId()
   const t = useT()
   const tx = useMaybeKey()
   const name = t(label)
+  const emit = (v: number) => onChange(int ? Math.round(v) : v)
   const [text, setText] = useState(() => formatSI(value, unit))
   const [invalid, setInvalid] = useState(false)
 
@@ -69,7 +73,7 @@ export default function Param({
       return
     }
     setInvalid(false)
-    onChange(clamp(parsed, min, max))
+    emit(clamp(parsed, min, max))
   }
 
   return (
@@ -95,7 +99,7 @@ export default function Param({
         max={TICKS}
         step={usableLog ? 1 : ((step ?? (max - min) / TICKS) / (max - min)) * TICKS}
         value={clamp(toSlider(value), 0, TICKS)}
-        onChange={(e) => onChange(clamp(fromSlider(Number(e.target.value)), min, max))}
+        onChange={(e) => emit(clamp(fromSlider(Number(e.target.value)), min, max))}
         aria-label={name}
       />
       {hint && (

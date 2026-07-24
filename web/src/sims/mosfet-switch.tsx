@@ -3,12 +3,8 @@ import { GPIO_MAX_MA, VCC } from '../engine/constants'
 import { DEFAULTS, analyse, toCelsius, waveform } from '../engine/mosfet'
 import type { MosfetParams } from '../engine/mosfet'
 import { formatSI } from '../engine/units'
-import { T, sym, useT } from '../i18n'
-import { Group, Segmented } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { T, sym } from '../i18n'
+import { Dot, Group, Oscilloscope, Param, ReadoutGrid, Schematic, Segmented, SimPage, Theory, Warning } from '../ui'
 
 /** Samples per sweep, same as every other time-domain page here. */
 const N = 8192
@@ -37,44 +33,42 @@ function matchPart(p: MosfetParams): PartKey {
   return 'custom'
 }
 
-function Schematic() {
-  const t = useT()
+function Diagram() {
   return (
-    <svg className="schematic" viewBox="0 0 260 132" aria-label={t('mosfet-switch.lowSideNChannel')}>
-      <g fill="none" stroke="currentColor" strokeWidth="1.5">
-        {/* gate path: GPIO, series resistor, gate plate */}
-        <circle cx="24" cy="75" r="3" />
-        <path d="M27 75h33" />
-        <rect x="60" y="67" width="36" height="16" />
-        <path d="M96 75h42" />
-        <path d="M138 56v38" />
-        {/* channel, drawn broken for an enhancement mode device */}
-        <path d="M146 56v10M146 70v10M146 84v10" />
-        {/* drain up to the load, source down to ground */}
-        <path d="M146 61h20v-5M166 30v-14M146 89h20v27" />
-        <rect x="158" y="30" width="16" height="26" />
-        {/* body tie */}
-        <path d="M146 75h20M152 71l-6 4 6 4" />
-        <path d="M154 116h24M158 120h16M162 124h8" />
-      </g>
-      <g fill="currentColor" fontSize="11">
-        <text x="2" y="79">
-          GPIO
-        </text>
-        <text x="70" y="62">
-          Rg
-        </text>
-        <text x="180" y="46">
-          Load
-        </text>
-        <text x="176" y="20">
-          +VS
-        </text>
-        <text x="112" y="110">
-          Vds
-        </text>
-      </g>
-    </svg>
+    <Schematic viewBox="0 0 260 132" label="mosfet-switch.lowSideNChannel">
+      {/* gate path: GPIO, series resistor, gate plate */}
+      <circle cx="24" cy="75" r="3" />
+      <path d="M27 75h33" />
+      <rect x="60" y="67" width="36" height="16" />
+      <path d="M96 75h42" />
+      <path d="M138 56v38" />
+      {/* channel, drawn broken for an enhancement mode device */}
+      <path d="M146 56v10M146 70v10M146 84v10" />
+      {/* drain up to the load, source down to ground */}
+      <path d="M146 61h20v-5M166 30v-14M146 89h20v27" />
+      <rect x="158" y="30" width="16" height="26" />
+      {/* Body tie. In a discrete part the substrate is bonded to the source,
+          so the arrow line has to run down and join it rather than stop in
+          mid air. The dot marks the three-way node it lands on. */}
+      <path d="M146 75h20v14M152 71l-6 4 6 4" />
+      <Dot x={166} y={89} />
+      <path d="M154 116h24M158 120h16M162 124h8" />
+      <text x="2" y="79">
+        GPIO
+      </text>
+      <text x="70" y="62">
+        Rg
+      </text>
+      <text x="180" y="46">
+        Load
+      </text>
+      <text x="176" y="20">
+        +VS
+      </text>
+      <text x="112" y="110">
+        Vds
+      </text>
+    </Schematic>
   )
 }
 
@@ -90,8 +84,8 @@ export default function MosfetSwitch() {
       dt: w.dt,
       a,
       traces: [
-        { label: 'mosfet-switch.vgs', color: TRACE_COLORS[0], samples: w.vgs },
-        { label: 'mosfet-switch.vds', color: TRACE_COLORS[1], samples: w.vds },
+        { label: 'mosfet-switch.vgs', samples: w.vgs },
+        { label: 'mosfet-switch.vds', samples: w.vds },
       ],
     }
   }, [p, cycles])
@@ -119,7 +113,7 @@ export default function MosfetSwitch() {
               { value: 'irf540n', label: sym('IRF540N') },
             ]}
           />
-          <Schematic />
+          <Diagram />
 
           <Group label="mosfet-switch.gateDrive">
             <Param
@@ -240,7 +234,7 @@ export default function MosfetSwitch() {
             <Param
               label="common.cyclesShown"
               value={cycles}
-              onChange={(v) => setCycles(Math.round(v))}
+              onChange={setCycles} int
               min={1}
               max={8}
               log={false}
@@ -274,40 +268,30 @@ export default function MosfetSwitch() {
     >
       <Oscilloscope traces={traces} dt={dt} unit="V" />
 
-      {a.belowThreshold && (
-        <Warning
-          text="mosfet-switch.warn1"
-          vars={{ vgsDrive: formatSI(p.vgsDrive, 'V'), vth: formatSI(p.vth, 'V') }}
-        />
-      )}
-      {a.region === 'saturation' && (
-        <Warning
-          text="mosfet-switch.warn2"
-          vars={{
-            id: formatSI(a.id, 'A'),
-            vds: formatSI(a.vds, 'V'),
-            pCond: formatSI(a.pCond, 'W'),
-          }}
-        />
-      )}
-      {a.gateOverCurrent && (
-        <Warning
-          text="mosfet-switch.warn3"
-          vars={{ igPeak: formatSI(a.igPeak, 'A'), GPIO_MAX_MA }}
-        />
-      )}
-      {a.transitionBound && (
-        <Warning
-          text="mosfet-switch.warn4"
-          vars={{ tfEff: formatSI(a.trEff + a.tfEff, 's'), fsw: formatSI(1 / p.fsw, 's') }}
-        />
-      )}
-      {a.overTemp && (
-        <Warning
-          text="mosfet-switch.warn5"
-          vars={{ tj: toCelsius(a.tj).toFixed(0) }}
-        />
-      )}
+      <Warning when={a.belowThreshold}
+        text="mosfet-switch.warn1"
+        vars={{ vgsDrive: formatSI(p.vgsDrive, 'V'), vth: formatSI(p.vth, 'V') }}
+      />
+      <Warning when={a.region === 'saturation'}
+        text="mosfet-switch.warn2"
+        vars={{
+          id: formatSI(a.id, 'A'),
+          vds: formatSI(a.vds, 'V'),
+          pCond: formatSI(a.pCond, 'W'),
+        }}
+      />
+      <Warning when={a.gateOverCurrent}
+        text="mosfet-switch.warn3"
+        vars={{ igPeak: formatSI(a.igPeak, 'A'), GPIO_MAX_MA }}
+      />
+      <Warning when={a.transitionBound}
+        text="mosfet-switch.warn4"
+        vars={{ tfEff: formatSI(a.trEff + a.tfEff, 's'), fsw: formatSI(1 / p.fsw, 's') }}
+      />
+      <Warning when={a.overTemp}
+        text="mosfet-switch.warn5"
+        vars={{ tj: toCelsius(a.tj).toFixed(0) }}
+      />
 
       <ReadoutGrid
         items={[

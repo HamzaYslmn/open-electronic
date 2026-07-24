@@ -2,20 +2,32 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { formatSI } from '../engine/units'
 import { useT } from '../i18n'
 import type { Key } from '../i18n'
-import { PAD, clampView, drawScope, stepScale, zoomView } from './scopeDraw'
+import { PAD, TRACE_COLORS, clampView, drawScope, stepScale, zoomView } from './scopeDraw'
 import type { Trace, View } from './scopeDraw'
 
 export type { Trace } from './scopeDraw'
 export { TRACE_COLORS } from './scopeDraw'
 
+/**
+ * What a page hands the scope. `color` is optional: leave it out and the trace
+ * takes TRACE_COLORS in order, which is what almost every page wants (input sky,
+ * output violet). Pass one only to hold a channel's colour across a mode switch.
+ */
+export type TraceInput = Omit<Trace, 'color'> & { color?: string }
+
 export type OscilloscopeProps = {
-  traces: Trace[]
+  traces: TraceInput[]
   /** Seconds per sample. Sets the horizontal time base. */
   dt: number
   /** Vertical unit for readouts, e.g. 'V' or 'A'. */
   unit?: string
+  /** Tallest the screen may get. It shrinks with the width on narrow devices. */
   height?: number
 }
+
+/** Keep the screen close to 2:1 rather than letting it eat a phone viewport. */
+const screenHeight = (width: number, max: number) =>
+  Math.round(Math.max(190, Math.min(max, width * 0.46)))
 
 /**
  * Shared scope used by every simulator.
@@ -32,9 +44,14 @@ export default function Oscilloscope({
   height = 340,
 }: OscilloscopeProps) {
   const t = useT()
-  // Trace labels are dictionary keys. Resolving them once here means the canvas
-  // legend and the channel buttons both work in finished text.
-  const traces = given.map((tr) => ({ ...tr, label: t(tr.label as Key) }))
+  // Trace labels are dictionary keys; resolve them once so the legend and the
+  // channel buttons read as finished text. Colour defaults to the palette in
+  // order, so a page only names one to pin it.
+  const traces: Trace[] = given.map((tr, i) => ({
+    ...tr,
+    color: tr.color ?? TRACE_COLORS[i % TRACE_COLORS.length],
+    label: t(tr.label as Key),
+  }))
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const wrapRef = useRef<HTMLDivElement>(null)
 
@@ -46,10 +63,12 @@ export default function Oscilloscope({
   const view = useRef<View>({ start: 0, span: 1 })
   const frame = useRef(0)
   const autoVpd = useRef(1)
+  /** Height actually in use, set from the measured width by resize(). */
+  const shown = useRef(height)
 
   // Latest render inputs, refreshed on every commit by the effect below. Kept in
   // a ref so the rAF callback can read them without being re-created.
-  const latest = useRef({ traces, dt, unit, height, thickness, voltsPerDiv, hidden })
+  const latest = useRef({ traces, dt, unit, thickness, voltsPerDiv, hidden })
 
   const paint = useCallback(() => {
     const canvas = canvasRef.current
@@ -59,7 +78,7 @@ export default function Oscilloscope({
     autoVpd.current = drawScope({
       ctx,
       width: canvas.width / (window.devicePixelRatio || 1),
-      height: l.height,
+      height: shown.current,
       traces: l.traces.filter((t) => !l.hidden[t.label]),
       dt: l.dt,
       unit: l.unit,
@@ -80,7 +99,7 @@ export default function Oscilloscope({
   // Every commit refreshes the snapshot and repaints. No dependency array on
   // purpose: any prop or panel change must reach the canvas.
   useEffect(() => {
-    latest.current = { traces, dt, unit, height, thickness, voltsPerDiv, hidden }
+    latest.current = { traces, dt, unit, thickness, voltsPerDiv, hidden }
     paint()
   })
 
@@ -91,13 +110,14 @@ export default function Oscilloscope({
     if (!wrap || !canvas) return
     const w = Math.max(240, Math.round(wrap.clientWidth || wrap.getBoundingClientRect().width))
     const dpr = window.devicePixelRatio || 1
+    shown.current = screenHeight(w, height)
     canvas.width = Math.round(w * dpr)
-    canvas.height = Math.round(latest.current.height * dpr)
+    canvas.height = Math.round(shown.current * dpr)
     canvas.style.width = `${w}px`
-    canvas.style.height = `${latest.current.height}px`
+    canvas.style.height = `${shown.current}px`
     canvas.getContext('2d')?.setTransform(dpr, 0, 0, dpr, 0, 0)
     paint()
-  }, [paint])
+  }, [paint, height])
 
   // Size once on mount, then again whenever the container changes. Relying on
   // the observer alone leaves the canvas at its default 300x150 if the initial

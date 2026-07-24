@@ -9,11 +9,7 @@ import {
 } from '../engine/rf'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group, Select } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Oscilloscope, Param, ReadoutGrid, Select, SimPage, Theory, TRACE_COLORS, Warning } from '../ui'
 
 const N = 1024
 const BAND_OPTIONS = BANDS.map((b, i) => ({ value: String(i), label: b.label }))
@@ -101,18 +97,14 @@ export default function LinkBudget() {
         ]}
       />
 
-      {r.linkFails && (
-        <Warning
-          text="link-budget.warn1"
-          vars={{ marginDb: Math.abs(r.marginDb).toFixed(1) }}
-        />
-      )}
-      {r.marginal && (
-        <Warning
-          text="link-budget.warn2"
-          vars={{ marginDb: r.marginDb.toFixed(1), MARGIN_MIN_DB }}
-        />
-      )}
+      <Warning when={r.linkFails}
+        text="link-budget.warn1"
+        vars={{ marginDb: Math.abs(r.marginDb).toFixed(1) }}
+      />
+      <Warning when={r.marginal}
+        text="link-budget.warn2"
+        vars={{ marginDb: r.marginDb.toFixed(1), MARGIN_MIN_DB }}
+      />
 
       <Theory
         text={[

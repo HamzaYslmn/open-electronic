@@ -3,13 +3,8 @@ import { GPIO_MAX_MA, VCC, VCC_5V } from '../engine/constants'
 import { ODF_TARGET, ampTrace, analyseAmp, analyseSwitch, switchTrace } from '../engine/bjt'
 import { sweep } from '../engine/signal'
 import { formatSI } from '../engine/units'
-import { T, useT } from '../i18n'
-import { Group, Segmented, Toggle } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
-import SourceControls, { useSource } from '../ui/SourceControls'
+import { T } from '../i18n'
+import { Dot, Group, Oscilloscope, Param, ReadoutGrid, Schematic, Segmented, SimPage, SourceControls, Theory, Toggle, useSource, Warning } from '../ui'
 
 /** Samples per sweep, same as every other time-domain page. */
 const N = 8192
@@ -20,91 +15,86 @@ const DC_SPAN = 1e-3
 
 type Mode = 'switch' | 'amp'
 
-function Schematic({ mode }: { mode: Mode }) {
-  const t = useT()
+function Diagram({ mode }: { mode: Mode }) {
   const isSwitch = mode === 'switch'
   return (
-    <svg
-      className="schematic"
+    <Schematic
       viewBox="0 0 260 168"
-      aria-label={t(isSwitch ? 'bjt-switch.npnLowSideSwitch' : 'bjt-switch.commonEmitterAmplifier')}
+      label={isSwitch ? 'bjt-switch.npnLowSideSwitch' : 'bjt-switch.commonEmitterAmplifier'}
     >
-      <g fill="none" stroke="currentColor" strokeWidth="1.5">
-        {/* transistor */}
-        <circle cx="128" cy="78" r="32" />
-        <path d="M110 58V98M110 64L140 46M110 92L140 110" />
-        {/* collector leg, broken for the load resistor */}
-        <path d="M140 46V40M140 18V12" />
-        <rect x="132" y="18" width="16" height="22" />
-        <path d={isSwitch ? 'M120 12H200' : 'M40 12H200'} />
-        {/* output tap */}
-        <path d="M140 46H196" />
-        <circle cx="200" cy="46" r="3" />
+      {/* transistor */}
+      <circle cx="128" cy="78" r="32" />
+      <path d="M110 58V98M110 64L140 46M110 92L140 110" />
+      {/* collector leg, broken for the load resistor */}
+      <path d="M140 46V40M140 18V12" />
+      <rect x="132" y="18" width="16" height="22" />
+      <path d={isSwitch ? 'M120 12H200' : 'M40 12H200'} />
+      {/* output tap; three wires meet at the collector, so it takes a dot */}
+      <path d="M140 46H196" />
+      <Dot x={140} y={46} />
+      <circle cx="200" cy="46" r="3" />
 
-        {isSwitch ? (
-          <>
-            <circle cx="22" cy="78" r="3" />
-            <path d="M25 78H40M80 78H110" />
-            <rect x="40" y="70" width="40" height="16" />
-            <path d="M140 110V142M128 142H152M132 147H148M136 152H144" />
-          </>
-        ) : (
-          <>
-            <circle cx="18" cy="78" r="3" />
-            <path d="M21 78H32M32 70V86M38 70V86M38 78H60" />
-            <rect x="52" y="28" width="16" height="24" />
-            <rect x="52" y="90" width="16" height="24" />
-            <path d="M60 12V28M60 52V90M60 114V142M60 78H110" />
-            <path d="M140 110V116M140 138V142" />
-            <rect x="132" y="116" width="16" height="22" />
-            <path d="M60 142H140M100 142V146M88 146H112M92 151H108M96 156H104" />
-          </>
-        )}
-      </g>
-      <g fill="currentColor" stroke="none">
-        {/* emitter arrow, NPN points out */}
-        <polygon points="137,108 128,106 131,101" />
-      </g>
-      <g fill="currentColor" fontSize="11">
-        <text x="204" y="16">
-          {isSwitch ? 'Vload' : 'VCC'}
-        </text>
-        <text x="154" y="34">
-          {isSwitch ? 'RL' : 'RC'}
-        </text>
-        <text x="184" y="38">
-          Vout
-        </text>
-        {isSwitch ? (
-          <>
-            <text x="8" y="68">
-              Vin
-            </text>
-            <text x="52" y="64">
-              RB
-            </text>
-          </>
-        ) : (
-          <>
-            <text x="6" y="68">
-              Vin
-            </text>
-            <text x="26" y="64">
-              Cin
-            </text>
-            <text x="72" y="44">
-              R1
-            </text>
-            <text x="72" y="108">
-              R2
-            </text>
-            <text x="154" y="132">
-              RE
-            </text>
-          </>
-        )}
-      </g>
-    </svg>
+      {isSwitch ? (
+        <>
+          <circle cx="22" cy="78" r="3" />
+          <path d="M25 78H40M80 78H110" />
+          <rect x="40" y="70" width="40" height="16" />
+          <path d="M140 110V142M128 142H152M132 147H148M136 152H144" />
+        </>
+      ) : (
+        <>
+          <circle cx="18" cy="78" r="3" />
+          <path d="M21 78H32M32 70V86M38 70V86M38 78H60" />
+          <rect x="52" y="28" width="16" height="24" />
+          <rect x="52" y="90" width="16" height="24" />
+          <path d="M60 12V28M60 52V90M60 114V142M60 78H110" />
+          {/* Coupling cap, both divider legs and the base all land here. */}
+          <Dot x={60} y={78} />
+          <path d="M140 110V116M140 138V142" />
+          <rect x="132" y="116" width="16" height="22" />
+          <path d="M60 142H140M100 142V146M88 146H112M92 151H108M96 156H104" />
+        </>
+      )}
+      {/* emitter arrow, NPN points out */}
+      <polygon className="dot" points="137,108 128,106 131,101" />
+      <text x="204" y="16">
+        {isSwitch ? 'Vload' : 'VCC'}
+      </text>
+      <text x="154" y="34">
+        {isSwitch ? 'RL' : 'RC'}
+      </text>
+      <text x="184" y="38">
+        Vout
+      </text>
+      {isSwitch ? (
+        <>
+          <text x="8" y="68">
+            Vin
+          </text>
+          <text x="52" y="64">
+            RB
+          </text>
+        </>
+      ) : (
+        <>
+          <text x="6" y="68">
+            Vin
+          </text>
+          <text x="26" y="64">
+            Cin
+          </text>
+          <text x="72" y="44">
+            R1
+          </text>
+          <text x="72" y="108">
+            R2
+          </text>
+          <text x="154" y="132">
+            RE
+          </text>
+        </>
+      )}
+    </Schematic>
   )
 }
 
@@ -144,8 +134,8 @@ export default function BjtSwitch() {
       return {
         dt,
         traces: [
-          { label: 'bjt-switch.vdrive', color: TRACE_COLORS[0], samples },
-          { label: 'bjt-switch.vce', color: TRACE_COLORS[1], samples: vce },
+          { label: 'bjt-switch.vdrive', samples },
+          { label: 'bjt-switch.vce', samples: vce },
         ],
         sw: analyseSwitch({ ...stage, vDrive: driveHigh }),
         amp: null,
@@ -156,8 +146,8 @@ export default function BjtSwitch() {
     return {
       dt,
       traces: [
-        { label: 'bjt-switch.vb', color: TRACE_COLORS[0], samples: base },
-        { label: 'common.vc', color: TRACE_COLORS[1], samples: collector },
+        { label: 'bjt-switch.vb', samples: base },
+        { label: 'common.vc', samples: collector },
       ],
       sw: null,
       amp: analyseAmp(stage),
@@ -193,7 +183,7 @@ export default function BjtSwitch() {
         controls={
           <>
             {modeSwitch}
-            <Schematic mode="switch" />
+            <Diagram mode="switch" />
 
             <Group label="bjt-switch.baseDrive">
               <Param label="bjt-switch.baseResistorRb" unit="Ω" value={rb} onChange={setRb} min={10} max={1e6} />
@@ -229,25 +219,21 @@ export default function BjtSwitch() {
       >
         <Oscilloscope traces={traces} dt={dt} unit="V" />
 
-        {sw.state !== 'saturated' && (
-          <Warning
-            text="bjt-switch.warn1"
-            vars={{
-              driveHigh: formatSI(driveHigh, 'V'),
-              icAvailable: formatSI(sw.icAvailable, 'A'),
-              icSat: formatSI(sw.icSat, 'A'),
-              vce: formatSI(sw.vce, 'V'),
-              pCollector: formatSI(sw.pCollector, 'W'),
-              rbForTarget: formatSI(sw.rbForTarget, 'Ω'),
-            }}
-          />
-        )}
-        {sw.overGpio && (
-          <Warning
-            text="bjt-switch.warn2"
-            vars={{ ib: formatSI(sw.ib, 'A'), GPIO_MAX_MA }}
-          />
-        )}
+        <Warning when={sw.state !== 'saturated'}
+          text="bjt-switch.warn1"
+          vars={{
+            driveHigh: formatSI(driveHigh, 'V'),
+            icAvailable: formatSI(sw.icAvailable, 'A'),
+            icSat: formatSI(sw.icSat, 'A'),
+            vce: formatSI(sw.vce, 'V'),
+            pCollector: formatSI(sw.pCollector, 'W'),
+            rbForTarget: formatSI(sw.rbForTarget, 'Ω'),
+          }}
+        />
+        <Warning when={sw.overGpio}
+          text="bjt-switch.warn2"
+          vars={{ ib: formatSI(sw.ib, 'A'), GPIO_MAX_MA }}
+        />
 
         <ReadoutGrid
           items={[
@@ -304,7 +290,7 @@ export default function BjtSwitch() {
       controls={
         <>
           {modeSwitch}
-          <Schematic mode="amp" />
+          <Diagram mode="amp" />
 
           <Group label="bjt-switch.supplyAndBias">
             <Param
@@ -342,30 +328,22 @@ export default function BjtSwitch() {
     >
       <Oscilloscope traces={traces} dt={dt} unit="V" />
 
-      {q.region === 'saturated' && (
-        <Warning
-          text="bjt-switch.warn3"
-          vars={{ vce: formatSI(q.vce, 'V') }}
-        />
-      )}
-      {q.region === 'cutoff' && (
-        <Warning
-          text="bjt-switch.warn4"
-          vars={{ vth: formatSI(q.vth, 'V') }}
-        />
-      )}
-      {q.region === 'active' && !q.stiff && (
-        <Warning
-          text="bjt-switch.warn5"
-          vars={{ stiffness: q.stiffness.toFixed(1) }}
-        />
-      )}
-      {q.region === 'active' && clipping && (
-        <Warning
-          text="bjt-switch.warn6"
-          vars={{ amplitude: formatSI(ac.amplitude, 'V'), maxInput: formatSI(q.maxInput, 'V') }}
-        />
-      )}
+      <Warning when={q.region === 'saturated'}
+        text="bjt-switch.warn3"
+        vars={{ vce: formatSI(q.vce, 'V') }}
+      />
+      <Warning when={q.region === 'cutoff'}
+        text="bjt-switch.warn4"
+        vars={{ vth: formatSI(q.vth, 'V') }}
+      />
+      <Warning when={q.region === 'active' && !q.stiff}
+        text="bjt-switch.warn5"
+        vars={{ stiffness: q.stiffness.toFixed(1) }}
+      />
+      <Warning when={q.region === 'active' && clipping}
+        text="bjt-switch.warn6"
+        vars={{ amplitude: formatSI(ac.amplitude, 'V'), maxInput: formatSI(q.maxInput, 'V') }}
+      />
 
       <ReadoutGrid
         items={[

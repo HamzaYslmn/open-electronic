@@ -2,10 +2,7 @@ import { useMemo, useState } from 'react'
 import { FAB_MIN_WIDTH, analyseTrace } from '../engine/conductor'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group, Segmented } from '../ui/Controls'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Param, ReadoutGrid, Segmented, SimPage, Theory, Warning } from '../ui'
 
 export default function TraceWidth() {
   const [current, setCurrent] = useState(1)
@@ -66,26 +63,20 @@ export default function TraceWidth() {
         ]}
       />
 
-      {r.belowFabLimit && (
-        <Warning
-          text="trace-width.warn1"
-          vars={{
-            width: (r.width * 1000).toFixed(3),
-            FAB_MIN_WIDTH: (FAB_MIN_WIDTH * 1000).toFixed(2),
-          }}
-        />
-      )}
-      {!external && (
-        <Warning
-          text="trace-width.warn2"
-        />
-      )}
-      {riseK > 40 && (
-        <Warning
-          text="trace-width.warn3"
-          vars={{ riseK }}
-        />
-      )}
+      <Warning when={r.belowFabLimit}
+        text="trace-width.warn1"
+        vars={{
+          width: (r.width * 1000).toFixed(3),
+          FAB_MIN_WIDTH: (FAB_MIN_WIDTH * 1000).toFixed(2),
+        }}
+      />
+      <Warning when={!external}
+        text="trace-width.warn2"
+      />
+      <Warning when={riseK > 40}
+        text="trace-width.warn3"
+        vars={{ riseK }}
+      />
 
       <Theory
         text={[

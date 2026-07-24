@@ -2,10 +2,7 @@ import { useMemo, useState } from 'react'
 import { analyseDeepSleep, analyseSolar } from '../engine/powerBudget'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group } from '../ui/Controls'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Param, ReadoutGrid, SimPage, Theory, Warning } from '../ui'
 
 export default function SolarSizing() {
   const [activeCurrent, setActiveCurrent] = useState(0.08)
@@ -59,7 +56,7 @@ export default function SolarSizing() {
             <Param label="solar-sizing.panelRating" unit="W" value={panelW} onChange={setPanelW} min={0.1} max={200} />
           </Group>
           <Group label="common.battery">
-            <Param label="solar-sizing.autonomy" unit="days" value={autonomyDays} onChange={(v) => setAutonomyDays(Math.round(v))} min={1} max={30} log={false} step={1} />
+            <Param label="solar-sizing.autonomy" unit="days" value={autonomyDays} onChange={setAutonomyDays} int min={1} max={30} log={false} step={1} />
             <Param label="solar-sizing.depthOfDischarge" value={dod} onChange={setDod} min={0.2} max={1} log={false} step={0.05} />
           </Group>
         </>
@@ -87,27 +84,21 @@ export default function SolarSizing() {
         ]}
       />
 
-      {solar.deficit && (
-        <Warning
-          text="solar-sizing.warn1"
-          vars={{
-            harvestWh: solar.harvestWh.toFixed(2),
-            whPerDay: load.whPerDay.toFixed(2),
-            panelW: solar.panelW.toFixed(2),
-          }}
-        />
-      )}
-      {!solar.deficit && solar.daysToRecharge > autonomyDays && (
-        <Warning
-          text="solar-sizing.warn2"
-          vars={{ daysToRecharge: solar.daysToRecharge.toFixed(1), autonomyDays }}
-        />
-      )}
-      {peakSunHours > 4 && (
-        <Warning
-          text="solar-sizing.warn3"
-        />
-      )}
+      <Warning when={solar.deficit}
+        text="solar-sizing.warn1"
+        vars={{
+          harvestWh: solar.harvestWh.toFixed(2),
+          whPerDay: load.whPerDay.toFixed(2),
+          panelW: solar.panelW.toFixed(2),
+        }}
+      />
+      <Warning when={!solar.deficit && solar.daysToRecharge > autonomyDays}
+        text="solar-sizing.warn2"
+        vars={{ daysToRecharge: solar.daysToRecharge.toFixed(1), autonomyDays }}
+      />
+      <Warning when={peakSunHours > 4}
+        text="solar-sizing.warn3"
+      />
 
       <Theory
         text={[

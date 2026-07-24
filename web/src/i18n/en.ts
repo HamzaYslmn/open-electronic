@@ -1,5 +1,5 @@
 /**
- * English source text, 1955 entries.
+ * English source text, 2030 entries.
  *
  * Keys are short and stable, so rewording a sentence here does not break its
  * translation. Every key must exist in every other language file: tr.ts is
@@ -499,6 +499,8 @@ export const en = {
   'common.cyclesShown': 'Cycles shown',
   'common.dcm': 'DCM',
   'common.dcOffset': 'DC offset',
+  'common.deepPassband': '(deep in the passband)',
+  'common.deepStopband': '(deep in the stopband)',
   'common.diameter': 'Diameter',
   'common.diodeVf': 'Diode Vf',
   'common.dissipation': 'Dissipation',
@@ -516,6 +518,7 @@ export const en = {
   'common.filterTopology': 'Filter topology',
   'common.frequency': 'Frequency',
   'common.gainAt': 'Gain at {frequency}',
+  'common.gainBandwidth': 'Gain bandwidth',
   'common.gateDriveVgs': 'Gate drive VGS',
   'common.gauge': 'Gauge',
   'common.halfWave': 'Half wave',
@@ -540,6 +543,7 @@ export const en = {
   'common.mean': 'mean',
   'common.method': 'Method',
   'common.mode': 'Mode',
+  'common.nearCorner': '(near the corner)',
   'common.never': 'never',
   'common.none': 'none',
   'common.notBuiltYet': 'Not built yet.',
@@ -590,6 +594,7 @@ export const en = {
   'common.source': 'Source',
   'common.sourceLoadZ': 'Source load |Z|',
   'common.square': 'Square',
+  'common.stepResponse': '(step response)',
   'common.supply': 'Supply',
   'common.supplyCurrent': 'Supply current',
   'common.sweep': 'Sweep',
@@ -1365,6 +1370,67 @@ export const en = {
     'The edges take {tfEff} out of a {fsw} period. The FET spends most of the cycle in transition, so the hard switching loss model no longer applies and the real device will be hotter than shown.',
   'mosfet-switch.warn5':
     'Junction is at {tj} °C, past the 150 °C rating. Add a heatsink (lower Rth), lower the current, or improve the gate drive.',
+  'motor-drive.appliedAverage': 'applies {v} on average',
+  'motor-drive.atStandstill': '(rotor held, no back EMF)',
+  'motor-drive.backEmf': 'Back EMF',
+  'motor-drive.blurb':
+    'Speed, torque, stall current and PWM ripple for a brushed motor on an H bridge.',
+  'motor-drive.copperLoss': '({w} as copper loss)',
+  'motor-drive.current': 'Current',
+  'motor-drive.currentRipple': 'Current ripple',
+  'motor-drive.drive': 'Drive',
+  'motor-drive.driverCurrentLimit': 'Driver current limit',
+  'motor-drive.driverHint': 'DRV8833 is 1.5 A, L298N about 2 A, BTS7960 far more.',
+  'motor-drive.electricalTime': 'Electrical time constant',
+  'motor-drive.hBridgeSchematic': 'H bridge driving a motor',
+  'motor-drive.lede':
+    'A brushed motor is an inductor that fights back. The scope shows a start from rest: current in amps, and speed on the same axis in thousands of rpm.',
+  'motor-drive.loadTorque': 'Load torque',
+  'motor-drive.mechanicalPower': 'Mechanical power',
+  'motor-drive.mechanicalTime': 'Mechanical time constant',
+  'motor-drive.mechanics': 'Mechanics',
+  'motor-drive.mostItCanPush': '(the most it can push)',
+  'motor-drive.motor': 'Motor',
+  'motor-drive.n20': 'N20 gearmotor, 6 V',
+  'motor-drive.noLoadWouldBe': '(no load would be {rpm} rpm)',
+  'motor-drive.ofApplied': '({pct}% of the applied volts)',
+  'motor-drive.ofRunningCurrent': '({pct}% of the running current)',
+  'motor-drive.ofStall': '({pct}% of stall)',
+  'motor-drive.preset': 'Motor preset',
+  'motor-drive.rotorInertia': 'Rotor inertia',
+  'motor-drive.rs385': 'RS-385 class, 12 V',
+  'motor-drive.rs775': 'RS-775 class, 12 V',
+  'motor-drive.runningCurrent': 'Running current',
+  'motor-drive.shaftSpeed': 'Shaft speed',
+  'motor-drive.shaftTorque': 'Shaft torque',
+  'motor-drive.speedConstantKv': 'Speed constant Kv',
+  'motor-drive.speedKrpm': 'Speed (krpm)',
+  'motor-drive.stallCurrent': 'Stall current',
+  'motor-drive.stallTorque': 'Stall torque',
+  'motor-drive.theory1':
+    'Two coupled first-order systems, not one: the winding obeys `L·di/dt = v - i·R - ke·w` and the rotor obeys `J·dw/dt = kt·i - b·w - Tload`. The coupling is the back EMF `ke·w`, which is the motor pushing back against the supply as it speeds up. That is the whole behaviour of a DC motor in one line.',
+  'motor-drive.theory2':
+    'At standstill there is no back EMF, so the supply sees only the winding resistance and the current is `V/R`, the stall current. That is why the trace spikes at t = 0 and decays as the rotor picks up speed: the motor is generating its own opposition. Stall current is also what flows if the shaft jams, which is why a driver has to survive it continuously rather than briefly.',
+  'motor-drive.theory3':
+    'Steady state solves both equations together: `w = (kt·V·D - R·Tload) / (kt·ke + R·b)`. Speed therefore falls linearly with load torque, which is the drooping line every motor datasheet plots. In SI the two constants are the same number, `kt = ke`, and a datasheet Kv in rpm/V converts as `ke = {rpmPerRad} / Kv`.',
+  'motor-drive.theory4':
+    'The two time constants are far apart, which is what makes the trace look the way it does. The electrical one is `L/R`, typically under a millisecond, so current reacts almost at once. The mechanical one is `J·R/(kt·ke)`, often tens or hundreds of milliseconds, so speed crawls up long after the current has settled. The trace is stepped with an exact matrix exponential, so it stays correct at any inertia the sliders reach rather than diverging the way forward Euler would.',
+  'motor-drive.title': 'DC Motor Drive',
+  'motor-drive.use':
+    'Any project that moves: robot drives, pumps, fans, conveyors and camera sliders. The number that catches people out is the stall current, several times the running current, drawn every time the motor starts or jams. Size the driver and the supply for that, not for the running figure, or the rail collapses and the ESP32 resets the moment the wheels touch the ground.',
+  'motor-drive.viscousFriction': 'Viscous friction',
+  'motor-drive.warnAudible':
+    'Chopping at {f} is inside the audible range, so the windings will whine at that pitch. Above 20 kHz the noise disappears, at the cost of more switching loss in the bridge.',
+  'motor-drive.warnDriver':
+    'Stall current is {stall}, past the {limit} the driver is rated for. That current flows every time the motor starts or jams, not only in a fault, so the driver needs the headroom or a current limit that folds back. This is the usual reason an H bridge runs hot and then dies.',
+  'motor-drive.warnRipple':
+    'Ripple is {pct}% of the average current. The winding is doing the filtering here, and that much ripple heats it without producing torque. Raise the PWM frequency.',
+  'motor-drive.warnStalled':
+    'Stalled: the {load} load is past the {stall} the motor can produce at this duty, so the rotor never turns and the winding sits at the full stall current. Raise the duty or the supply, gear the load down, or fit a bigger motor.',
+  'motor-drive.whatSetsTheRamp': '(what sets the speed ramp)',
+  'motor-drive.windingInductance': 'Winding inductance',
+  'motor-drive.windingLOverR': '(winding L/R)',
+  'motor-drive.windingResistance': 'Winding resistance',
   'ntc-thermistor.adcCountsPerK': 'ADC counts per K',
   'ntc-thermistor.atC': 'at {tempC} °C',
   'ntc-thermistor.beta': 'Beta',
@@ -1607,8 +1673,10 @@ export const en = {
   'pwm-filter.anRcLowPass':
     "An RC low pass has unity gain at DC and the rectangle's average is `D·Vs`, so the settled output is `Vout = D·Vs` no matter what R and C are. R and C only decide how much of the switching gets through.",
   'pwm-filter.attenuationAtFPwm': 'Attenuation at f_pwm',
+  'pwm-filter.barelyFiltered': '(barely filtered)',
   'pwm-filter.bitMaxAtThis': '({bits} bit, max {maxBits} at this f)',
   'pwm-filter.blurb': 'Turn PWM into an analogue voltage. Ripple against settling time.',
+  'pwm-filter.cleanDc': '(clean DC)',
   'pwm-filter.dutyResolution': 'Duty resolution',
   'pwm-filter.dutyStep': 'Duty step',
   'pwm-filter.esp32GpioIntoAn': 'ESP32 GPIO into an RC low pass',
@@ -1634,6 +1702,7 @@ export const en = {
   'pwm-filter.title': 'PWM Low-Pass Filter',
   'pwm-filter.use':
     'Making a cheap analogue output from a microcontroller that has no DAC, which covers most ESP32 use: setting a reference voltage, driving an analogue meter, generating a control voltage for a fan or a valve. The trade-off is always the same, less ripple means slower settling, and this page shows you exactly where the knee is.',
+  'pwm-filter.visibleRipple': '(visible ripple)',
   'pwm-filter.vpwm': 'Vpwm',
   'pwm-filter.warn1':
     'fc sits only {ratio}x below f_pwm. Aim for {FC_RATIO_GOOD}x (40 dB on the switching fundamental); under {FC_RATIO_MIN}x the RC is not smoothing, it is just rounding the edges. Raise f_pwm or raise R·C.',
@@ -1906,6 +1975,46 @@ export const en = {
     "Q above {HIGH_Q_LIMIT} assumes a lossless L and C. A real inductor's winding resistance and core loss, plus the capacitor ESR, both sit in the loop and will hold the measured Q well below this. Add the coil DCR into R for a realistic answer.",
   'rlc-resonance.warn3':
     'The scope window holds {perRing} samples per ring cycle, so the drawn trace is aliased. The numbers above are still exact, they come from closed form, not the trace. Shorten the window or raise the source frequency to see the real ring.',
+  'sallen-key.atFrequency': '(at {f})',
+  'sallen-key.blurb':
+    'Two-pole low or high pass from one op-amp, with Q, peaking and step ringing.',
+  'sallen-key.c1': 'C1',
+  'sallen-key.c2': 'C2',
+  'sallen-key.cutoff': 'Cutoff',
+  'sallen-key.dampingZeta': '(damping {zeta})',
+  'sallen-key.gbwHint': 'MCP6002 is 1 MHz, TL072 3 MHz, OPA1656 50 MHz.',
+  'sallen-key.gbwOverQ': '(GBW / Q)',
+  'sallen-key.lede':
+    'One op-amp buys a second pole: 40 dB per decade instead of 20, and a Q a passive RC cannot reach without an inductor. Horizontal axis is time.',
+  'sallen-key.linearGain': '({gain}x)',
+  'sallen-key.maximallyFlat': '(maximally flat or gentler)',
+  'sallen-key.none': 'none',
+  'sallen-key.opAmp': 'Op-amp',
+  'sallen-key.opAmpLimit': 'Op-amp runs out at',
+  'sallen-key.peaking': 'Passband peaking',
+  'sallen-key.poleFrequency': 'Pole frequency f0',
+  'sallen-key.r1': 'R1',
+  'sallen-key.r2': 'R2',
+  'sallen-key.rollOff': 'Roll-off',
+  'sallen-key.schematic': 'Unity-gain Sallen-Key filter',
+  'sallen-key.stepOvershoot': 'Step overshoot',
+  'sallen-key.theory1':
+    'Both topologies share one pole pair: `w0 = 1/sqrt(R1·R2·C1·C2)`. The Q differs by which components set it, `Q = sqrt(R1·R2·C1·C2)/(C2·(R1+R2))` for the low pass and `Q = sqrt(R1·R2·C1·C2)/(R1·(C1+C2))` for the high pass. Only the ratio matters, so scaling every resistor up and every capacitor down by the same factor moves nothing but the impedance level.',
+  'sallen-key.theory2':
+    'Q is what a cascade of two RC sections cannot give you. Two independent RC stages always land at Q = 0.5, a droopy corner. Feeding the capacitor from the output instead of from ground adds positive feedback just below the corner, which lifts the response back up: that is the whole trick. Q = 0.707 is Butterworth, the flattest passband with no peak, and it needs `C1 = 2·C2` with equal resistors.',
+  'sallen-key.theory3':
+    'Past Q = 0.707 the response peaks before it falls, by `Q/sqrt(1 - 1/(4·Q²))`, and the step response rings. Overshoot follows the damping ratio alone, `exp(-pi·zeta/sqrt(1 - zeta²))` with `zeta = 1/(2Q)`, which is the same expression as for an RLC network because it is the same pole pair. High Q is therefore a choice about ringing, not just about the shape of the passband.',
+  'sallen-key.theory4':
+    'The op-amp is treated as an ideal unity-gain buffer, which holds while it still has loop gain to spare. Roughly, keep `Q·f0` at least a decade under the gain bandwidth. The trace is not the transfer function: the network is stepped as two capacitor voltages with exact zero-order-hold discretisation, so clipping, ringing and PWM edges all appear as they would on a bench, and nothing diverges at any Q the sliders reach.',
+  'sallen-key.title': 'Sallen-Key Active Filter',
+  'sallen-key.twiceASingleRc': '(twice what one RC gives)',
+  'sallen-key.use':
+    'The standard anti-aliasing filter in front of an ADC, the reconstruction filter after a PWM DAC, and the tone shaping in any audio path. A single RC rolls off too slowly to keep switching noise out of a converter, and cascading two of them cannot produce a flat passband. This is the cheapest way to get a proper Butterworth corner, which is why it appears on almost every mixed-signal board.',
+  'sallen-key.warnBandwidth':
+    'The op-amp is too slow for this corner: f0 of {f0} against a gain bandwidth of {gbw}. The buffer stops following once the loop gain is gone, so the real response sags below the ideal one and the Q you measure is not the Q you calculated. Pick a faster part or a lower corner.',
+  'sallen-key.warnPeaky':
+    'Q of {q} is past {limit}, where ordinary component tolerances start to move the response noticeably. A 5% capacitor shifts Q by roughly the same percentage, so the peak you build is not the peak you designed. Use 1% parts, or spread the filter over two gentler stages.',
+  'sallen-key.whereItIs3Db': '(where it is 3 dB down)',
   'servo-pwm.actualAngle': 'Actual angle',
   'servo-pwm.actualPulse': 'Actual pulse',
   'servo-pwm.angle': 'Angle',

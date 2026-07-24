@@ -39,10 +39,15 @@ export type WarnMsg = { text: Key; vars?: Vars }
  * a transistor out of saturation, a converter in DCM, a GPIO over its current
  * limit. Prefer this over silently returning a number that is not physical.
  *
+ * `when` is the gate: pass the condition and the warning shows itself only when
+ * it holds, so a page writes `<Warning when={op.dcm} .../>` instead of wrapping
+ * every warning in its own `{cond && (...)}`. Omit it for an always-on note.
+ *
  * The text is a key rather than markup so it can be translated. Wrap formulas
  * in `backticks` and interpolate live values with {name} plus a vars entry.
  */
-export function Warning({ text, vars }: WarnMsg) {
+export function Warning({ when = true, text, vars }: WarnMsg & { when?: boolean }) {
+  if (!when) return null
   return (
     <p className="warn-note">
       <Prose text={text} vars={vars} />

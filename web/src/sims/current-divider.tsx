@@ -3,71 +3,64 @@ import { VCC, GPIO_MAX_MA } from '../engine/constants'
 import { QUARTER_WATT, analyse } from '../engine/currentDivider'
 import type { BranchResult, Drive } from '../engine/currentDivider'
 import { formatSI } from '../engine/units'
-import { T, sym, useT } from '../i18n'
-import { Group, Segmented } from '../ui/Controls'
-import { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { T, sym } from '../i18n'
+import { Group, Param, ReadoutGrid, Schematic, Segmented, SimPage, Theory, TRACE_COLORS, Warning } from '../ui'
 
 type DriveKind = 'voltage' | 'current'
 
 /** Slider defaults: a common E12 spread so the split is visibly uneven. */
 const DEFAULT_R = [1000, 2200, 4700, 10_000]
 
-function Schematic({ count, kind }: { count: number; kind: DriveKind }) {
+function Diagram({ count, kind }: { count: number; kind: DriveKind }) {
   // Branches sit evenly between x=90 and x=232 on a 260-wide canvas.
   const xs = Array.from({ length: count }, (_, i) =>
     count === 1 ? 160 : 90 + (i * 142) / (count - 1),
   )
-  const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 120" aria-label={t('current-divider.parallelBranchNetwork')}>
-      <g fill="none" stroke="currentColor" strokeWidth="1.5">
-        {kind === 'voltage' ? (
-          <>
-            <path d="M22 46h16M26 52h8M30 20v26M30 52v48" />
-            <rect x="48" y="13" width="28" height="14" />
-            <path d="M30 20h18M76 20h156" />
-          </>
-        ) : (
-          <>
-            <circle cx="30" cy="60" r="12" />
-            <path d="M30 70v-20M26 55l4-5 4 5" />
-            <path d="M30 20v28M30 72v28M30 20h202" />
-          </>
-        )}
-        <path d="M30 100h202" />
-        {xs.map((x) => (
-          <g key={x}>
-            <rect x={x - 7} y="46" width="14" height="28" />
-            <path d={`M${x} 20v26M${x} 74v26`} />
-          </g>
-        ))}
-      </g>
-      <g fill="currentColor" fontSize="10" textAnchor="middle">
-        {kind === 'voltage' && (
-          <>
-            <text x="62" y="11">
-              Rs
-            </text>
-            <text x="10" y="52">
-              Vs
-            </text>
-          </>
-        )}
-        {kind === 'current' && (
-          <text x="8" y="64" textAnchor="start">
-            I
+    <Schematic viewBox="0 0 260 120" label="current-divider.parallelBranchNetwork">
+      {kind === 'voltage' ? (
+        <>
+          <path d="M22 46h16M26 52h8M30 20v26M30 52v48" />
+          <rect x="48" y="13" width="28" height="14" />
+          <path d="M30 20h18M76 20h156" />
+        </>
+      ) : (
+        <>
+          <circle cx="30" cy="60" r="12" />
+          <path d="M30 70v-20M26 55l4-5 4 5" />
+          <path d="M30 20v28M30 72v28M30 20h202" />
+        </>
+      )}
+      <path d="M30 100h202" />
+      {xs.map((x) => (
+        <g key={x}>
+          <rect x={x - 7} y="46" width="14" height="28" />
+          <path d={`M${x} 20v26M${x} 74v26`} />
+        </g>
+      ))}
+    <g fontSize="10" textAnchor="middle">
+      {kind === 'voltage' && (
+        <>
+          <text x="62" y="11">
+            Rs
           </text>
-        )}
-        {xs.map((x, i) => (
-          <text key={x} x={x} y="42">
-            R{i + 1}
+          <text x="10" y="52">
+            Vs
           </text>
-        ))}
-      </g>
-    </svg>
+        </>
+      )}
+      {kind === 'current' && (
+        <text x="8" y="64" textAnchor="start">
+          I
+        </text>
+      )}
+      {xs.map((x, i) => (
+        <text key={x} x={x} y="42">
+          R{i + 1}
+        </text>
+      ))}
+    </g>
+    </Schematic>
   )
 }
 
@@ -170,7 +163,7 @@ export default function CurrentDivider() {
               { value: 'current', label: 'current-divider.currentSource' },
             ]}
           />
-          <Schematic count={count} kind={kind} />
+          <Diagram count={count} kind={kind} />
 
           <Group label="common.source">
             {kind === 'voltage' ? (
@@ -258,27 +251,21 @@ export default function CurrentDivider() {
         ]}
       />
 
-      {readout.overGpio && (
-        <Warning
-          text="current-divider.warn1"
-          vars={{ total: formatSI(readout.total, 'A'), GPIO_MAX_MA }}
-        />
-      )}
-      {readout.anyOverPower && (
-        <Warning
-          text="current-divider.warn2"
-          vars={{ hot, rating: formatSI(rating, 'W') }}
-        />
-      )}
-      {kind === 'current' && readout.voltage > supply && (
-        <Warning
-          text="current-divider.warn3"
-          vars={{
-            total: formatSI(readout.total, 'A'),
-            voltage: formatSI(readout.voltage, 'V'),
-          }}
-        />
-      )}
+      <Warning when={readout.overGpio}
+        text="current-divider.warn1"
+        vars={{ total: formatSI(readout.total, 'A'), GPIO_MAX_MA }}
+      />
+      <Warning when={readout.anyOverPower}
+        text="current-divider.warn2"
+        vars={{ hot, rating: formatSI(rating, 'W') }}
+      />
+      <Warning when={kind === 'current' && readout.voltage > supply}
+        text="current-divider.warn3"
+        vars={{
+          total: formatSI(readout.total, 'A'),
+          voltage: formatSI(readout.voltage, 'V'),
+        }}
+      />
 
       <Theory
         text={[

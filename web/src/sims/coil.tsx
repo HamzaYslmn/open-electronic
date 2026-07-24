@@ -3,57 +3,50 @@ import { PROTECTION_OPTIONS, analyse, simulate } from '../engine/coil'
 import type { CoilParams, Protection } from '../engine/coil'
 import { GPIO_MAX_MA, VCC } from '../engine/constants'
 import { formatSI } from '../engine/units'
-import { T, useT } from '../i18n'
-import { Group, Segmented } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import type { Trace } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { T } from '../i18n'
+import { Dot, Group, Oscilloscope, Param, ReadoutGrid, Schematic, Segmented, SimPage, Theory, TRACE_COLORS, Warning } from '../ui'
+import type { Trace } from '../ui'
 
 /** Samples per sweep, same budget as every other time-domain page here. */
 const N = 8192
 
-function Schematic({ protection }: { protection: Protection }) {
-  const t = useT()
+function Diagram({ protection }: { protection: Protection }) {
   return (
-    <svg className="schematic" viewBox="0 0 260 130" aria-label={t('coil.lowSideSwitchedCoil')}>
-      <g fill="none" stroke="currentColor" strokeWidth="1.5">
-        {/* supply rail */}
-        <path d="M40 16h180M150 16v14" />
-        {/* the winding */}
-        <path d="M150 30a7 7 0 0 1 0 8a7 7 0 0 1 0 8a7 7 0 0 1 0 8a7 7 0 0 1 0 8" />
-        <path d="M150 62v12" />
-        {/* switch */}
-        <rect x="132" y="74" width="36" height="24" />
-        <path d="M132 86H96M150 98v14M132 112h36M138 118h24M144 124h12" />
-        {/* flyback diode */}
-        {protection !== 'none' && (
-          <>
-            <path d="M204 16v24M196 40h16M204 52l-8-12h16zM204 52v18h-54" />
-          </>
-        )}
-      </g>
-      <g fill="currentColor" fontSize="11">
-        <text x="20" y="20">
-          +V
+    <Schematic viewBox="0 0 260 130" label="coil.lowSideSwitchedCoil">
+      {/* supply rail */}
+      <path d="M40 16h180M150 16v14" />
+      {/* the winding */}
+      <path d="M150 30a7 7 0 0 1 0 8a7 7 0 0 1 0 8a7 7 0 0 1 0 8a7 7 0 0 1 0 8" />
+      <path d="M150 62v12" />
+      {/* switch */}
+      <rect x="132" y="74" width="36" height="24" />
+      <path d="M132 86H96M150 98v14M132 112h36M138 118h24M144 124h12" />
+      {/* Flyback diode. It has to conduct from the switch node back up into
+          the rail, so the triangle points up at the cathode bar. */}
+      {protection !== 'none' && (
+        <>
+          <path d="M204 16v24M196 40h16M196 52h16l-8-12zM204 52v18h-54" />
+          <Dot x={150} y={70} />
+        </>
+      )}
+      <text x="20" y="20">
+        +V
+      </text>
+      <text x="160" y="50">
+        L
+      </text>
+      <text x="139" y="90">
+        Q1
+      </text>
+      <text x="60" y="83">
+        GPIO
+      </text>
+      {protection !== 'none' && (
+        <text x="214" y="46">
+          D1
         </text>
-        <text x="160" y="50">
-          L
-        </text>
-        <text x="139" y="90">
-          Q1
-        </text>
-        <text x="60" y="83">
-          GPIO
-        </text>
-        {protection !== 'none' && (
-          <text x="214" y="46">
-            D1
-          </text>
-        )}
-      </g>
-    </svg>
+      )}
+    </Schematic>
   )
 }
 
@@ -106,7 +99,7 @@ export default function Coil() {
       lede="coil.lede"
       controls={
         <>
-          <Schematic protection={protection} />
+          <Diagram protection={protection} />
 
           <Group label="coil.coil">
             <Param label="common.inductance" unit="H" value={l} onChange={setL} min={1e-6} max={10} />
@@ -155,7 +148,7 @@ export default function Coil() {
             <Param
               label="common.cyclesShown"
               value={cycles}
-              onChange={(v) => setCycles(Math.round(v))}
+              onChange={setCycles} int
               min={1}
               max={10}
               log={false}
@@ -252,45 +245,37 @@ export default function Coil() {
         ]}
       />
 
-      {!readout.hasClamp && (
-        <Warning
-          text="coil.warn1"
-          vars={{
-            iPeak: formatSI(readout.iPeak, 'A'),
-            l: formatSI(l, 'H'),
-            turnOff: formatSI(turnOff, 's'),
-            vSwitchOpen: formatSI(readout.vSwitchOpen, 'V'),
-            vBreakdown: formatSI(vBreakdown, 'V'),
-            small: readout.overBreakdown
-              ? 'coil.pastTheRatingOf'
-              : 'coil.thatIsInsideThe',
-          }}
-        />
-      )}
+      <Warning when={!readout.hasClamp}
+        text="coil.warn1"
+        vars={{
+          iPeak: formatSI(readout.iPeak, 'A'),
+          l: formatSI(l, 'H'),
+          turnOff: formatSI(turnOff, 's'),
+          vSwitchOpen: formatSI(readout.vSwitchOpen, 'V'),
+          vBreakdown: formatSI(vBreakdown, 'V'),
+          small: readout.overBreakdown
+            ? 'coil.pastTheRatingOf'
+            : 'coil.thatIsInsideThe',
+        }}
+      />
 
-      {readout.hasClamp && readout.clampOverBreakdown && (
-        <Warning
-          text="coil.warn2"
-          vars={{
-            vSwitchClamped: formatSI(readout.vSwitchClamped, 'V'),
-            vBreakdown: formatSI(vBreakdown, 'V'),
-          }}
-        />
-      )}
+      <Warning when={readout.hasClamp && readout.clampOverBreakdown}
+        text="coil.warn2"
+        vars={{
+          vSwitchClamped: formatSI(readout.vSwitchClamped, 'V'),
+          vBreakdown: formatSI(vBreakdown, 'V'),
+        }}
+      />
 
-      {readout.saturating && (
-        <Warning
-          text="coil.warn3"
-          vars={{ satPercent: satPercent.toFixed(0), iSat: formatSI(iSat, 'A') }}
-        />
-      )}
+      <Warning when={readout.saturating}
+        text="coil.warn3"
+        vars={{ satPercent: satPercent.toFixed(0), iSat: formatSI(iSat, 'A') }}
+      />
 
-      {readout.overGpio && (
-        <Warning
-          text="coil.warn4"
-          vars={{ iPeak: formatSI(readout.iPeak, 'A'), GPIO_MAX_MA }}
-        />
-      )}
+      <Warning when={readout.overGpio}
+        text="coil.warn4"
+        vars={{ iPeak: formatSI(readout.iPeak, 'A'), GPIO_MAX_MA }}
+      />
 
       <Theory
         text={[

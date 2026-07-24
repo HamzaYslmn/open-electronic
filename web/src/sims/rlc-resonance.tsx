@@ -4,13 +4,8 @@ import { HIGH_Q_LIMIT, analyse, simulate } from '../engine/rlc'
 import type { RLCTopology } from '../engine/rlc'
 import { sweep } from '../engine/signal'
 import { formatSI } from '../engine/units'
-import { T, useT } from '../i18n'
-import { Group, Segmented } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
-import SourceControls, { useSource } from '../ui/SourceControls'
+import { T } from '../i18n'
+import { Dot, Group, Oscilloscope, Param, ReadoutGrid, Schematic, Segmented, SimPage, SourceControls, Theory, useSource, Warning } from '../ui'
 
 /** Samples per sweep, same as every other time-domain page. */
 const N = 8192
@@ -24,51 +19,49 @@ const DAMPING_TEXT = {
   over: 'overdamped, no ringing',
 } as const
 
-function Schematic({ topology }: { topology: RLCTopology }) {
+function Diagram({ topology }: { topology: RLCTopology }) {
   const series = topology === 'series'
-  const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 110" aria-label={t('rlc-resonance.rlcNetwork')}>
-      <g fill="none" stroke="currentColor" strokeWidth="1.5">
-        <circle cx="24" cy="34" r="10" />
-        <path d="M18 34a6 6 0 0 1 12 0M24 24V14M24 44v36h212" />
-        <rect x="56" y="26" width="36" height="16" />
-        <path d="M34 34h22" />
-        {series ? (
-          <>
-            <path d="M92 34h14" />
-            <path d="M106 34a5.5 5.5 0 0 1 11 0a5.5 5.5 0 0 1 11 0a5.5 5.5 0 0 1 11 0a5.5 5.5 0 0 1 11 0" />
-            <path d="M150 34h70" />
-            <path d="M186 34v12M172 46h28M172 56h28M186 56v24" />
-          </>
-        ) : (
-          <>
-            <path d="M92 34h128" />
-            <path d="M140 34v10" />
-            <path d="M140 44a5.5 5.5 0 0 0 0 11a5.5 5.5 0 0 0 0 11M140 66v14" />
-            <path d="M190 34v12M176 46h28M176 56h28M190 56v24" />
-          </>
-        )}
-        <circle cx="220" cy="34" r="3" />
-      </g>
-      <g fill="currentColor" fontSize="11">
-        <text x="68" y="20">
-          R
-        </text>
-        <text x={series ? 122 : 148} y={series ? 20 : 62}>
-          L
-        </text>
-        <text x={series ? 204 : 208} y="62">
-          C
-        </text>
-        <text x="4" y="60">
-          Vin
-        </text>
-        <text x="200" y="24">
-          Vout
-        </text>
-      </g>
-    </svg>
+    <Schematic viewBox="0 0 260 110" label="rlc-resonance.rlcNetwork">
+      <circle cx="24" cy="34" r="10" />
+      <path d="M18 34a6 6 0 0 1 12 0M24 44v36h212" />
+      <rect x="56" y="26" width="36" height="16" />
+      <path d="M34 34h22" />
+      {series ? (
+        <>
+          <path d="M92 34h14" />
+          <path d="M106 34a5.5 5.5 0 0 1 11 0a5.5 5.5 0 0 1 11 0a5.5 5.5 0 0 1 11 0a5.5 5.5 0 0 1 11 0" />
+          <path d="M150 34h70" />
+          <path d="M186 34v12M172 46h28M172 56h28M186 56v24" />
+          <Dot x={186} y={34} />
+        </>
+      ) : (
+        <>
+          <path d="M92 34h128" />
+          <path d="M140 34v10" />
+          <path d="M140 44a5.5 5.5 0 0 0 0 11a5.5 5.5 0 0 0 0 11M140 66v14" />
+          <path d="M190 34v12M176 46h28M176 56h28M190 56v24" />
+          <Dot x={140} y={34} />
+          <Dot x={190} y={34} />
+        </>
+      )}
+      <circle cx="220" cy="34" r="3" />
+      <text x="68" y="20">
+        R
+      </text>
+      <text x={series ? 122 : 148} y={series ? 20 : 62}>
+        L
+      </text>
+      <text x={series ? 204 : 208} y="62">
+        C
+      </text>
+      <text x="4" y="60">
+        Vin
+      </text>
+      <text x="200" y="24">
+        Vout
+      </text>
+    </Schematic>
   )
 }
 
@@ -111,8 +104,8 @@ export default function RLCResonance() {
     return {
       dt,
       traces: [
-        { label: 'common.vin', color: TRACE_COLORS[0], samples: input },
-        { label: 'common.vout', color: TRACE_COLORS[1], samples: vout },
+        { label: 'common.vin', samples: input },
+        { label: 'common.vout', samples: vout },
       ],
       readout,
       peakVout,
@@ -142,7 +135,7 @@ export default function RLCResonance() {
               { value: 'parallel', label: 'common.parallel' },
             ]}
           />
-          <Schematic topology={topology} />
+          <Diagram topology={topology} />
 
           <Group label="common.components">
             <Param label="common.resistor" unit="Ω" value={r} onChange={setR} min={0.01} max={1e6} />
@@ -213,26 +206,20 @@ export default function RLCResonance() {
         ]}
       />
 
-      {overshootWarn && (
-        <Warning
-          text="rlc-resonance.warn1"
-          vars={{ peakVout: formatSI(peakVout, 'V'), drive: formatSI(drive, 'V') }}
-        />
-      )}
+      <Warning when={overshootWarn}
+        text="rlc-resonance.warn1"
+        vars={{ peakVout: formatSI(peakVout, 'V'), drive: formatSI(drive, 'V') }}
+      />
 
-      {lossyQ && (
-        <Warning
-          text="rlc-resonance.warn2"
-          vars={{ HIGH_Q_LIMIT }}
-        />
-      )}
+      <Warning when={lossyQ}
+        text="rlc-resonance.warn2"
+        vars={{ HIGH_Q_LIMIT }}
+      />
 
-      {aliased && (
-        <Warning
-          text="rlc-resonance.warn3"
-          vars={{ perRing: perRing.toFixed(1) }}
-        />
-      )}
+      <Warning when={aliased}
+        text="rlc-resonance.warn3"
+        vars={{ perRing: perRing.toFixed(1) }}
+      />
 
       <Theory
         text={[

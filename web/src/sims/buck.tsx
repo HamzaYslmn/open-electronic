@@ -3,12 +3,8 @@ import { analyse, inductorWaveform, operatingPoint } from '../engine/buck'
 import type { BuckSpec, Rectifier } from '../engine/buck'
 import { VCC, VCC_5V } from '../engine/constants'
 import { formatSI } from '../engine/units'
-import { T, useT } from '../i18n'
-import { Group, Segmented } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { T } from '../i18n'
+import { Dot, Group, Oscilloscope, Param, ReadoutGrid, Schematic, Segmented, SimPage, Theory, Warning } from '../ui'
 
 /** Samples across the whole scope window. */
 const N = 8192
@@ -19,51 +15,48 @@ const RIPPLE_LIMIT = 0.6
 /** Output ripple above this fraction of Vout is worth flagging. */
 const VOUT_RIPPLE_LIMIT = 0.01
 
-function Schematic({ rectifier }: { rectifier: Rectifier }) {
-  const t = useT()
+function Diagram({ rectifier }: { rectifier: Rectifier }) {
   return (
-    <svg
-      className="schematic"
+    <Schematic
       viewBox="0 0 260 110"
-      aria-label={t('buck.buckConverterWithA', { rectifier: rectifier === 'sync' ? 'buck.synchronousFet' : 'buck.catchDiode' })}
+      label="buck.buckConverterWithA"
+      vars={{ rectifier: rectifier === 'sync' ? 'buck.synchronousFet' : 'buck.catchDiode' }}
     >
-      <g fill="none" stroke="currentColor" strokeWidth="1.5">
-        <circle cx="18" cy="30" r="8" />
-        <path d="M18 22V12M18 38v52h214M26 30h20" />
-        <rect x="46" y="22" width="28" height="16" />
-        <path d="M74 30h38" />
-        <path d="M104 30v22M104 68v22" />
-        {rectifier === 'sync' ? (
-          <rect x="90" y="52" width="28" height="16" />
-        ) : (
-          <path d="M94 68h20l-10-16zM94 52h20" />
-        )}
-        <rect x="112" y="22" width="40" height="16" />
-        <path d="M152 30h78" />
-        <path d="M190 30v22M178 52h24M178 62h24M190 62v28" />
-        <circle cx="232" cy="30" r="3" />
-      </g>
-      <g fill="currentColor" fontSize="11">
-        <text x="2" y="64">
-          Vin
-        </text>
-        <text x="50" y="18">
-          SW
-        </text>
-        <text x="126" y="18">
-          L
-        </text>
-        <text x="122" y="64">
-          {rectifier === 'sync' ? 'SW2' : 'D'}
-        </text>
-        <text x="206" y="62">
-          C
-        </text>
-        <text x="200" y="22">
-          Vout
-        </text>
-      </g>
-    </svg>
+      <circle cx="18" cy="30" r="8" />
+      <path d="M18 38v52h214M26 30h20" />
+      <rect x="46" y="22" width="28" height="16" />
+      <path d="M74 30h38" />
+      <path d="M104 30v22M104 68v22" />
+      {rectifier === 'sync' ? (
+        <rect x="90" y="52" width="28" height="16" />
+      ) : (
+        <path d="M94 68h20l-10-16zM94 52h20" />
+      )}
+      <rect x="112" y="22" width="40" height="16" />
+      <path d="M152 30h78" />
+      <path d="M190 30v22M178 52h24M178 62h24M190 62v28" />
+      <Dot x={104} y={30} />
+      <Dot x={190} y={30} />
+      <circle cx="232" cy="30" r="3" />
+      <text x="2" y="64">
+        Vin
+      </text>
+      <text x="50" y="18">
+        SW
+      </text>
+      <text x="126" y="18">
+        L
+      </text>
+      <text x="122" y="64">
+        {rectifier === 'sync' ? 'SW2' : 'D'}
+      </text>
+      <text x="206" y="62">
+        C
+      </text>
+      <text x="200" y="22">
+        Vout
+      </text>
+    </Schematic>
   )
 }
 
@@ -93,9 +86,9 @@ export default function Buck() {
     return {
       dt,
       traces: [
-        { label: 'common.il', color: TRACE_COLORS[0], samples },
-        { label: 'buck.iout', color: TRACE_COLORS[1], samples: level, quiet: true },
-        { label: 'buck.icap', color: TRACE_COLORS[2], samples: icap },
+        { label: 'common.il', samples },
+        { label: 'buck.iout', samples: level, quiet: true },
+        { label: 'buck.icap', samples: icap },
       ],
       ...analyse(spec),
     }
@@ -119,7 +112,7 @@ export default function Buck() {
               { value: 'diode', label: 'buck.schottky' },
             ]}
           />
-          <Schematic rectifier={rectifier} />
+          <Diagram rectifier={rectifier} />
 
           <Group label="common.operatingPoint">
             <Param label="common.inputVin" unit="V" value={vin} onChange={setVin} min={1} max={60} />
@@ -169,7 +162,7 @@ export default function Buck() {
             <Param
               label="common.periodsShown"
               value={periods}
-              onChange={(v) => setPeriods(Math.round(v))}
+              onChange={setPeriods} int
               min={1}
               max={8}
               log={false}
@@ -247,25 +240,19 @@ export default function Buck() {
         ]}
       />
 
-      {op.dropout && (
-        <Warning
-          text="buck.warn1"
-        />
-      )}
+      <Warning when={op.dropout}
+        text="buck.warn1"
+      />
 
-      {op.mode === 'dcm' && !op.dropout && (
-        <Warning
-          text="buck.warn2"
-          vars={{ boundary: formatSI(op.boundary, 'A') }}
-        />
-      )}
+      <Warning when={op.mode === 'dcm' && !op.dropout}
+        text="buck.warn2"
+        vars={{ boundary: formatSI(op.boundary, 'A') }}
+      />
 
-      {op.mode === 'ccm' && rippleRatio > RIPPLE_LIMIT && (
-        <Warning
-          text="buck.warn3"
-          vars={{ rippleRatio: (rippleRatio * 100).toFixed(0) }}
-        />
-      )}
+      <Warning when={op.mode === 'ccm' && rippleRatio > RIPPLE_LIMIT}
+        text="buck.warn3"
+        vars={{ rippleRatio: (rippleRatio * 100).toFixed(0) }}
+      />
 
       <Theory
         text={[

@@ -10,12 +10,8 @@ import {
 import type { Timer555Mode, Timer555Variant } from '../engine/timer555'
 import { VCC_5V } from '../engine/constants'
 import { formatSI } from '../engine/units'
-import { Group, Segmented, Select, Toggle } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import type { ReadoutItem, WarnMsg } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Oscilloscope, Param, ReadoutGrid, Segmented, Select, SimPage, Theory, Toggle, TRACE_COLORS, Warning } from '../ui'
+import type { ReadoutItem, WarnMsg } from '../ui'
 
 const N = 8192
 
@@ -180,7 +176,7 @@ export default function Timer555() {
               <Param
                 label="common.cyclesShown"
                 value={cycles}
-                onChange={(v) => setCycles(Math.round(v))}
+                onChange={setCycles} int
                 min={1}
                 max={12}
                 log={false}

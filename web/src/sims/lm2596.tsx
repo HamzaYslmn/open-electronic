@@ -13,11 +13,7 @@ import { SERIES_NAMES } from '../engine/eseries'
 import type { SeriesName } from '../engine/eseries'
 import { formatSI } from '../engine/units'
 import { T, sym } from '../i18n'
-import { Group, Select } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Oscilloscope, Param, ReadoutGrid, Select, SimPage, Theory, Warning } from '../ui'
 
 const N = 4096
 
@@ -48,7 +44,7 @@ export default function Lm2596() {
     return {
       r,
       dt: w.dt,
-      traces: [{ label: 'common.il', color: TRACE_COLORS[0], samples: w.samples }],
+      traces: [{ label: 'common.il', samples: w.samples }],
     }
   }, [vin, voutTarget, iout, r1, series, l, cout, esr, vd, dcr, thetaJA, tAmbC, cycles])
 
@@ -75,7 +71,7 @@ export default function Lm2596() {
             <Param label="common.outputCap" unit="F" value={cout} onChange={setCout} min={1e-6} max={4.7e-3} />
             <Param label="common.capEsr" unit="Ω" value={esr} onChange={setEsr} min={0.001} max={2} />
             <Param label="common.diodeVf" unit="V" value={vd} onChange={setVd} min={0.2} max={1} log={false} step={0.05} />
-            <Param label="common.periodsShown" value={cycles} onChange={(v) => setCycles(Math.round(v))} min={1} max={10} log={false} step={1} />
+            <Param label="common.periodsShown" value={cycles} onChange={setCycles} int min={1} max={10} log={false} step={1} />
           </Group>
 
           <Group label="common.thermal">
@@ -125,47 +121,33 @@ export default function Lm2596() {
         ]}
       />
 
-      {r.dropout && (
-        <Warning
-          text="lm2596.warn1"
-          vars={{ vinMinimum: formatSI(r.vinMinimum, 'V') }}
-        />
-      )}
-      {r.vinLow && (
-        <Warning
-          text="lm2596.warn2"
-          vars={{ VIN_MIN }}
-        />
-      )}
-      {r.vinHigh && (
-        <Warning
-          text="lm2596.warn3"
-          vars={{ VIN_MAX }}
-        />
-      )}
-      {r.overCurrent && (
-        <Warning
-          text="lm2596.warn4"
-          vars={{ IOUT_MAX }}
-        />
-      )}
-      {r.overLimit && (
-        <Warning
-          text="lm2596.warn5"
-        />
-      )}
-      {r.overTemp && (
-        <Warning
-          text="lm2596.warn6"
-          vars={{ tj: r.tj.toFixed(0), TJ_MAX }}
-        />
-      )}
-      {r.voutBelowRef && (
-        <Warning
-          text="lm2596.warn7"
-          vars={{ VREF }}
-        />
-      )}
+      <Warning when={r.dropout}
+        text="lm2596.warn1"
+        vars={{ vinMinimum: formatSI(r.vinMinimum, 'V') }}
+      />
+      <Warning when={r.vinLow}
+        text="lm2596.warn2"
+        vars={{ VIN_MIN }}
+      />
+      <Warning when={r.vinHigh}
+        text="lm2596.warn3"
+        vars={{ VIN_MAX }}
+      />
+      <Warning when={r.overCurrent}
+        text="lm2596.warn4"
+        vars={{ IOUT_MAX }}
+      />
+      <Warning when={r.overLimit}
+        text="lm2596.warn5"
+      />
+      <Warning when={r.overTemp}
+        text="lm2596.warn6"
+        vars={{ tj: r.tj.toFixed(0), TJ_MAX }}
+      />
+      <Warning when={r.voutBelowRef}
+        text="lm2596.warn7"
+        vars={{ VREF }}
+      />
 
       <Theory
         text={[

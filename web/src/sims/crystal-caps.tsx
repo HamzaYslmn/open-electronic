@@ -2,10 +2,7 @@ import { useMemo, useState } from 'react'
 import { analyseCrystal } from '../engine/parts'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group } from '../ui/Controls'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Param, ReadoutGrid, SimPage, Theory, Warning } from '../ui'
 
 export default function CrystalCaps() {
   const [frequency, setFrequency] = useState(32768)
@@ -58,20 +55,16 @@ export default function CrystalCaps() {
         ]}
       />
 
-      {r.strayTooHigh && (
-        <Warning
-          text="crystal-caps.warn1"
-        />
-      )}
-      {r.outOfSpec && !r.strayTooHigh && (
-        <Warning
-          text="crystal-caps.warn2"
-          vars={{
-            errorPpm: r.errorPpm.toFixed(1),
-            secondsPerDay: Math.abs(secondsPerDay).toFixed(1),
-          }}
-        />
-      )}
+      <Warning when={r.strayTooHigh}
+        text="crystal-caps.warn1"
+      />
+      <Warning when={r.outOfSpec && !r.strayTooHigh}
+        text="crystal-caps.warn2"
+        vars={{
+          errorPpm: r.errorPpm.toFixed(1),
+          secondsPerDay: Math.abs(secondsPerDay).toFixed(1),
+        }}
+      />
 
       <Theory
         text={[

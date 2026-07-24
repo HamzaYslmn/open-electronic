@@ -4,11 +4,7 @@ import { APB_CLOCK, BITS_MAX, analyseLedc, maxFrequency } from '../engine/ledc'
 import { generate } from '../engine/signal'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Oscilloscope, Param, ReadoutGrid, SimPage, Theory, TRACE_COLORS, Warning } from '../ui'
 
 const N = 8192
 
@@ -56,7 +52,7 @@ export default function LedcPwm() {
             <Param
               label="ledc-pwm.requestedBits"
               value={requestedBits}
-              onChange={(v) => setRequestedBits(Math.round(v))}
+              onChange={setRequestedBits} int
               min={1}
               max={BITS_MAX}
               log={false}
@@ -65,7 +61,7 @@ export default function LedcPwm() {
           </Group>
           <Group label="common.output">
             <Param label="common.duty" value={duty} onChange={setDuty} min={0} max={1} log={false} step={0.001} />
-            <Param label="common.cyclesShown" value={cycles} onChange={(v) => setCycles(Math.round(v))} min={1} max={10} log={false} step={1} />
+            <Param label="common.cyclesShown" value={cycles} onChange={setCycles} int min={1} max={10} log={false} step={1} />
           </Group>
         </>
       }
@@ -91,24 +87,20 @@ export default function LedcPwm() {
         ]}
       />
 
-      {r.unreachable && (
-        <Warning
-          text="ledc-pwm.warn1"
-          vars={{ frequency: formatSI(frequency, 'Hz'), APB_CLOCK: formatSI(APB_CLOCK, 'Hz') }}
-        />
-      )}
-      {r.clamped && !r.unreachable && (
-        <Warning
-          text="ledc-pwm.warn2"
-          vars={{
-            requestedBits,
-            frequency: formatSI(frequency, 'Hz'),
-            bits: r.bits,
-            stepCount: r.stepCount,
-            requestedBits2: Math.pow(2, requestedBits).toLocaleString(),
-          }}
-        />
-      )}
+      <Warning when={r.unreachable}
+        text="ledc-pwm.warn1"
+        vars={{ frequency: formatSI(frequency, 'Hz'), APB_CLOCK: formatSI(APB_CLOCK, 'Hz') }}
+      />
+      <Warning when={r.clamped && !r.unreachable}
+        text="ledc-pwm.warn2"
+        vars={{
+          requestedBits,
+          frequency: formatSI(frequency, 'Hz'),
+          bits: r.bits,
+          stepCount: r.stepCount,
+          requestedBits2: Math.pow(2, requestedBits).toLocaleString(),
+        }}
+      />
       {r.bits > 0 && r.bits < 8 && !r.unreachable && (
         <Warning
           text="ledc-pwm.warn3"

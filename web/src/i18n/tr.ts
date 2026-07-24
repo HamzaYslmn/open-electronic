@@ -502,6 +502,8 @@ export const tr: Record<Key, string> = {
   'common.cyclesShown': 'Gösterilen çevrim',
   'common.dcm': 'DCM',
   'common.dcOffset': 'DC ofset',
+  'common.deepPassband': '(geçirme bandının derininde)',
+  'common.deepStopband': '(durdurma bandının derininde)',
   'common.diameter': 'Çap',
   'common.diodeVf': 'Diyot Vf',
   'common.dissipation': 'Güç kaybı',
@@ -519,6 +521,7 @@ export const tr: Record<Key, string> = {
   'common.filterTopology': 'Süzgeç topolojisi',
   'common.frequency': 'Frekans',
   'common.gainAt': '{frequency} frekansında kazanç',
+  'common.gainBandwidth': 'Kazanç bant genişliği',
   'common.gateDriveVgs': 'Kapı sürme VGS',
   'common.gauge': 'Kalınlık',
   'common.halfWave': 'Yarım dalga',
@@ -543,6 +546,7 @@ export const tr: Record<Key, string> = {
   'common.mean': 'ortalama',
   'common.method': 'Yöntem',
   'common.mode': 'Kip',
+  'common.nearCorner': '(köşeye yakın)',
   'common.never': 'hiçbir zaman',
   'common.none': 'yok',
   'common.notBuiltYet': 'Henüz hazır değil.',
@@ -593,6 +597,7 @@ export const tr: Record<Key, string> = {
   'common.source': 'Kaynak',
   'common.sourceLoadZ': 'Kaynak yükü |Z|',
   'common.square': 'Kare',
+  'common.stepResponse': '(basamak yanıtı)',
   'common.supply': 'Besleme',
   'common.supplyCurrent': 'Besleme akımı',
   'common.sweep': 'Tarama',
@@ -1377,6 +1382,68 @@ export const tr: Record<Key, string> = {
     'Kenarlar {fsw} çevriminin {tfEff} kadarını alıyor. FET çevrimin çoğunu geçişte geçiriyor, yani sert anahtarlama kaybı modeli artık geçerli değil ve gerçek eleman gösterilenden daha sıcak olacaktır.',
   'mosfet-switch.warn5':
     "Jonksiyon {tj} °C'de, 150 °C değerinin ötesinde. Soğutucu ekleyin (Rth'yi düşürün), akımı azaltın ya da kapı sürüşünü iyileştirin.",
+  'motor-drive.appliedAverage': 'ortalama {v} uygular',
+  'motor-drive.atStandstill': '(rotor tutulu, karşı EMK yok)',
+  'motor-drive.backEmf': 'Karşı EMK',
+  'motor-drive.blurb':
+    'H köprüsündeki fırçalı bir motor için hız, tork, durma akımı ve PWM dalgalanması.',
+  'motor-drive.copperLoss': '({w} bakır kaybı olarak)',
+  'motor-drive.current': 'Akım',
+  'motor-drive.currentRipple': 'Akım dalgalanması',
+  'motor-drive.drive': 'Sürücü',
+  'motor-drive.driverCurrentLimit': 'Sürücü akım sınırı',
+  'motor-drive.driverHint':
+    'DRV8833 için 1,5 A, L298N için yaklaşık 2 A, BTS7960 için çok daha fazlası.',
+  'motor-drive.electricalTime': 'Elektriksel zaman sabiti',
+  'motor-drive.hBridgeSchematic': 'Motor süren H köprüsü',
+  'motor-drive.lede':
+    'Fırçalı bir motor, geri direnen bir bobindir. Osiloskop duruştan kalkışı gösterir: amper cinsinden akım ve aynı eksende bin rpm biriminde hız.',
+  'motor-drive.loadTorque': 'Yük torku',
+  'motor-drive.mechanicalPower': 'Mekanik güç',
+  'motor-drive.mechanicalTime': 'Mekanik zaman sabiti',
+  'motor-drive.mechanics': 'Mekanik',
+  'motor-drive.mostItCanPush': '(itebileceği en yüksek değer)',
+  'motor-drive.motor': 'Motor',
+  'motor-drive.n20': 'N20 redüktörlü motor, 6 V',
+  'motor-drive.noLoadWouldBe': '(yüksüz {rpm} rpm olurdu)',
+  'motor-drive.ofApplied': '(uygulanan gerilimin %{pct} kadarı)',
+  'motor-drive.ofRunningCurrent': '(çalışma akımının %{pct} kadarı)',
+  'motor-drive.ofStall': '(durma akımının %{pct} kadarı)',
+  'motor-drive.preset': 'Hazır motor',
+  'motor-drive.rotorInertia': 'Rotor ataleti',
+  'motor-drive.rs385': 'RS-385 sınıfı, 12 V',
+  'motor-drive.rs775': 'RS-775 sınıfı, 12 V',
+  'motor-drive.runningCurrent': 'Çalışma akımı',
+  'motor-drive.shaftSpeed': 'Mil hızı',
+  'motor-drive.shaftTorque': 'Mil torku',
+  'motor-drive.speedConstantKv': 'Hız sabiti Kv',
+  'motor-drive.speedKrpm': 'Hız (krpm)',
+  'motor-drive.stallCurrent': 'Durma akımı',
+  'motor-drive.stallTorque': 'Durma torku',
+  'motor-drive.theory1':
+    'Tek değil, birbirine bağlı iki birinci derece sistem: sargı `L·di/dt = v - i·R - ke·w`, rotor ise `J·dw/dt = kt·i - b·w - Tload` denklemine uyar. Bağlantıyı kuran, motorun hızlandıkça beslemeye karşı koyması olan `ke·w` karşı EMK terimidir. Bir DC motorun tüm davranışı tek satırda budur.',
+  'motor-drive.theory2':
+    'Duruşta karşı EMK yoktur, bu yüzden besleme yalnızca sargı direncini görür ve akım durma akımı olan `V/R` değerindedir. İzin t = 0 anında sıçrayıp rotor hızlandıkça sönmesinin nedeni budur: motor kendi karşı koymasını üretmektedir. Mil sıkışırsa da aynı akım akar; bir sürücünün buna kısa süre değil sürekli dayanması gerekmesinin nedeni budur.',
+  'motor-drive.theory3':
+    'Kararlı durum iki denklemi birlikte çözer: `w = (kt·V·D - R·Tload) / (kt·ke + R·b)`. Dolayısıyla hız, yük torkuyla doğrusal olarak düşer; her motor veri sayfasının çizdiği eğimli doğru budur. SI biriminde iki sabit aynı sayıdır, `kt = ke`, ve veri sayfasındaki rpm/V cinsinden Kv değeri `ke = {rpmPerRad} / Kv` ile dönüştürülür.',
+  'motor-drive.theory4':
+    'İki zaman sabiti birbirinden çok uzaktır ve izin böyle görünmesinin nedeni budur. Elektriksel olan `L/R` genellikle bir milisaniyenin altındadır, bu yüzden akım neredeyse anında tepki verir. Mekanik olan `J·R/(kt·ke)` ise çoğu zaman onlarca ya da yüzlerce milisaniyedir, bu yüzden hız, akım oturduktan çok sonra yavaşça yükselir. İz tam bir matris üsteliyle adımlanır, böylece sürgülerin ulaştığı her atalet değerinde ileri Euler gibi ıraksamak yerine doğru kalır.',
+  'motor-drive.title': 'DC Motor Sürücüsü',
+  'motor-drive.use':
+    'Hareket eden her proje: robot tahrikleri, pompalar, fanlar, konveyörler ve kamera kızakları. İnsanları yanıltan değer durma akımıdır; çalışma akımının birkaç katıdır ve motor her kalkışta veya sıkıştığında çekilir. Sürücüyü ve beslemeyi çalışma değerine göre değil buna göre boyutlandırın, yoksa tekerlekler yere değdiği anda hat çöker ve ESP32 yeniden başlar.',
+  'motor-drive.viscousFriction': 'Viskoz sürtünme',
+  'motor-drive.warnAudible':
+    '{f} frekansında kıymak duyulabilir aralığın içindedir, bu yüzden sargılar o perdeden ötecektir. 20 kHz üzerinde bu gürültü kaybolur, bedeli köprüde daha fazla anahtarlama kaybıdır.',
+  'motor-drive.warnDriver':
+    'Durma akımı {stall}, sürücünün dayandığı {limit} değerinin ötesinde. Bu akım yalnızca arızada değil, motor her kalkışta veya sıkıştığında akar; bu yüzden sürücünün ya bu payı ya da geri kısan bir akım sınırı olmalıdır. Bir H köprüsünün ısınıp sonra bozulmasının alışılmış nedeni budur.',
+  'motor-drive.warnRipple':
+    'Dalgalanma, ortalama akımın %{pct} kadarı. Süzme işini burada sargı yapıyor ve bu kadar dalgalanma tork üretmeden onu ısıtır. PWM frekansını yükseltin.',
+  'motor-drive.warnStalled':
+    'Durdu: {load} yük, motorun bu görev çevriminde üretebildiği {stall} değerinin ötesinde; bu yüzden rotor hiç dönmez ve sargı tam durma akımında kalır. Görev çevrimini ya da beslemeyi yükseltin, yükü dişliyle azaltın veya daha büyük bir motor takın.',
+  'motor-drive.whatSetsTheRamp': '(hız rampasını belirleyen değer)',
+  'motor-drive.windingInductance': 'Sargı endüktansı',
+  'motor-drive.windingLOverR': '(sargının L/R değeri)',
+  'motor-drive.windingResistance': 'Sargı direnci',
   'ntc-thermistor.adcCountsPerK': 'K başına ADC adımı',
   'ntc-thermistor.atC': "{tempC} °C'de",
   'ntc-thermistor.beta': 'Beta',
@@ -1619,8 +1686,10 @@ export const tr: Record<Key, string> = {
   'pwm-filter.anRcLowPass':
     "Bir RC alçak geçiren süzgeç DC'de birim kazanca sahiptir ve dikdörtgen dalganın ortalaması `D·Vs` olduğundan, R ve C ne olursa olsun oturmuş çıkış `Vout = D·Vs` olur. R ve C yalnızca anahtarlama bileşeninin ne kadarının sızacağını belirler.",
   'pwm-filter.attenuationAtFPwm': "f_pwm'de zayıflatma",
+  'pwm-filter.barelyFiltered': '(zar zor süzülmüş)',
   'pwm-filter.bitMaxAtThis': '({bits} bit, bu f değerinde en çok {maxBits})',
   'pwm-filter.blurb': 'PWM sinyalini analog gerilime çevirin. Dalgalanmaya karşı oturma süresi.',
+  'pwm-filter.cleanDc': '(temiz DC)',
   'pwm-filter.dutyResolution': 'Görev çevrimi çözünürlüğü',
   'pwm-filter.dutyStep': 'Görev çevrimi adımı',
   'pwm-filter.esp32GpioIntoAn': "RC alçak geçiren süzgece bağlı ESP32 GPIO'su",
@@ -1646,6 +1715,7 @@ export const tr: Record<Key, string> = {
   'pwm-filter.title': 'PWM Alçak Geçiren Süzgeç',
   'pwm-filter.use':
     "DAC'ı olmayan bir mikrodenetleyiciden ucuz bir analog çıkış üretmek için kullanılır; ESP32 kullanımının çoğu da budur: bir referans gerilim ayarlamak, analog bir gösterge sürmek, bir fan ya da vana için kontrol gerilimi üretmek. Ödünleşim her zaman aynıdır: daha az dalgalanma, daha yavaş oturma demektir; bu sayfa da kırılma noktasının tam olarak nerede olduğunu gösterir.",
+  'pwm-filter.visibleRipple': '(görünür dalgalanma)',
   'pwm-filter.vpwm': 'Vpwm',
   'pwm-filter.warn1':
     "fc, f_pwm değerinin yalnızca {ratio} katı kadar altında kalıyor. {FC_RATIO_GOOD} katı hedefleyin (anahtarlama temel bileşeninde 40 dB); {FC_RATIO_MIN} katının altında RC düzleştirme yapmaz, yalnızca kenarları yuvarlar. f_pwm'i ya da R·C'yi yükseltin.",
@@ -1924,6 +1994,46 @@ export const tr: Record<Key, string> = {
     "{HIGH_Q_LIMIT} üzerindeki bir Q, kayıpsız bir L ve C varsayar. Gerçek bir bobinin sargı direnci ile çekirdek kaybı ve buna ek olarak kondansatörün ESR'si, ikisi de çevrimin içindedir ve ölçülen Q'yu bunun epey altında tutar. Gerçekçi bir sonuç için bobinin DCR'sini R'ye katın.",
   'rlc-resonance.warn3':
     'Osiloskop penceresi, çınlama çevrimi başına yalnızca {perRing} örnek tutuyor, yani çizilen iz örtüşmelidir (alias). Yukarıdaki sayılar yine de tamdır; izden değil kapalı biçimli çözümden gelirler. Gerçek çınlamayı görmek için pencereyi kısaltın ya da kaynak frekansını yükseltin.',
+  'sallen-key.atFrequency': '({f} frekansında)',
+  'sallen-key.blurb':
+    'Tek işlemsel yükselteçle iki kutuplu alçak veya yüksek geçiren süzgeç; Q, tepe yapma ve basamak çınlaması ile.',
+  'sallen-key.c1': 'C1',
+  'sallen-key.c2': 'C2',
+  'sallen-key.cutoff': 'Kesim',
+  'sallen-key.dampingZeta': '(sönüm {zeta})',
+  'sallen-key.gbwHint': 'MCP6002 için 1 MHz, TL072 için 3 MHz, OPA1656 için 50 MHz.',
+  'sallen-key.gbwOverQ': '(GBW / Q)',
+  'sallen-key.lede':
+    'Tek bir işlemsel yükselteç ikinci bir kutup kazandırır: dekat başına 20 yerine 40 dB ve pasif bir RC devresinin bobin olmadan ulaşamayacağı bir Q. Yatay eksen zamandır.',
+  'sallen-key.linearGain': '({gain}x)',
+  'sallen-key.maximallyFlat': '(en düz veya daha yumuşak)',
+  'sallen-key.none': 'yok',
+  'sallen-key.opAmp': 'İşlemsel yükselteç',
+  'sallen-key.opAmpLimit': 'İşlemsel yükseltecin sınırı',
+  'sallen-key.peaking': 'Geçirme bandı tepesi',
+  'sallen-key.poleFrequency': 'Kutup frekansı f0',
+  'sallen-key.r1': 'R1',
+  'sallen-key.r2': 'R2',
+  'sallen-key.rollOff': 'Sönüm eğimi',
+  'sallen-key.schematic': 'Birim kazançlı Sallen-Key süzgeci',
+  'sallen-key.stepOvershoot': 'Basamak aşımı',
+  'sallen-key.theory1':
+    'Her iki topoloji de tek bir kutup çiftini paylaşır: `w0 = 1/sqrt(R1·R2·C1·C2)`. Q, onu hangi bileşenlerin belirlediğine göre değişir: alçak geçiren için `Q = sqrt(R1·R2·C1·C2)/(C2·(R1+R2))`, yüksek geçiren için `Q = sqrt(R1·R2·C1·C2)/(R1·(C1+C2))`. Yalnızca oran önemlidir, bu yüzden her direnci aynı çarpanla büyütüp her kondansatörü aynı çarpanla küçültmek empedans düzeyinden başka hiçbir şeyi değiştirmez.',
+  'sallen-key.theory2':
+    "Q, art arda bağlanmış iki RC katının veremeyeceği şeydir. Bağımsız iki RC katı her zaman Q = 0,5 değerine iner, yani sarkık bir köşe verir. Kondansatörü topraktan değil çıkıştan beslemek, köşenin hemen altında pozitif geri besleme ekler ve yanıtı geri kaldırır: bütün püf noktası budur. Q = 0,707 Butterworth'tür, tepesiz en düz geçirme bandıdır ve eşit dirençlerle `C1 = 2·C2` gerektirir.",
+  'sallen-key.theory3':
+    'Q = 0,707 değerinin ötesinde yanıt düşmeden önce `Q/sqrt(1 - 1/(4·Q²))` kadar tepe yapar ve basamak yanıtı çınlar. Aşım yalnızca sönüm oranına bağlıdır, `zeta = 1/(2Q)` ile `exp(-pi·zeta/sqrt(1 - zeta²))`; bu, bir RLC devresiyle aynı ifadedir çünkü aynı kutup çiftidir. Dolayısıyla yüksek Q, yalnızca geçirme bandının biçimiyle ilgili değil, çınlamayla ilgili bir tercihtir.',
+  'sallen-key.theory4':
+    'İşlemsel yükselteç ideal birim kazançlı bir tampon olarak alınır; bu, elinde artacak çevrim kazancı olduğu sürece geçerlidir. Kabaca, `Q·f0` değerini kazanç bant genişliğinin en az bir dekat altında tutun. İz, transfer işlevi değildir: devre, iki kondansatör gerilimi olarak tam sıfırıncı derece tutma ayrıklaştırmasıyla adımlanır; böylece kırpma, çınlama ve PWM kenarları tezgahta görüleceği gibi belirir ve sürgülerin ulaştığı hiçbir Q değerinde hiçbir şey ıraksamaz.',
+  'sallen-key.title': 'Sallen-Key Aktif Süzgeç',
+  'sallen-key.twiceASingleRc': '(tek bir RC devresinin iki katı)',
+  'sallen-key.use':
+    'Bir ADC önündeki standart örtüşme önleyici süzgeç, PWM DAC sonrasındaki geri çatma süzgeci ve her ses yolundaki ton şekillendirme. Tek bir RC, anahtarlama gürültüsünü çeviriciden uzak tutacak kadar hızlı sönmez ve iki tanesini art arda bağlamak düz bir geçirme bandı üretemez. Düzgün bir Butterworth köşesi elde etmenin en ucuz yolu budur; neredeyse her karma işaretli kartta görünmesinin nedeni de budur.',
+  'sallen-key.warnBandwidth':
+    'İşlemsel yükselteç bu köşe için fazla yavaş: {gbw} kazanç bant genişliğine karşı {f0} f0 değeri. Çevrim kazancı tükendiğinde tampon izlemeyi bırakır, bu yüzden gerçek yanıt ideal olanın altına düşer ve ölçtüğünüz Q hesapladığınız Q olmaz. Daha hızlı bir parça ya da daha düşük bir köşe seçin.',
+  'sallen-key.warnPeaky':
+    'Q değeri {q}, olağan bileşen toleranslarının yanıtı gözle görülür biçimde kaydırmaya başladığı {limit} sınırının ötesinde. %5 toleranslı bir kondansatör Q değerini kabaca aynı oranda kaydırır, yani kurduğunuz tepe tasarladığınız tepe olmaz. %1 toleranslı parçalar kullanın ya da süzgeci daha yumuşak iki kata yayın.',
+  'sallen-key.whereItIs3Db': '(3 dB düştüğü nokta)',
   'servo-pwm.actualAngle': 'Gerçek açı',
   'servo-pwm.actualPulse': 'Gerçek darbe',
   'servo-pwm.angle': 'Açı',

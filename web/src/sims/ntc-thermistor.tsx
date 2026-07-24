@@ -3,11 +3,7 @@ import { VCC } from '../engine/constants'
 import { analyseNtc, ntcResistance, toKelvin } from '../engine/sensing'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Oscilloscope, Param, ReadoutGrid, SimPage, Theory, Warning } from '../ui'
 
 const N = 1024
 
@@ -34,7 +30,7 @@ export default function NtcThermistor() {
     return {
       r,
       dt: step,
-      traces: [{ label: 'common.vout', color: TRACE_COLORS[0], samples: volts }],
+      traces: [{ label: 'common.vout', samples: volts }],
     }
   }, [r0, beta, t0C, tempC, rSeries, dissipation, sweepLow, sweepHigh])
 
@@ -80,18 +76,14 @@ export default function NtcThermistor() {
         ]}
       />
 
-      {r.selfHeatSignificant && (
-        <Warning
-          text="ntc-thermistor.warn1"
-          vars={{ selfHeatW: formatSI(r.selfHeatW, 'W'), selfHeatK: r.selfHeatK.toFixed(2) }}
-        />
-      )}
-      {rSeries !== r0 && (
-        <Warning
-          text="ntc-thermistor.warn2"
-          vars={{ t0C, r0: formatSI(r0, 'Ω') }}
-        />
-      )}
+      <Warning when={r.selfHeatSignificant}
+        text="ntc-thermistor.warn1"
+        vars={{ selfHeatW: formatSI(r.selfHeatW, 'W'), selfHeatK: r.selfHeatK.toFixed(2) }}
+      />
+      <Warning when={rSeries !== r0}
+        text="ntc-thermistor.warn2"
+        vars={{ t0C, r0: formatSI(r0, 'Ω') }}
+      />
 
       <Theory
         text={[

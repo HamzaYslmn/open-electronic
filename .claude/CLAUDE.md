@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 `open-electronic`: browser-based electronics simulators and calculators for engineers. The app lives in `web/`.
 Every simulator runs real formulas client-side and drives the same live oscilloscope component.
 
-All 49 simulators are built. `web/src/catalog.ts` is the full list, with the headline formula on each entry.
+All 51 simulators are built. `web/src/catalog.ts` is the full list, with the headline formula on each entry.
 
 ## Commands
 
@@ -44,15 +44,18 @@ There is no `pages/` or `components/` directory. A simulator is a single file in
 belongs in `ui/`. Three layers only, and the dependency arrow points one way: `sims/` imports from `ui/` and
 `engine/`, `ui/` imports from `engine/`, `engine/` imports nothing local except other engine modules.
 
-The `ui/` primitives exist so a simulator is mostly declaration. Use them rather than hand-rolling markup:
+The `ui/` primitives exist so a simulator is mostly declaration. Use them rather than hand-rolling markup.
+A sim imports the lot from one barrel, `import { SimPage, Param, Group, ReadoutGrid, Warning, ... } from '../ui'`,
+never the individual files.
 
 | Primitive | Purpose |
 | --- | --- |
 | `SimPage` | Page layout. Reads title/blurb from the catalog by `id`, so a sim never renders its own `<h1>`. |
-| `Oscilloscope` | The scope. Pages pass data only; it owns its front panel. Colours from `TRACE_COLORS`. |
-| `Param` | Log slider + SI text box that parses `4k7`, `100n`, `2.2 uF`. |
-| `ReadoutGrid` / `Warning` / `Theory` | Derived-value tiles, out-of-range caution, collapsible maths. Prose is passed as `text` strings, never as markup, so it can be translated: wrap formulas in `` `backticks` `` and emphasis in `*stars*`, and interpolate live values with `{name}` plus a `vars` entry. |
-| `Group` / `Segmented` / `Select` / `Toggle` | Controls-column building blocks. |
+| `Oscilloscope` | The scope. Pages pass data only; it owns its front panel. Trace `color` is optional and defaults to `TRACE_COLORS` in array order, so pass one only to pin a channel's hue across a mode switch. |
+| `Param` | Log slider + SI text box that parses `4k7`, `100n`, `2.2 uF`. `int` rounds the emitted value for counts (turns, bits), so no `(v) => set(Math.round(v))` wrapper. |
+| `Schematic` / `Dot` | The circuit-diagram frame and a junction dot. Stroke, fill and text defaults live in `.schematic` CSS, so a page's SVG is geometry only: bare `<path>`/`<rect>`/`<text>` with no styling attributes. Never re-wrap children in `<g fill=... stroke=...>`. |
+| `ReadoutGrid` / `Warning` / `Theory` | Derived-value tiles, out-of-range caution, collapsible maths. `Warning` gates itself: `<Warning when={op.dcm} .../>`, no `{cond && (...)}` wrapper. Prose is passed as `text` strings, never as markup, so it can be translated: wrap formulas in `` `backticks` `` and emphasis in `*stars*`, and interpolate live values with `{name}` plus a `vars` entry. |
+| `Group` / `Segmented` / `Select` / `Toggle` | Controls-column building blocks. `Group` is a collapsible `<details>` section; the column is sticky and scrolls inside itself on desktop, so a page with many sliders never forces a long page scroll. |
 | `useSource` + `SourceControls` | The shared stimulus (waveform, frequency, amplitude, offset, duty, cycles). |
 
 `SimPage` puts `.stage` (scope + readouts) first in the DOM and `.controls` second. Keep that order: it stacks
@@ -119,9 +122,10 @@ Add a language by adding one map next to `tr.ts` and one line in `LOADERS`.
 
 ### Oscilloscope contract
 
-`<Oscilloscope traces={[{label, color, samples}]} dt={secondsPerSample} unit="V" />`. Pages supply data only;
+`<Oscilloscope traces={[{label, samples}]} dt={secondsPerSample} unit="V" />`. Pages supply data only;
 the scope owns its own front panel (timebase zoom, volts/div, trace thickness, channel on/off, reset).
-Take trace colours from the exported `TRACE_COLORS` rather than hardcoding hex.
+`color` is optional and falls back to `TRACE_COLORS` in array order; pass an explicit one only to hold a
+channel's hue when the trace list changes between modes. Never hardcode hex.
 
 Performance rules, because these are what keep it smooth and are easy to break:
 

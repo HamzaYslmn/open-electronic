@@ -11,10 +11,7 @@ import {
 import type { Combo, SeriesName } from '../engine/eseries'
 import { formatSI } from '../engine/units'
 import { T, sym } from '../i18n'
-import { Group, Segmented } from '../ui/Controls'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Param, ReadoutGrid, Segmented, SimPage, Theory, Warning } from '../ui'
 
 /**
  * Default target: the top leg of a 12 V battery sense divider into the ESP32
@@ -149,26 +146,22 @@ export default function ESeries() {
         ]}
       />
 
-      {r.outOfRange && (
-        <Warning
-          text="e-series.warn1"
-          vars={{ target: formatSI(target, 'Ω') }}
-        />
-      )}
+      <Warning when={r.outOfRange}
+        text="e-series.warn1"
+        vars={{ target: formatSI(target, 'Ω') }}
+      />
 
-      {!r.inBand && !r.outOfRange && (
-        <Warning
-          text="e-series.warn2"
-          vars={{
-            series,
-            target: formatSI(target, 'Ω'),
-            tolerance: span(r.tolerance),
-            single: formatSI(r.single, 'Ω'),
-            bandLow: formatSI(r.bandLow, 'Ω'),
-            bandHigh: formatSI(r.bandHigh, 'Ω'),
-          }}
-        />
-      )}
+      <Warning when={!r.inBand && !r.outOfRange}
+        text="e-series.warn2"
+        vars={{
+          series,
+          target: formatSI(target, 'Ω'),
+          tolerance: span(r.tolerance),
+          single: formatSI(r.single, 'Ω'),
+          bandLow: formatSI(r.bandLow, 'Ω'),
+          bandHigh: formatSI(r.bandHigh, 'Ω'),
+        }}
+      />
 
       <Theory
         text={[

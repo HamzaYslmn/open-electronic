@@ -3,11 +3,7 @@ import { VCC } from '../engine/constants'
 import { VIH_FRAC, VIL_FRAC, analyseDebounce, voltageAt } from '../engine/logic'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Oscilloscope, Param, ReadoutGrid, SimPage, Theory, TRACE_COLORS, Warning } from '../ui'
 
 const N = 4096
 
@@ -114,21 +110,17 @@ export default function Debounce() {
         ]}
       />
 
-      {readout.tooFast && (
-        <Warning
-          text="debounce.warn1"
-          vars={{
-            tRise: formatSI(readout.tRise, 's'),
-            bounceMs: formatSI(bounceMs / 1000, 's'),
-          }}
-        />
-      )}
-      {readout.tooSlow && (
-        <Warning
-          text="debounce.warn2"
-          vars={{ maxRate: formatSI(readout.maxRate, 'Hz'), pressRate }}
-        />
-      )}
+      <Warning when={readout.tooFast}
+        text="debounce.warn1"
+        vars={{
+          tRise: formatSI(readout.tRise, 's'),
+          bounceMs: formatSI(bounceMs / 1000, 's'),
+        }}
+      />
+      <Warning when={readout.tooSlow}
+        text="debounce.warn2"
+        vars={{ maxRate: formatSI(readout.maxRate, 'Hz'), pressRate }}
+      />
       {readout.contactCurrent < 1e-4 && (
         <Warning
           text="debounce.warn3"

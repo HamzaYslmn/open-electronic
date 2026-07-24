@@ -4,11 +4,7 @@ import { BITS_MAX, SERVO_OPTIONS, SERVO_TYPES, analyseServo } from '../engine/le
 import { generate } from '../engine/signal'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group, Select } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Oscilloscope, Param, ReadoutGrid, Select, SimPage, Theory, Warning } from '../ui'
 
 const N = 8192
 
@@ -31,7 +27,7 @@ export default function ServoPwm() {
       N,
       dt,
     )
-    return { r, dt, traces: [{ label: 'servo-pwm.signal', color: TRACE_COLORS[0], samples }] }
+    return { r, dt, traces: [{ label: 'servo-pwm.signal', samples }] }
   }, [spec, angle, bits, frameHz, frames])
 
   return (
@@ -46,8 +42,8 @@ export default function ServoPwm() {
             <Param label="servo-pwm.frameRate" unit="Hz" value={frameHz} onChange={setFrameHz} min={40} max={400} log={false} step={5} />
           </Group>
           <Group label="servo-pwm.ledcTimer">
-            <Param label="common.resolution" value={bits} onChange={(v) => setBits(Math.round(v))} min={8} max={BITS_MAX} log={false} step={1} />
-            <Param label="servo-pwm.framesShown" value={frames} onChange={(v) => setFrames(Math.round(v))} min={1} max={5} log={false} step={1} />
+            <Param label="common.resolution" value={bits} onChange={setBits} int min={8} max={BITS_MAX} log={false} step={1} />
+            <Param label="servo-pwm.framesShown" value={frames} onChange={setFrames} int min={1} max={5} log={false} step={1} />
           </Group>
         </>
       }
@@ -75,17 +71,13 @@ export default function ServoPwm() {
         ]}
       />
 
-      {r.coarse && (
-        <Warning
-          text="servo-pwm.warn1"
-          vars={{ degreesPerStep: r.degreesPerStep.toFixed(2), maxBits: r.maxBits }}
-        />
-      )}
-      {frameHz > 60 && (
-        <Warning
-          text="servo-pwm.warn2"
-        />
-      )}
+      <Warning when={r.coarse}
+        text="servo-pwm.warn1"
+        vars={{ degreesPerStep: r.degreesPerStep.toFixed(2), maxBits: r.maxBits }}
+      />
+      <Warning when={frameHz > 60}
+        text="servo-pwm.warn2"
+      />
 
       <Theory
         text={[

@@ -77,6 +77,18 @@ describe('crystal load capacitors', () => {
     expect(analyseCrystal(F, 6e-12, 8e-12, CM, C0).strayTooHigh).toBe(true)
     expect(analyseCrystal(F, 12.5e-12, 3e-12, CM, C0).strayTooHigh).toBe(false)
   })
+
+  it('still reports a real pull when no capacitor fits', () => {
+    // Stray alone exceeds the specified load, so the best case is fitting no
+    // external capacitors. That must read as a number, not NaN.
+    const r = analyseCrystal(F, 6e-12, 8e-12, CM, C0)
+    expect(Number.isNaN(r.cStandard)).toBe(true)
+    expect(r.actualCL).toBeCloseTo(8e-12, 15)
+    expect(Number.isFinite(r.errorPpm)).toBe(true)
+    expect(Number.isFinite(r.errorHz)).toBe(true)
+    // More load than specified always means a slow crystal.
+    expect(r.errorPpm).toBeLessThan(0)
+  })
 })
 
 describe('tp4056 charger', () => {

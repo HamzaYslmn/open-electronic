@@ -18,11 +18,7 @@ import {
 import type { PackageId } from '../engine/lm317'
 import { formatSI } from '../engine/units'
 import { T, useT } from '../i18n'
-import { Group, Select, Toggle } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Dot, Group, Oscilloscope, Param, ReadoutGrid, Schematic, Select, SimPage, Theory, Toggle, TRACE_COLORS, Warning } from '../ui'
 
 /** Points along the load-current axis. The curve is a straight line, so this is plenty. */
 const N = 2048
@@ -30,55 +26,51 @@ const N = 2048
 /** Kelvin is what the engine stores; datasheets and enclosures are quoted in C. */
 const degC = (k: number) => `${(k - ZERO_C_K).toFixed(1)} °C`
 
-function Schematic() {
-  const t = useT()
+function Diagram() {
   return (
-    <svg className="schematic" viewBox="0 0 260 120" aria-label={t('lm317.lm317AdjustableRegulator')}>
-      <g fill="none" stroke="currentColor" strokeWidth="1.5">
-        {/* input node and ground return */}
-        <circle cx="16" cy="32" r="3" />
-        <path d="M19 32h41M16 35v73h180" />
-        {/* the regulator */}
-        <rect x="60" y="14" width="70" height="36" />
-        {/* output rail */}
-        <path d="M130 32h100" />
-        <circle cx="233" cy="32" r="3" />
-        {/* ADJ pin down to the divider tap */}
-        <path d="M95 50v14M95 64h55" />
-        {/* R1, OUT to ADJ */}
-        <rect x="142" y="40" width="16" height="24" />
-        <path d="M150 32v8" />
-        {/* R2, ADJ to ground */}
-        <rect x="87" y="74" width="16" height="24" />
-        <path d="M95 64v10M95 98v10" />
-        {/* load */}
-        <rect x="188" y="60" width="16" height="28" />
-        <path d="M196 32v28M196 88v20" />
-      </g>
-      <g fill="currentColor" fontSize="11">
-        <text x="70" y="36">
-          LM317
-        </text>
-        <text x="163" y="56">
-          R1
-        </text>
-        <text x="70" y="92">
-          R2
-        </text>
-        <text x="208" y="80">
-          load
-        </text>
-        <text x="99" y="61">
-          ADJ
-        </text>
-        <text x="4" y="24">
-          Vin
-        </text>
-        <text x="212" y="24">
-          Vout
-        </text>
-      </g>
-    </svg>
+    <Schematic viewBox="0 0 260 120" label="lm317.lm317AdjustableRegulator">
+      {/* input node and ground return */}
+      <circle cx="16" cy="32" r="3" />
+      <path d="M19 32h41M16 35v73h180" />
+      {/* the regulator */}
+      <rect x="60" y="14" width="70" height="36" />
+      {/* output rail */}
+      <path d="M130 32h100" />
+      <circle cx="233" cy="32" r="3" />
+      {/* ADJ pin down to the divider tap */}
+      <path d="M95 50v14M95 64h55" />
+      {/* R1, OUT to ADJ */}
+      <rect x="142" y="40" width="16" height="24" />
+      <path d="M150 32v8" />
+      <Dot x={150} y={32} />
+      {/* R2, ADJ to ground */}
+      <rect x="87" y="74" width="16" height="24" />
+      <path d="M95 64v10M95 98v10" />
+      {/* load */}
+      <rect x="188" y="60" width="16" height="28" />
+      <path d="M196 32v28M196 88v20" />
+      <text x="70" y="36">
+        LM317
+      </text>
+      <text x="163" y="56">
+        R1
+      </text>
+      <text x="70" y="92">
+        R2
+      </text>
+      <text x="208" y="80">
+        load
+      </text>
+      <text x="99" y="61">
+        ADJ
+      </text>
+      <text x="4" y="24">
+        Vin
+      </text>
+      <text x="212" y="24">
+        Vout
+      </text>
+    </Schematic>
   )
 }
 
@@ -141,7 +133,7 @@ export default function LM317() {
       )}
       controls={
         <>
-          <Schematic />
+          <Diagram />
 
           <Group label="lm317.supplyAndLoad">
             <Param
@@ -342,83 +334,67 @@ export default function LM317() {
         ]}
       />
 
-      {r.dropout && (
-        <Warning
-          text="lm317.warn1"
-          vars={{
-            headroom: formatSI(r.headroom, 'V'),
-            DROPOUT_V: formatSI(DROPOUT_V, 'V'),
-            vinMin: formatSI(r.vinMin, 'V'),
-          }}
-        />
-      )}
+      <Warning when={r.dropout}
+        text="lm317.warn1"
+        vars={{
+          headroom: formatSI(r.headroom, 'V'),
+          DROPOUT_V: formatSI(DROPOUT_V, 'V'),
+          vinMin: formatSI(r.vinMin, 'V'),
+        }}
+      />
 
-      {r.overDifferential && (
-        <Warning
-          text="lm317.warn2"
-          vars={{ headroom: formatSI(r.headroom, 'V'), V_IO_MAX: formatSI(V_IO_MAX, 'V') }}
-        />
-      )}
+      <Warning when={r.overDifferential}
+        text="lm317.warn2"
+        vars={{ headroom: formatSI(r.headroom, 'V'), V_IO_MAX: formatSI(V_IO_MAX, 'V') }}
+      />
 
-      {r.shutdown && (
-        <Warning
-          text="lm317.warn3"
-          vars={{ tjK: degC(r.tjK), pdMax: formatSI(r.pd - r.pdMax, 'W') }}
-        />
-      )}
+      <Warning when={r.shutdown}
+        text="lm317.warn3"
+        vars={{ tjK: degC(r.tjK), pdMax: formatSI(r.pd - r.pdMax, 'W') }}
+      />
 
-      {r.overTemp && !r.shutdown && (
-        <Warning
-          text="lm317.warn4"
-          vars={{
-            tjK: degC(r.tjK),
-            TJ_MAX_K: degC(TJ_MAX_K),
-            rthSinkNeeded: r.rthSinkNeeded.toFixed(1),
-            topology:
-              r.rthSinkNeeded > 0 ? 'lm317.aKWSink' : 'lm317.aDifferentTopology',
-            ioutCeiling: formatSI(r.ioutCeiling, 'A'),
-          }}
-        />
-      )}
+      <Warning when={r.overTemp && !r.shutdown}
+        text="lm317.warn4"
+        vars={{
+          tjK: degC(r.tjK),
+          TJ_MAX_K: degC(TJ_MAX_K),
+          rthSinkNeeded: r.rthSinkNeeded.toFixed(1),
+          topology:
+            r.rthSinkNeeded > 0 ? 'lm317.aKWSink' : 'lm317.aDifferentTopology',
+          ioutCeiling: formatSI(r.ioutCeiling, 'A'),
+        }}
+      />
 
-      {r.heatsinkImpossible && (
-        <Warning
-          text="lm317.warn5"
-          vars={{
-            pd: formatSI(r.pd, 'W'),
-            rthJC: thermal.rthJC.toFixed(1),
-            ambientK: degC(ambientK),
-          }}
-        />
-      )}
+      <Warning when={r.heatsinkImpossible}
+        text="lm317.warn5"
+        vars={{
+          pd: formatSI(r.pd, 'W'),
+          rthJC: thermal.rthJC.toFixed(1),
+          ambientK: degC(ambientK),
+        }}
+      />
 
-      {r.overCurrent && (
-        <Warning
-          text="lm317.warn6"
-          vars={{ iout: formatSI(iout, 'A'), I_OUT_MAX: formatSI(I_OUT_MAX, 'A') }}
-        />
-      )}
+      <Warning when={r.overCurrent}
+        text="lm317.warn6"
+        vars={{ iout: formatSI(iout, 'A'), I_OUT_MAX: formatSI(I_OUT_MAX, 'A') }}
+      />
 
-      {!r.minLoadOk && (
-        <Warning
-          text="lm317.warn7"
-          vars={{
-            iProgram: formatSI(r.iProgram, 'A'),
-            I_LOAD_MIN: formatSI(I_LOAD_MIN, 'A'),
-            r1Max: formatSI(r.r1Max, 'Ω'),
-          }}
-        />
-      )}
+      <Warning when={!r.minLoadOk}
+        text="lm317.warn7"
+        vars={{
+          iProgram: formatSI(r.iProgram, 'A'),
+          I_LOAD_MIN: formatSI(I_LOAD_MIN, 'A'),
+          r1Max: formatSI(r.r1Max, 'Ω'),
+        }}
+      />
 
-      {r.iadjTerm > 0.02 * r.vout && (
-        <Warning
-          text="lm317.warn8"
-          vars={{
-            iadjTerm: formatSI(r.iadjTerm, 'V'),
-            vout: ((100 * r.iadjTerm) / r.vout).toFixed(1),
-          }}
-        />
-      )}
+      <Warning when={r.iadjTerm > 0.02 * r.vout}
+        text="lm317.warn8"
+        vars={{
+          iadjTerm: formatSI(r.iadjTerm, 'V'),
+          vout: ((100 * r.iadjTerm) / r.vout).toFixed(1),
+        }}
+      />
 
       <Theory
         text={[

@@ -9,11 +9,7 @@ import {
 import type { PanelSpec } from '../engine/photovoltaic'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Oscilloscope, Param, ReadoutGrid, SimPage, Theory, TRACE_COLORS, Warning } from '../ui'
 
 const N = 2048
 const KELVIN_OFFSET = 273.15
@@ -53,7 +49,7 @@ export default function Photovoltaic() {
       controls={
         <>
           <Group label="photovoltaic.panelDatasheetAtStc">
-            <Param label="common.cellsInSeries" value={cells} onChange={(v) => setCells(Math.round(v))} min={1} max={144} log={false} step={1} />
+            <Param label="common.cellsInSeries" value={cells} onChange={setCells} int min={1} max={144} log={false} step={1} />
             <Param label="photovoltaic.isc" unit="A" value={isc} onChange={setIsc} min={0.05} max={20} />
             <Param label="photovoltaic.voc" unit="V" value={voc} onChange={setVoc} min={0.4} max={100} />
             <Param label="photovoltaic.cellEdge" unit="m" value={cellEdge} onChange={setCellEdge} min={0.01} max={0.25} log={false} step={0.001} />
@@ -104,19 +100,13 @@ export default function Photovoltaic() {
         ]}
       />
 
-      {r.shuntLimited && (
-        <Warning
-          text="photovoltaic.warn1"
-        />
-      )}
-      {r.lowLight && (
-        <Warning
-          text="photovoltaic.warn2"
-        />
-      )}
-      {r.tempOutOfRange && (
-        <Warning text="photovoltaic.warn3" />
-      )}
+      <Warning when={r.shuntLimited}
+        text="photovoltaic.warn1"
+      />
+      <Warning when={r.lowLight}
+        text="photovoltaic.warn2"
+      />
+      <Warning when={r.tempOutOfRange} text="photovoltaic.warn3" />
 
       <Theory
         text={[

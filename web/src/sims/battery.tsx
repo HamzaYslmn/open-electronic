@@ -9,11 +9,7 @@ import {
 import type { Chemistry, LoadMode } from '../engine/battery'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group, Segmented, Select } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Oscilloscope, Param, ReadoutGrid, Segmented, Select, SimPage, Theory, Warning } from '../ui'
 
 const N = 4096
 
@@ -45,8 +41,8 @@ export default function Battery() {
       r,
       dt: r.dt,
       traces: [
-        { label: 'battery.vterm', color: TRACE_COLORS[0], samples: r.terminal },
-        { label: 'battery.ocv', color: TRACE_COLORS[1], samples: r.ocv },
+        { label: 'battery.vterm', samples: r.terminal },
+        { label: 'battery.ocv', samples: r.ocv },
       ],
     }
   }, [chemistry, series, parallel, capacityAh, mode, loadValue])
@@ -67,8 +63,8 @@ export default function Battery() {
               onChange={setChemistry}
               options={CHEMISTRY_OPTIONS}
             />
-            <Param label="common.cellsInSeries" value={series} onChange={(v) => setSeries(Math.round(v))} min={1} max={16} log={false} step={1} />
-            <Param label="battery.cellsInParallel" value={parallel} onChange={(v) => setParallel(Math.round(v))} min={1} max={16} log={false} step={1} />
+            <Param label="common.cellsInSeries" value={series} onChange={setSeries} int min={1} max={16} log={false} step={1} />
+            <Param label="battery.cellsInParallel" value={parallel} onChange={setParallel} int min={1} max={16} log={false} step={1} />
             <Param label="battery.cellCapacity" unit="Ah" value={capacityAh} onChange={setCapacityAh} min={0.05} max={200} />
           </Group>
 
@@ -124,22 +120,16 @@ export default function Battery() {
         ]}
       />
 
-      {r.overPower && (
-        <Warning
-          text="battery.warn1"
-        />
-      )}
-      {r.overCRate && !r.overPower && (
-        <Warning
-          text="battery.warn2"
-          vars={{ cRate: r.cRate.toFixed(2), maxCRate: spec.maxCRate, label: spec.label }}
-        />
-      )}
-      {r.deadOnArrival && (
-        <Warning
-          text="battery.warn3"
-        />
-      )}
+      <Warning when={r.overPower}
+        text="battery.warn1"
+      />
+      <Warning when={r.overCRate && !r.overPower}
+        text="battery.warn2"
+        vars={{ cRate: r.cRate.toFixed(2), maxCRate: spec.maxCRate, label: spec.label }}
+      />
+      <Warning when={r.deadOnArrival}
+        text="battery.warn3"
+      />
 
       <Theory
         text={[

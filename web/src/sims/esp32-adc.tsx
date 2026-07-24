@@ -4,10 +4,7 @@ import { ADC_MAX_SOURCE_Z, ATTENUATION_OPTIONS, analyseAdc } from '../engine/sen
 import type { Attenuation } from '../engine/sensing'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group, Select } from '../ui/Controls'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Param, ReadoutGrid, Select, SimPage, Theory, Warning } from '../ui'
 
 export default function Esp32Adc() {
   const [atten, setAtten] = useState<Attenuation>('11')
@@ -55,27 +52,21 @@ export default function Esp32Adc() {
         ]}
       />
 
-      {r.overRange && (
-        <Warning
-          text="esp32-adc.warn1"
-          vars={{ vAdcMax: formatSI(r.vAdcMax, 'V'), usableHigh: r.spec.usableHigh }}
-        />
-      )}
-      {r.underRange && (
-        <Warning
-          text="esp32-adc.warn2"
-          vars={{ vAdcMin: formatSI(r.vAdcMin, 'V'), usableLow: r.spec.usableLow }}
-        />
-      )}
-      {r.tooStiff && (
-        <Warning
-          text="esp32-adc.warn3"
-          vars={{
-            sourceImpedance: formatSI(r.sourceImpedance, 'Ω'),
-            ADC_MAX_SOURCE_Z: formatSI(ADC_MAX_SOURCE_Z, 'Ω'),
-          }}
-        />
-      )}
+      <Warning when={r.overRange}
+        text="esp32-adc.warn1"
+        vars={{ vAdcMax: formatSI(r.vAdcMax, 'V'), usableHigh: r.spec.usableHigh }}
+      />
+      <Warning when={r.underRange}
+        text="esp32-adc.warn2"
+        vars={{ vAdcMin: formatSI(r.vAdcMin, 'V'), usableLow: r.spec.usableLow }}
+      />
+      <Warning when={r.tooStiff}
+        text="esp32-adc.warn3"
+        vars={{
+          sourceImpedance: formatSI(r.sourceImpedance, 'Ω'),
+          ADC_MAX_SOURCE_Z: formatSI(ADC_MAX_SOURCE_Z, 'Ω'),
+        }}
+      />
 
       <Theory
         text={[

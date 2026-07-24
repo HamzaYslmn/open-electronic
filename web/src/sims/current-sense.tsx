@@ -8,10 +8,7 @@ import {
 } from '../engine/sensing'
 import type { SenseMethod } from '../engine/sensing'
 import { formatSI } from '../engine/units'
-import { Group, Select } from '../ui/Controls'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Param, ReadoutGrid, Select, SimPage, Theory, Warning } from '../ui'
 
 const FULL_SCALE = ATTENUATIONS['11'].fullScale
 
@@ -83,29 +80,21 @@ export default function CurrentSense() {
         }
       />
 
-      {r.clipping && (
-        <Warning
-          text="current-sense.warn1"
-          vars={{ vOut: formatSI(r.vOut, 'V'), FULL_SCALE: formatSI(FULL_SCALE, 'V') }}
-        />
-      )}
-      {r.underusingRange && !r.clipping && (
-        <Warning
-          text="current-sense.warn2"
-          vars={{ rangeUsed: (r.rangeUsed * 100).toFixed(0) }}
-        />
-      )}
-      {r.wastefulShunt && (
-        <Warning
-          text="current-sense.warn3"
-          vars={{ pShunt: formatSI(r.pShunt, 'W') }}
-        />
-      )}
-      {method.startsWith('acs712') && (
-        <Warning
-          text="current-sense.warn4"
-        />
-      )}
+      <Warning when={r.clipping}
+        text="current-sense.warn1"
+        vars={{ vOut: formatSI(r.vOut, 'V'), FULL_SCALE: formatSI(FULL_SCALE, 'V') }}
+      />
+      <Warning when={r.underusingRange && !r.clipping}
+        text="current-sense.warn2"
+        vars={{ rangeUsed: (r.rangeUsed * 100).toFixed(0) }}
+      />
+      <Warning when={r.wastefulShunt}
+        text="current-sense.warn3"
+        vars={{ pShunt: formatSI(r.pShunt, 'W') }}
+      />
+      <Warning when={method.startsWith('acs712')}
+        text="current-sense.warn4"
+      />
 
       <Theory
         text={[

@@ -13,12 +13,8 @@ import { timeBase } from '../engine/signal'
 import { formatSI } from '../engine/units'
 import { T, sym } from '../i18n'
 import type { Key } from '../i18n'
-import { Group, Segmented, Toggle } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import type { Trace } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Oscilloscope, Param, ReadoutGrid, Segmented, SimPage, Theory, Toggle, TRACE_COLORS, Warning } from '../ui'
+import type { Trace } from '../ui'
 
 /** Samples per sweep, same as every other time-domain page. */
 const N = 8192
@@ -142,7 +138,7 @@ export default function Harmonics() {
             <Param
               label="common.cyclesShown"
               value={cycles}
-              onChange={(v) => setCycles(Math.round(v))}
+              onChange={setCycles} int
               min={1}
               max={20}
               log={false}
@@ -201,21 +197,19 @@ export default function Harmonics() {
         ]}
       />
 
-      {clips && (
-        <Warning
-          text="harmonics.warn1"
-          vars={{
-            // Whole phrases rather than glued fragments, so each one is a key a
-            // translation can put wherever its own grammar needs it.
-            swing:
-              readout.clipsLow && readout.clipsHigh
-                ? 'harmonics.below0VAnd'
-                : readout.clipsLow
-                  ? 'harmonics.below0V'
-                  : 'harmonics.aboveTheSupplyRail',
-          }}
-        />
-      )}
+      <Warning when={clips}
+        text="harmonics.warn1"
+        vars={{
+          // Whole phrases rather than glued fragments, so each one is a key a
+          // translation can put wherever its own grammar needs it.
+          swing:
+            readout.clipsLow && readout.clipsHigh
+              ? 'harmonics.below0VAnd'
+              : readout.clipsLow
+                ? 'harmonics.below0V'
+                : 'harmonics.aboveTheSupplyRail',
+        }}
+      />
 
       <Theory
         text={[

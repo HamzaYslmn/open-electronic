@@ -12,11 +12,7 @@ import {
   sweepArm,
 } from '../engine/wheatstone'
 import type { Arm, Bridge } from '../engine/wheatstone'
-import { Group, Segmented } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Oscilloscope, Param, ReadoutGrid, Schematic, Segmented, SimPage, Theory, TRACE_COLORS, Warning } from '../ui'
 
 /** Samples across the swept resistance range. Same budget as the time-domain pages. */
 const N = 8192
@@ -25,49 +21,52 @@ function ArmBox({ x, y, on }: { x: number; y: number; on: boolean }) {
   return <rect x={x} y={y} width={18} height={26} strokeWidth={on ? 3 : 1.5} />
 }
 
-function Schematic({ arm }: { arm: Arm }) {
-  const t = useT()
+function Diagram({ arm }: { arm: Arm }) {
   return (
-    <svg className="schematic" viewBox="0 0 260 134" aria-label={t('wheatstone.wheatstoneBridge')}>
-      <g fill="none" stroke="currentColor" strokeWidth="1.5">
-        <circle cx="24" cy="20" r="3" />
-        <path d="M24 20h146M70 20v12M70 58v24M70 108v8M170 20v12M170 58v24M170 108v8" />
-        <path d="M70 116h100M120 116v6M108 122h24M112 126h16M116 130h8" />
-        <ArmBox x={61} y={32} on={arm === 'R1'} />
-        <ArmBox x={61} y={82} on={arm === 'R2'} />
-        <ArmBox x={161} y={32} on={arm === 'R3'} />
-        <ArmBox x={161} y={82} on={arm === 'R4'} />
-        <path d="M70 70h30M170 70h-30" />
-        <circle cx="103" cy="70" r="3" />
-        <circle cx="137" cy="70" r="3" />
-      </g>
-      <g fill="currentColor" fontSize="11">
-        <text x="4" y="16">
-          Vin
-        </text>
-        <text x="40" y="49">
-          R1
-        </text>
-        <text x="40" y="99">
-          R2
-        </text>
-        <text x="182" y="49">
-          R3
-        </text>
-        <text x="182" y="99">
-          R4
-        </text>
-        <text x="56" y="66">
-          A
-        </text>
-        <text x="174" y="66">
-          B
-        </text>
-        <text x="106" y="62">
-          Vout
-        </text>
-      </g>
-    </svg>
+    <Schematic viewBox="0 0 260 134" label="wheatstone.wheatstoneBridge">
+      <circle cx="24" cy="20" r="3" />
+      <path d="M24 20h146M70 20v12M70 58v24M70 108v8M170 20v12M170 58v24M170 108v8" />
+      <path d="M70 116h100M120 116v6M108 122h24M112 126h16M116 130h8" />
+      <ArmBox x={61} y={32} on={arm === 'R1'} />
+      <ArmBox x={61} y={82} on={arm === 'R2'} />
+      <ArmBox x={161} y={32} on={arm === 'R3'} />
+      <ArmBox x={161} y={82} on={arm === 'R4'} />
+      <path d="M70 70h30M170 70h-30" />
+      {/* Every corner of the bridge is a T, so each one is dotted. Without
+          them the taps read as wires crossing the arms rather than joining. */}
+      {[20, 70, 116].map((y) => (
+        <g key={y}>
+          <circle cx="70" cy={y} r="2.5" />
+          <circle cx="170" cy={y} r="2.5" />
+        </g>
+      ))}
+      <circle cx="103" cy="70" r="3" />
+      <circle cx="137" cy="70" r="3" />
+      <text x="4" y="16">
+        Vin
+      </text>
+      <text x="40" y="49">
+        R1
+      </text>
+      <text x="40" y="99">
+        R2
+      </text>
+      <text x="182" y="49">
+        R3
+      </text>
+      <text x="182" y="99">
+        R4
+      </text>
+      <text x="56" y="66">
+        A
+      </text>
+      <text x="174" y="66">
+        B
+      </text>
+      <text x="106" y="62">
+        Vout
+      </text>
+    </Schematic>
   )
 }
 
@@ -115,7 +114,7 @@ export default function Wheatstone() {
       controls={
         <>
           <Segmented label="wheatstone.sensorArm" value={arm} onChange={setArm} options={ARMS} />
-          <Schematic arm={arm} />
+          <Diagram arm={arm} />
 
           <Group label="wheatstone.excitation">
             <Param
@@ -207,36 +206,28 @@ export default function Wheatstone() {
         ]}
       />
 
-      {readout.belowLsb && (
-        <Warning
-          text="wheatstone.warn1"
-          vars={{
-            ADC_LSB: formatSI(ADC_LSB, 'V'),
-            ADC_FULL_SCALE: formatSI(ADC_FULL_SCALE, 'V'),
-          }}
-        />
-      )}
-      {readout.nodeOverRange && (
-        <Warning
-          text="wheatstone.warn2"
-          vars={{ ADC_FULL_SCALE: formatSI(ADC_FULL_SCALE, 'V') }}
-        />
-      )}
-      {readout.overRth && (
-        <Warning
-          text="wheatstone.warn3"
-          vars={{ ADC_MAX_SOURCE_OHMS: formatSI(ADC_MAX_SOURCE_OHMS, 'Ω') }}
-        />
-      )}
-      {readout.overPower && (
-        <Warning
-          text="wheatstone.warn4"
-          vars={{
-            maxArmPower: formatSI(readout.maxArmPower, 'W'),
-            RESISTOR_POWER_W: formatSI(RESISTOR_POWER_W, 'W'),
-          }}
-        />
-      )}
+      <Warning when={readout.belowLsb}
+        text="wheatstone.warn1"
+        vars={{
+          ADC_LSB: formatSI(ADC_LSB, 'V'),
+          ADC_FULL_SCALE: formatSI(ADC_FULL_SCALE, 'V'),
+        }}
+      />
+      <Warning when={readout.nodeOverRange}
+        text="wheatstone.warn2"
+        vars={{ ADC_FULL_SCALE: formatSI(ADC_FULL_SCALE, 'V') }}
+      />
+      <Warning when={readout.overRth}
+        text="wheatstone.warn3"
+        vars={{ ADC_MAX_SOURCE_OHMS: formatSI(ADC_MAX_SOURCE_OHMS, 'Ω') }}
+      />
+      <Warning when={readout.overPower}
+        text="wheatstone.warn4"
+        vars={{
+          maxArmPower: formatSI(readout.maxArmPower, 'W'),
+          RESISTOR_POWER_W: formatSI(RESISTOR_POWER_W, 'W'),
+        }}
+      />
 
       <Theory
         text={[

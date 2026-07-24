@@ -1,10 +1,7 @@
 import { useMemo, useState } from 'react'
 import { BANDS, VELOCITY_FACTORS, analyseAntenna } from '../engine/rf'
 import { formatSI } from '../engine/units'
-import { Group, Select } from '../ui/Controls'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Param, ReadoutGrid, Select, SimPage, Theory, Warning } from '../ui'
 
 const VF_OPTIONS = VELOCITY_FACTORS.map((v) => ({ value: v.value, label: v.label }))
 const BAND_OPTIONS = BANDS.map((b, i) => ({ value: String(i), label: b.label }))

@@ -3,11 +3,7 @@ import { analyse, waveform } from '../engine/buckBoost'
 import type { Topology } from '../engine/buckBoost'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group, Segmented, Toggle } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Oscilloscope, Param, ReadoutGrid, Segmented, SimPage, Theory, Toggle, TRACE_COLORS, Warning } from '../ui'
 
 const N = 4096
 
@@ -86,7 +82,7 @@ export default function BuckBoost() {
             {topology === 'inverting' && (
               <Param label="common.diodeVf" unit="V" value={vf} onChange={setVf} min={0.15} max={1.2} log={false} step={0.05} />
             )}
-            <Param label="common.periodsShown" value={periods} onChange={(v) => setPeriods(Math.round(v))} min={1} max={10} log={false} step={1} />
+            <Param label="common.periodsShown" value={periods} onChange={setPeriods} int min={1} max={10} log={false} step={1} />
           </Group>
         </>
       }
@@ -116,27 +112,19 @@ export default function BuckBoost() {
         ]}
       />
 
-      {!r.op.reachable && (
-        <Warning
-          text="buck-boost.warn1"
-        />
-      )}
-      {r.saturating && (
-        <Warning
-          text="buck-boost.warn2"
-          vars={{ ilPeak: formatSI(r.op.ilPeak, 'A'), isat: formatSI(isat, 'A') }}
-        />
-      )}
-      {r.dutyLimited && (
-        <Warning
-          text="buck-boost.warn3"
-        />
-      )}
-      {r.op.conduction === 'dcm' && (
-        <Warning
-          text="buck-boost.warn4"
-        />
-      )}
+      <Warning when={!r.op.reachable}
+        text="buck-boost.warn1"
+      />
+      <Warning when={r.saturating}
+        text="buck-boost.warn2"
+        vars={{ ilPeak: formatSI(r.op.ilPeak, 'A'), isat: formatSI(isat, 'A') }}
+      />
+      <Warning when={r.dutyLimited}
+        text="buck-boost.warn3"
+      />
+      <Warning when={r.op.conduction === 'dcm'}
+        text="buck-boost.warn4"
+      />
 
       <Theory
         text={[

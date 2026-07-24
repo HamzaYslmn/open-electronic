@@ -5,11 +5,7 @@ import type { ShifterKind } from '../engine/parts'
 import { voltageAt } from '../engine/logic'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group, Segmented } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Oscilloscope, Param, ReadoutGrid, Segmented, SimPage, Theory, TRACE_COLORS, Warning } from '../ui'
 
 const N = 2048
 
@@ -105,27 +101,21 @@ export default function LevelShifter() {
         }
       />
 
-      {r.insufficientDrive && (
-        <Warning
-          text="level-shifter.warn1"
-          vars={{ vgsMargin: formatSI(r.vgsMargin, 'V') }}
-        />
-      )}
-      {r.tooSlow && (
-        <Warning
-          text="level-shifter.warn2"
-          vars={{
-            worstRise: formatSI(r.worstRise, 's'),
-            maxBitRate: formatSI(r.maxBitRate, 'Hz'),
-            bitRate: formatSI(bitRate, 'Hz'),
-          }}
-        />
-      )}
-      {kind === 'divider' && (
-        <Warning
-          text="level-shifter.warn3"
-        />
-      )}
+      <Warning when={r.insufficientDrive}
+        text="level-shifter.warn1"
+        vars={{ vgsMargin: formatSI(r.vgsMargin, 'V') }}
+      />
+      <Warning when={r.tooSlow}
+        text="level-shifter.warn2"
+        vars={{
+          worstRise: formatSI(r.worstRise, 's'),
+          maxBitRate: formatSI(r.maxBitRate, 'Hz'),
+          bitRate: formatSI(bitRate, 'Hz'),
+        }}
+      />
+      <Warning when={kind === 'divider'}
+        text="level-shifter.warn3"
+      />
 
       <Theory
         text={[

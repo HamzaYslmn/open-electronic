@@ -5,11 +5,7 @@ import {
   analyseCharger,
 } from '../engine/parts'
 import { formatSI } from '../engine/units'
-import { Group } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Oscilloscope, Param, ReadoutGrid, SimPage, Theory, Warning } from '../ui'
 
 const N = 2048
 
@@ -42,8 +38,8 @@ export default function LipoCharger() {
       r,
       dt,
       traces: [
-        { label: 'I', color: TRACE_COLORS[0], samples: current },
-        { label: 'lipo-charger.vcell', color: TRACE_COLORS[1], samples: voltage },
+        { label: 'I', samples: current },
+        { label: 'lipo-charger.vcell', samples: voltage },
       ],
     }
   }, [rProg, capacityAh, vInput])
@@ -80,18 +76,14 @@ export default function LipoCharger() {
         ]}
       />
 
-      {r.overRate && (
-        <Warning
-          text="lipo-charger.warn1"
-          vars={{ cRate: r.cRate.toFixed(2), capacityAh: formatSI(1200 / capacityAh, 'Ω') }}
-        />
-      )}
-      {r.hot && (
-        <Warning
-          text="lipo-charger.warn2"
-          vars={{ dissipation: formatSI(r.dissipation, 'W') }}
-        />
-      )}
+      <Warning when={r.overRate}
+        text="lipo-charger.warn1"
+        vars={{ cRate: r.cRate.toFixed(2), capacityAh: formatSI(1200 / capacityAh, 'Ω') }}
+      />
+      <Warning when={r.hot}
+        text="lipo-charger.warn2"
+        vars={{ dissipation: formatSI(r.dissipation, 'W') }}
+      />
       <Warning
         text="lipo-charger.warn3"
       />

@@ -9,11 +9,7 @@ import {
 import type { I2cSpeed } from '../engine/logic'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group, Select } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Oscilloscope, Param, ReadoutGrid, Select, SimPage, Theory, TRACE_COLORS, Warning } from '../ui'
 
 const N = 2048
 
@@ -99,27 +95,21 @@ export default function I2cPullup() {
         ]}
       />
 
-      {r.windowEmpty && (
-        <Warning
-          text="i2c-pullup.warn1"
-        />
-      )}
-      {!r.windowEmpty && r.outOfWindow && (
-        <Warning
-          text="i2c-pullup.warn2"
-          vars={{
-            rPullup: formatSI(rPullup, 'Ω'),
-            rMin: formatSI(r.rMin, 'Ω'),
-            rMax: formatSI(r.rMax, 'Ω'),
-          }}
-        />
-      )}
-      {r.overCapacitance && (
-        <Warning
-          text="i2c-pullup.warn3"
-          vars={{ maxCapacitance: formatSI(r.spec.maxCapacitance, 'F') }}
-        />
-      )}
+      <Warning when={r.windowEmpty}
+        text="i2c-pullup.warn1"
+      />
+      <Warning when={!r.windowEmpty && r.outOfWindow}
+        text="i2c-pullup.warn2"
+        vars={{
+          rPullup: formatSI(rPullup, 'Ω'),
+          rMin: formatSI(r.rMin, 'Ω'),
+          rMax: formatSI(r.rMax, 'Ω'),
+        }}
+      />
+      <Warning when={r.overCapacitance}
+        text="i2c-pullup.warn3"
+        vars={{ maxCapacitance: formatSI(r.spec.maxCapacitance, 'F') }}
+      />
 
       <Theory
         text={[

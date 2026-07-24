@@ -3,12 +3,8 @@ import { VCC } from '../engine/constants'
 import { ADC_LSB, FC_RATIO_GOOD, FC_RATIO_MIN, analyse, simulate } from '../engine/pwmFilter'
 import { sweep } from '../engine/signal'
 import { formatSI } from '../engine/units'
-import { T, useT } from '../i18n'
-import { Group, Segmented } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { T } from '../i18n'
+import { Dot, Group, Oscilloscope, Param, ReadoutGrid, Schematic, Segmented, SimPage, Theory, Warning } from '../ui'
 
 /** Samples per sweep, same as every other time-domain page here. */
 const N = 8192
@@ -18,33 +14,29 @@ const MIN_SAMPLES_PER_PERIOD = 8
 
 type View = 'ripple' | 'startup'
 
-function Schematic() {
-  const t = useT()
+function Diagram() {
   return (
-    <svg className="schematic" viewBox="0 0 260 110" aria-label={t('pwm-filter.esp32GpioIntoAn')}>
-      <g fill="none" stroke="currentColor" strokeWidth="1.5">
-        <rect x="8" y="20" width="34" height="28" />
-        <path d="M42 34h28M25 48v32h199" />
-        <rect x="70" y="26" width="44" height="16" />
-        <path d="M114 34h106" />
-        <path d="M150 34v12M136 46h28M136 56h28M150 56v24" />
-        <circle cx="224" cy="34" r="3" />
-      </g>
-      <g fill="currentColor" fontSize="11">
-        <text x="12" y="38" fontSize="9">
-          GPIO
-        </text>
-        <text x="86" y="18">
-          R
-        </text>
-        <text x="168" y="55">
-          C
-        </text>
-        <text x="200" y="24">
-          Vout
-        </text>
-      </g>
-    </svg>
+    <Schematic viewBox="0 0 260 110" label="pwm-filter.esp32GpioIntoAn">
+      <rect x="8" y="20" width="34" height="28" />
+      <path d="M42 34h28M25 48v32h199" />
+      <rect x="70" y="26" width="44" height="16" />
+      <path d="M114 34h106" />
+      <path d="M150 34v12M136 46h28M136 56h28M150 56v24" />
+      <Dot x={150} y={34} />
+      <circle cx="224" cy="34" r="3" />
+      <text x="12" y="38" fontSize="9">
+        GPIO
+      </text>
+      <text x="86" y="18">
+        R
+      </text>
+      <text x="168" y="55">
+        C
+      </text>
+      <text x="200" y="24">
+        Vout
+      </text>
+    </Schematic>
   )
 }
 
@@ -97,22 +89,18 @@ export default function PwmFilter() {
       showInput,
       traces: [
         ...(showInput
-          ? [{ label: 'pwm-filter.vpwm', color: TRACE_COLORS[0], samples: input }]
+          ? [{ label: 'pwm-filter.vpwm', samples: input }]
           : []),
-        { label: 'common.vout', color: TRACE_COLORS[1], samples: out },
-        { label: 'common.target', color: TRACE_COLORS[2], samples: target },
+        { label: 'common.vout', samples: out },
+        { label: 'common.target', samples: target },
       ],
     }
   }, [vs, r, c, f, dutyPct, bits, view, cycles])
 
-  // Parenthesised here rather than in the note, so the whole phrase is one
-  // dictionary key instead of a fragment glued to punctuation.
-  const band =
-    readout.smoothing === 'good'
-      ? '(clean DC)'
-      : readout.smoothing === 'marginal'
-        ? '(visible ripple)'
-        : '(barely filtered)'
+  // A key per phrase, not a fragment glued to punctuation, so it translates.
+  const band = (
+    { good: 'pwm-filter.cleanDc', marginal: 'pwm-filter.visibleRipple', poor: 'pwm-filter.barelyFiltered' } as const
+  )[readout.smoothing]
 
   return (
     <SimPage
@@ -129,7 +117,7 @@ export default function PwmFilter() {
               { value: 'startup', label: 'pwm-filter.startup' },
             ]}
           />
-          <Schematic />
+          <Diagram />
 
           <Group label="common.filter">
             <Param label="common.resistor" unit="Ω" value={r} onChange={setR} min={100} max={1e6} />
@@ -159,7 +147,7 @@ export default function PwmFilter() {
               label="pwm-filter.dutyResolution"
               unit="bit"
               value={bits}
-              onChange={(v) => setBits(Math.round(v))}
+              onChange={setBits} int
               min={4}
               max={16}
               log={false}
@@ -179,7 +167,7 @@ export default function PwmFilter() {
               <Param
                 label="common.cyclesShown"
                 value={cycles}
-                onChange={(v) => setCycles(Math.round(v))}
+                onChange={setCycles} int
                 min={1}
                 max={20}
                 log={false}
@@ -192,29 +180,21 @@ export default function PwmFilter() {
     >
       <Oscilloscope traces={traces} dt={dt} unit="V" />
 
-      {readout.smoothing !== 'good' && (
-        <Warning
-          text="pwm-filter.warn1"
-          vars={{ ratio: readout.ratio.toFixed(1), FC_RATIO_GOOD, FC_RATIO_MIN }}
-        />
-      )}
-      {!readout.bitsOk && (
-        <Warning
-          text="pwm-filter.warn2"
-          vars={{ bits, f: formatSI(f, 'Hz'), maxBits: readout.maxBits }}
-        />
-      )}
-      {!readout.gpioOk && (
-        <Warning
-          text="pwm-filter.warn3"
-          vars={{ gpioPeakA: formatSI(readout.gpioPeakA, 'A') }}
-        />
-      )}
-      {!showInput && (
-        <Warning
-          text="pwm-filter.warn4"
-        />
-      )}
+      <Warning when={readout.smoothing !== 'good'}
+        text="pwm-filter.warn1"
+        vars={{ ratio: readout.ratio.toFixed(1), FC_RATIO_GOOD, FC_RATIO_MIN }}
+      />
+      <Warning when={!readout.bitsOk}
+        text="pwm-filter.warn2"
+        vars={{ bits, f: formatSI(f, 'Hz'), maxBits: readout.maxBits }}
+      />
+      <Warning when={!readout.gpioOk}
+        text="pwm-filter.warn3"
+        vars={{ gpioPeakA: formatSI(readout.gpioPeakA, 'A') }}
+      />
+      <Warning when={!showInput}
+        text="pwm-filter.warn4"
+      />
 
       <ReadoutGrid
         items={[

@@ -124,7 +124,10 @@ export function analyseCrystal(
   // Explicit femtofarad-to-millifarad range: the default snapping window starts
   // at 1 milli (it is sized for resistors) and would clamp picofarads to it.
   const cStandard = cLoad > 0 ? nearestByRatio('E24', cLoad, 1e-15, 1e-3) : NaN
-  const actualCL = cStandard / 2 + cStray
+  // With stray alone already over the specified load there is no capacitor to
+  // fit, so the best case is fitting none at all. Reporting that honestly beats
+  // propagating the NaN into every figure on the page.
+  const actualCL = cLoad > 0 ? cStandard / 2 + cStray : cStray
   // Pull between two loads, from the standard pulling formula.
   const pull =
     (cMotional / 2) * (1 / (cShunt + actualCL) - 1 / (cShunt + clSpec))

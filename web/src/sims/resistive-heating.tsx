@@ -10,11 +10,7 @@ import {
 import type { HeatingInput, MaterialKey } from '../engine/heating'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group, Segmented, Select } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Oscilloscope, Param, ReadoutGrid, Segmented, Select, SimPage, Theory, TRACE_COLORS, Warning } from '../ui'
 
 const N = 4096
 
@@ -82,7 +78,7 @@ export default function ResistiveHeating() {
               ]}
             />
             {sizing === 'awg' ? (
-              <Param label="common.gauge" unit="AWG" value={awg} onChange={(v) => setAwg(Math.round(v))} min={10} max={40} log={false} step={1} />
+              <Param label="common.gauge" unit="AWG" value={awg} onChange={setAwg} int min={10} max={40} log={false} step={1} />
             ) : (
               <Param label="common.diameter" unit="mm" value={diameterMm} onChange={setDiameterMm} min={0.05} max={3} />
             )}
@@ -131,22 +127,16 @@ export default function ResistiveHeating() {
         ]}
       />
 
-      {r.overTemp && (
-        <Warning
-          text="resistive-heating.warn1"
-          vars={{ maxTemp: toC(material.maxTemp).toFixed(0), label: material.label }}
-        />
-      )}
-      {!r.reachable && (
-        <Warning
-          text="resistive-heating.warn2"
-        />
-      )}
-      {materialKey === 'copper' && (
-        <Warning
-          text="resistive-heating.warn3"
-        />
-      )}
+      <Warning when={r.overTemp}
+        text="resistive-heating.warn1"
+        vars={{ maxTemp: toC(material.maxTemp).toFixed(0), label: material.label }}
+      />
+      <Warning when={!r.reachable}
+        text="resistive-heating.warn2"
+      />
+      <Warning when={materialKey === 'copper'}
+        text="resistive-heating.warn3"
+      />
 
       <Theory
         text={[

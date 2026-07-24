@@ -3,10 +3,7 @@ import type { Key } from '../i18n'
 import { useMemo, useState } from 'react'
 import { BAND_COLORS, encodeResistor } from '../engine/parts'
 import { formatSI } from '../engine/units'
-import { Group, Segmented } from '../ui/Controls'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Param, ReadoutGrid, Segmented, SimPage, Theory, Warning } from '../ui'
 
 const hexFor = (name: string) =>
   BAND_COLORS.find((c) => c.name === name)?.hex ?? '#1a1a1a'
@@ -93,11 +90,9 @@ export default function ResistorCode() {
         ]}
       />
 
-      {codes.eia96 === 'not in E96' && (
-        <Warning
-          text="resistor-code.warn1"
-        />
-      )}
+      <Warning when={codes.eia96 === 'not in E96'}
+        text="resistor-code.warn1"
+      />
       {value < 10 && (
         <Warning
           text="resistor-code.warn2"

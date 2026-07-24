@@ -8,14 +8,17 @@ import type { Key } from '../i18n'
  * a page cannot forget and a typo is a compile error.
  */
 
-/** Section heading inside the controls column. */
+/**
+ * Section of the controls column. Foldable, because a page like the MOSFET
+ * switch carries twenty sliders and you are usually only touching one section.
+ */
 export function Group({ label, children }: { label: Key; children: ReactNode }) {
   const t = useT()
   return (
-    <>
-      <h2>{t(label)}</h2>
+    <details className="group" open>
+      <summary>{t(label)}</summary>
       {children}
-    </>
+    </details>
   )
 }
 

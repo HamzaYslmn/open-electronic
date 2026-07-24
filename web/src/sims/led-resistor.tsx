@@ -4,10 +4,7 @@ import { LED_TYPES, VF_SPREAD_V, analyse } from '../engine/led'
 import { formatSI } from '../engine/units'
 import { T, sym, useT } from '../i18n'
 import type { Key } from '../i18n'
-import { Group, Select, Toggle } from '../ui/Controls'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Param, ReadoutGrid, Schematic, Select, SimPage, Theory, Toggle, Warning } from '../ui'
 
 /** Standard resistor package ratings. Values are watts, stored as strings for
  *  the select and converted at the edge. */
@@ -25,41 +22,36 @@ const CUSTOM = 'custom'
 const pct = (x: number) => `${(x * 100).toFixed(1)}%`
 const signedPct = (x: number) => `${x >= 0 ? '+' : ''}${(x * 100).toFixed(1)}%`
 
-function Schematic() {
-  const t = useT()
+function Diagram() {
   return (
-    <svg className="schematic" viewBox="0 0 260 112" aria-label={t('led-resistor.ledWithSeriesResistor')}>
-      <g fill="none" stroke="currentColor" strokeWidth="1.5">
-        {/* battery on the left branch, long plate positive */}
-        <path d="M24 30V52M12 52H36M17 60H31M24 60V90" />
-        {/* top rail through the resistor and the LED */}
-        <path d="M24 30V20H70" />
-        <rect x="70" y="12" width="44" height="16" />
-        <path d="M114 20H150" />
-        <path d="M150 10V30L172 20Z" />
-        <path d="M172 10V30" />
-        {/* emitted light */}
-        <path d="M156 9L164 2M160 2H164M164 2V6M164 9L172 2M168 2H172M172 2V6" />
-        <path d="M172 20H220V90" />
-        {/* return rail and ground */}
-        <path d="M24 90H220" />
-        <path d="M120 90V98M110 98H130M114 103H126M118 108H122" />
-      </g>
-      <g fill="currentColor" fontSize="11">
-        <text x="40" y="48">
-          Vs
-        </text>
-        <text x="88" y="8">
-          R
-        </text>
-        <text x="180" y="42">
-          LED
-        </text>
-        <text x="126" y="16">
-          If
-        </text>
-      </g>
-    </svg>
+    <Schematic viewBox="0 -8 260 120" label="led-resistor.ledWithSeriesResistor">
+      {/* battery on the left branch, long plate positive */}
+      <path d="M24 30V52M12 52H36M17 60H31M24 60V90" />
+      {/* top rail through the resistor and the LED */}
+      <path d="M24 30V20H70" />
+      <rect x="70" y="12" width="44" height="16" />
+      <path d="M114 20H150" />
+      <path d="M150 10V30L172 20Z" />
+      <path d="M172 10V30" />
+      {/* emitted light */}
+      <path d="M156 9L164 2M160 2H164M164 2V6M164 9L172 2M168 2H172M172 2V6" />
+      <path d="M172 20H220V90" />
+      {/* return rail and ground */}
+      <path d="M24 90H220" />
+      <path d="M120 90V98M110 98H130M114 103H126M118 108H122" />
+      <text x="40" y="48">
+        Vs
+      </text>
+      <text x="88" y="8">
+        R
+      </text>
+      <text x="180" y="42">
+        LED
+      </text>
+      <text x="126" y="16">
+        If
+      </text>
+    </Schematic>
   )
 }
 
@@ -94,7 +86,7 @@ export default function LedResistor() {
       lede="led-resistor.lede"
       controls={
         <>
-          <Schematic />
+          <Diagram />
 
           <Group label="common.supply">
             <Param
@@ -208,44 +200,34 @@ export default function LedResistor() {
         ]}
       />
 
-      {r.noConduction && (
-        <Warning
-          text="led-resistor.warn1"
-          vars={{ vf: formatSI(vf, 'V'), supply: formatSI(supply, 'V') }}
-        />
-      )}
+      <Warning when={r.noConduction}
+        text="led-resistor.warn1"
+        vars={{ vf: formatSI(vf, 'V'), supply: formatSI(supply, 'V') }}
+      />
 
-      {r.lowHeadroom && (
-        <Warning
-          text="led-resistor.warn2"
-          vars={{
-            headroom: formatSI(r.headroom, 'V'),
-            spread,
-            current: pct(r.vfSensitivity / r.current),
-          }}
-        />
-      )}
+      <Warning when={r.lowHeadroom}
+        text="led-resistor.warn2"
+        vars={{
+          headroom: formatSI(r.headroom, 'V'),
+          spread,
+          current: pct(r.vfSensitivity / r.current),
+        }}
+      />
 
-      {r.overGpio && (
-        <Warning
-          text="led-resistor.warn3"
-          vars={{ current: formatSI(r.current, 'A'), GPIO_MAX_MA }}
-        />
-      )}
+      <Warning when={r.overGpio}
+        text="led-resistor.warn3"
+        vars={{ current: formatSI(r.current, 'A'), GPIO_MAX_MA }}
+      />
 
-      {r.overLedMax && (
-        <Warning
-          text="led-resistor.warn4"
-          vars={{ current: formatSI(r.current, 'A'), maxCurrent: formatSI(maxCurrent, 'A') }}
-        />
-      )}
+      <Warning when={r.overLedMax}
+        text="led-resistor.warn4"
+        vars={{ current: formatSI(r.current, 'A'), maxCurrent: formatSI(maxCurrent, 'A') }}
+      />
 
-      {r.overRating && (
-        <Warning
-          text="led-resistor.warn5"
-          vars={{ rPower: formatSI(r.rPower, 'W'), ratingLabel }}
-        />
-      )}
+      <Warning when={r.overRating}
+        text="led-resistor.warn5"
+        vars={{ rPower: formatSI(r.rPower, 'W'), ratingLabel }}
+      />
 
       <Theory
         text={[

@@ -12,14 +12,9 @@ import { OPAMP_MODES } from '../engine/opamp'
 import type { OpAmp, OpAmpConfig, OpAmpMode } from '../engine/opamp'
 import { peakToPeak, sweep } from '../engine/signal'
 import { formatSI } from '../engine/units'
-import { T, useT } from '../i18n'
-import { Group, Segmented, Select } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import type { Trace } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
-import SourceControls, { useSource } from '../ui/SourceControls'
+import { T } from '../i18n'
+import { Group, Oscilloscope, Param, ReadoutGrid, Schematic, Segmented, Select, SimPage, SourceControls, Theory, TRACE_COLORS, useSource, Warning } from '../ui'
+import type { Trace } from '../ui'
 
 /** Samples per sweep, matching every other time-domain page. */
 const N = 8192
@@ -32,7 +27,7 @@ function Resistor({ x, y, label }: { x: number; y: number; label: string }) {
   return (
     <>
       <rect x={x} y={y - 7} width={34} height={14} />
-      <text x={x + 6} y={y - 11} fill="currentColor" stroke="none" fontSize="10">
+      <text x={x + 6} y={y - 11} fontSize="10">
         {label}
       </text>
     </>
@@ -44,106 +39,103 @@ function summingNodeInput(mode: OpAmpMode): boolean {
   return mode === 'inverting' || mode === 'summing' || mode === 'integrator'
 }
 
-function Schematic({ mode }: { mode: OpAmpMode }) {
+function Diagram({ mode }: { mode: OpAmpMode }) {
   const inverting = summingNodeInput(mode)
-  const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 130" aria-label={t('op-amp.amplifier')}>
-      <g fill="none" stroke="currentColor" strokeWidth="1.5">
-        {/* the part itself */}
-        <path d="M100 30v70l60-35z" />
-        <path d="M160 65h75" />
-        <circle cx="235" cy="65" r="3" />
-        <text x="104" y="52" fill="currentColor" stroke="none" fontSize="11">
-          &minus;
-        </text>
-        <text x="104" y="90" fill="currentColor" stroke="none" fontSize="11">
-          +
-        </text>
-        <text x="196" y="60" fill="currentColor" stroke="none" fontSize="10">
-          Vout
-        </text>
+    <Schematic viewBox="0 -8 260 138" label="op-amp.amplifier">
+      {/* the part itself */}
+      <path d="M100 30v70l60-35z" />
+      <path d="M160 65h75" />
+      <circle cx="235" cy="65" r="3" />
+      <text x="104" y="52">
+        &minus;
+      </text>
+      <text x="104" y="90">
+        +
+      </text>
+      <text x="196" y="60" fontSize="10">
+        Vout
+      </text>
 
-        {mode === 'comparator' ? (
-          <>
-            {/* signal straight onto the inverting pin */}
-            <path d="M6 47h94" />
-            {/* vref through R2 to the non-inverting node */}
-            <path d="M6 83h10" />
-            <Resistor x={16} y={83} label="R2" />
-            <path d="M50 83h50" />
-            {/* R1 closes positive feedback from the output */}
-            <path d="M60 83v32h50M144 115h51v-50" />
-            <Resistor x={110} y={115} label="R1" />
-            <circle cx="60" cy="83" r="2.5" fill="currentColor" />
-            <text x="2" y="42" fill="currentColor" stroke="none" fontSize="10">
-              Vin
-            </text>
-            <text x="2" y="78" fill="currentColor" stroke="none" fontSize="10">
-              Vref
-            </text>
-          </>
-        ) : (
-          <>
-            {/* feedback around the top, absent on a buffer */}
-            {mode === 'buffer' ? (
-              <path d="M195 65V16H75v31h25" />
-            ) : (
-              <>
-                <path d="M195 65V16h-43M118 16H75v31h25" />
-                {/* the integrator's feedback is Rf in parallel with Cf, i.e. Zf */}
-                <Resistor x={118} y={16} label={mode === 'integrator' ? 'Zf' : 'Rf'} />
-              </>
-            )}
-            <circle cx="195" cy="65" r="2.5" fill="currentColor" />
+      {mode === 'comparator' ? (
+        <>
+          {/* signal straight onto the inverting pin */}
+          <path d="M6 47h94" />
+          {/* vref through R2 to the non-inverting node */}
+          <path d="M6 83h10" />
+          <Resistor x={16} y={83} label="R2" />
+          <path d="M50 83h50" />
+          {/* R1 closes positive feedback from the output */}
+          <path d="M60 83v32h50M144 115h51v-50" />
+          <Resistor x={110} y={115} label="R1" />
+          <circle className="dot" cx="60" cy="83" r="2.5" />
+          <text x="2" y="42" fontSize="10">
+            Vin
+          </text>
+          <text x="2" y="78" fontSize="10">
+            Vref
+          </text>
+        </>
+      ) : (
+        <>
+          {/* feedback around the top, absent on a buffer */}
+          {mode === 'buffer' ? (
+            <path d="M195 65V16H75v31h25" />
+          ) : (
+            <>
+              <path d="M195 65V16h-43M118 16H75v31h25" />
+              {/* the integrator's feedback is Rf in parallel with Cf, i.e. Zf */}
+              <Resistor x={118} y={16} label={mode === 'integrator' ? 'Zf' : 'Rf'} />
+            </>
+          )}
+          <circle className="dot" cx="195" cy="65" r="2.5" />
 
-            {inverting ? (
-              <>
-                {/* source through Rin into the virtual earth */}
-                <path d="M6 47h24" />
-                <Resistor x={30} y={47} label="Rin" />
-                <path d="M64 47h36" />
-                {mode === 'summing' && (
-                  <>
-                    <path d="M6 112h24" />
-                    <Resistor x={30} y={112} label="R2" />
-                    <path d="M64 112h11V47" />
-                    <text x="2" y="107" fill="currentColor" stroke="none" fontSize="10">
-                      V2
-                    </text>
-                  </>
-                )}
-                <path d="M100 83H70v14M60 97h20M65 103h10" />
-                <text x="46" y="118" fill="currentColor" stroke="none" fontSize="10">
-                  Vbias
-                </text>
-              </>
-            ) : (
-              <>
-                {/* source onto the non-inverting pin, Rg from the summing node */}
-                <path d="M6 83h94" />
-                {mode !== 'buffer' && (
-                  <>
-                    <path d="M75 47v25" />
-                    <rect x="68" y="72" width="14" height="30" />
-                    <path d="M75 102v8M65 110h20M69 116h12" />
-                    <text x="52" y="92" fill="currentColor" stroke="none" fontSize="10">
-                      Rg
-                    </text>
-                    <text x="12" y="114" fill="currentColor" stroke="none" fontSize="10">
-                      Vbias
-                    </text>
-                  </>
-                )}
-              </>
-            )}
-            <text x="2" y={inverting ? 42 : 78} fill="currentColor" stroke="none" fontSize="10">
-              Vin
-            </text>
-          </>
-        )}
-      </g>
-    </svg>
+          {inverting ? (
+            <>
+              {/* source through Rin into the virtual earth */}
+              <path d="M6 47h24" />
+              <Resistor x={30} y={47} label="Rin" />
+              <path d="M64 47h36" />
+              {mode === 'summing' && (
+                <>
+                  <path d="M6 112h24" />
+                  <Resistor x={30} y={112} label="R2" />
+                  <path d="M64 112h11V47" />
+                  <text x="2" y="107" fontSize="10">
+                    V2
+                  </text>
+                </>
+              )}
+              <path d="M100 83H70v14M60 97h20M65 103h10" />
+              <text x="46" y="118" fontSize="10">
+                Vbias
+              </text>
+            </>
+          ) : (
+            <>
+              {/* source onto the non-inverting pin, Rg from the summing node */}
+              <path d="M6 83h94" />
+              {mode !== 'buffer' && (
+                <>
+                  <path d="M75 47v25" />
+                  <rect x="68" y="72" width="14" height="30" />
+                  <path d="M75 102v8M65 110h20M69 116h12" />
+                  <text x="52" y="92" fontSize="10">
+                    Rg
+                  </text>
+                  <text x="12" y="114" fontSize="10">
+                    Vbias
+                  </text>
+                </>
+              )}
+            </>
+          )}
+          <text x="2" y={inverting ? 42 : 78} fontSize="10">
+            Vin
+          </text>
+        </>
+      )}
+    </Schematic>
   )
 }
 
@@ -340,7 +332,7 @@ export default function OpAmp() {
             onChange={setMode}
             options={OPAMP_MODES}
           />
-          <Schematic mode={mode} />
+          <Diagram mode={mode} />
 
           <Group label="op-amp.network">
             {mode !== 'buffer' && !isComparator && (
@@ -470,47 +462,37 @@ export default function OpAmp() {
     >
       <Oscilloscope traces={traces} dt={dt} unit="V" />
 
-      {stats.clipped > 0 && (
-        <Warning
-          text="op-amp.warn1"
-          vars={{ clipped: (stats.clipped * 100).toFixed(1) }}
-        />
-      )}
-      {(readout.slewLimited || stats.slewed > 0) && (
-        <Warning
-          text="op-amp.warn2"
-          vars={{
-            slewNeeded: formatSI(readout.slewNeeded, 'V/s'),
-            slewRate: formatSI(amp.slewRate, 'V/s'),
-          }}
-        />
-      )}
-      {commonMode && (
-        <Warning
-          text="op-amp.warn3"
-          vars={{
-            inMin: formatSI(stats.inMin, 'V'),
-            inMax: formatSI(stats.inMax, 'V'),
-            vneg: formatSI(vneg, 'V'),
-            vpos: formatSI(vpos, 'V'),
-          }}
-        />
-      )}
-      {biasOffRail && (
-        <Warning
-          text="op-amp.warn4"
-          vars={{ vpos: formatSI(vpos / 2, 'V') }}
-        />
-      )}
-      {integratorTooFast && (
-        <Warning
-          text="op-amp.warn5"
-          vars={{
-            integratorUnity: formatSI(readout.integratorUnity, 'Hz'),
-            gbw: formatSI(gbw, 'Hz'),
-          }}
-        />
-      )}
+      <Warning when={stats.clipped > 0}
+        text="op-amp.warn1"
+        vars={{ clipped: (stats.clipped * 100).toFixed(1) }}
+      />
+      <Warning when={(readout.slewLimited || stats.slewed > 0)}
+        text="op-amp.warn2"
+        vars={{
+          slewNeeded: formatSI(readout.slewNeeded, 'V/s'),
+          slewRate: formatSI(amp.slewRate, 'V/s'),
+        }}
+      />
+      <Warning when={commonMode}
+        text="op-amp.warn3"
+        vars={{
+          inMin: formatSI(stats.inMin, 'V'),
+          inMax: formatSI(stats.inMax, 'V'),
+          vneg: formatSI(vneg, 'V'),
+          vpos: formatSI(vpos, 'V'),
+        }}
+      />
+      <Warning when={biasOffRail}
+        text="op-amp.warn4"
+        vars={{ vpos: formatSI(vpos / 2, 'V') }}
+      />
+      <Warning when={integratorTooFast}
+        text="op-amp.warn5"
+        vars={{
+          integratorUnity: formatSI(readout.integratorUnity, 'Hz'),
+          gbw: formatSI(gbw, 'Hz'),
+        }}
+      />
 
       <ReadoutGrid items={items} />
 

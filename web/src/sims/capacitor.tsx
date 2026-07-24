@@ -3,46 +3,40 @@ import { analyse, curve, memberVoltages } from '../engine/capacitor'
 import type { CapMode, CurveMode } from '../engine/capacitor'
 import { GPIO_MAX_MA, VCC } from '../engine/constants'
 import { formatSI } from '../engine/units'
-import { T, sym, useT } from '../i18n'
-import { Group, Segmented, Toggle } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { T, sym } from '../i18n'
+import { Dot, Group, Oscilloscope, Param, ReadoutGrid, Schematic, Segmented, SimPage, Theory, Toggle, TRACE_COLORS, Warning } from '../ui'
 
 /** Samples per curve, matching the other time-domain pages. */
 const N = 8192
 
-function Schematic({ mode }: { mode: CapMode }) {
-  const t = useT()
+function Diagram({ mode }: { mode: CapMode }) {
   return (
-    <svg className="schematic" viewBox="0 0 260 110" aria-label={t('capacitor.capacitorsIn')}>
-      <g fill="none" stroke="currentColor" strokeWidth="1.5">
-        <circle cx="24" cy="34" r="10" />
-        <path d="M18 34a6 6 0 0 1 12 0M24 24V14M24 44v36h212M34 34h36" />
-        <rect x="70" y="26" width="44" height="16" />
-        <path d="M114 34h46" />
-        {mode === 'series' ? (
-          <path d="M160 34v6M146 40h28M146 50h28M160 50v10M146 60h28M146 70h28M160 70v10" />
-        ) : (
+    <Schematic viewBox="0 0 260 110" label="capacitor.capacitorsIn">
+      <circle cx="24" cy="34" r="10" />
+      <path d="M18 34a6 6 0 0 1 12 0M24 44v36h212M34 34h36" />
+      <rect x="70" y="26" width="44" height="16" />
+      <path d="M114 34h46" />
+      {mode === 'series' ? (
+        <path d="M160 34v6M146 40h28M146 50h28M160 50v10M146 60h28M146 70h28M160 70v10" />
+      ) : (
+        <>
           <path d="M160 34h48M160 34v10M146 44h28M146 54h28M160 54v26M208 34v10M194 44h28M194 54h28M208 54v26" />
-        )}
-      </g>
-      <g fill="currentColor" fontSize="11">
-        <text x="86" y="18">
-          R
-        </text>
-        <text x="178" y="46">
-          C1
-        </text>
-        <text x={mode === 'series' ? 178 : 226} y={mode === 'series' ? 76 : 46}>
-          C2
-        </text>
-        <text x="4" y="60">
-          V
-        </text>
-      </g>
-    </svg>
+          <Dot x={160} y={34} />
+        </>
+      )}
+      <text x="86" y="18">
+        R
+      </text>
+      <text x="178" y="46">
+        C1
+      </text>
+      <text x={mode === 'series' ? 178 : 226} y={mode === 'series' ? 76 : 46}>
+        C2
+      </text>
+      <text x="4" y="60">
+        V
+      </text>
+    </Schematic>
   )
 }
 
@@ -110,7 +104,7 @@ export default function Capacitor() {
               { value: 'series', label: 'common.series' },
             ]}
           />
-          <Schematic mode={mode} />
+          <Diagram mode={mode} />
 
           <Group label="capacitor.bank">
             <Param label={sym('C1')} unit="F" value={c1} onChange={setC1} min={1e-12} max={1e-1} />
@@ -169,7 +163,7 @@ export default function Capacitor() {
             value: formatSI(readout.total, 'F'),
             note: <T k="capacitor.in" vars={{ values: values.length, mode }} />,
           },
-          { label: 'common.timeConstant', value: formatSI(readout.tau, 's'), note: '(R·C)' },
+          { label: 'common.timeConstant', value: formatSI(readout.tau, 's'), note: sym('(R·C)') },
           {
             label: curveMode === 'charge' ? 'capacitor.timeToReachTarget' : 'capacitor.timeToFallTo',
             value: formatSI(readout.tTarget, 's'),
@@ -212,29 +206,23 @@ export default function Capacitor() {
         ]}
       />
 
-      {gpioOver && (
-        <Warning
-          text="capacitor.warn1"
-          vars={{ peakCurrent: formatSI(readout.peakCurrent, 'A'), GPIO_MAX_MA }}
-        />
-      )}
+      <Warning when={gpioOver}
+        text="capacitor.warn1"
+        vars={{ peakCurrent: formatSI(readout.peakCurrent, 'A'), GPIO_MAX_MA }}
+      />
 
-      {overRail && curveMode === 'charge' && (
-        <Warning
-          text="capacitor.warn2"
-        />
-      )}
+      <Warning when={overRail && curveMode === 'charge'}
+        text="capacitor.warn2"
+      />
 
-      {unevenSplit && (
-        <Warning
-          text="capacitor.warn3"
-          vars={{
-            maxMemberVoltage: formatSI(readout.maxMemberVoltage, 'V'),
-            supply: formatSI(supply, 'V'),
-            values: formatSI(supply / values.length, 'V'),
-          }}
-        />
-      )}
+      <Warning when={unevenSplit}
+        text="capacitor.warn3"
+        vars={{
+          maxMemberVoltage: formatSI(readout.maxMemberVoltage, 'V'),
+          supply: formatSI(supply, 'V'),
+          values: formatSI(supply / values.length, 'V'),
+        }}
+      />
 
       <Theory
         text={[

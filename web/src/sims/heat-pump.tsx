@@ -2,10 +2,7 @@ import { useMemo, useState } from 'react'
 import { J_PER_KWH, analyse } from '../engine/heatPump'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group } from '../ui/Controls'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Param, ReadoutGrid, SimPage, Theory, Warning } from '../ui'
 
 /** A typical UK house heating season, used as the default seasonal demand. */
 const DEFAULT_SEASON_KWH = 8000
@@ -78,16 +75,12 @@ export default function HeatPump() {
         ]}
       />
 
-      {r.noLift && (
-        <Warning
-          text="heat-pump.warn1"
-        />
-      )}
-      {r.liftK > 55 && !r.noLift && (
-        <Warning
-          text="heat-pump.warn2"
-        />
-      )}
+      <Warning when={r.noLift}
+        text="heat-pump.warn1"
+      />
+      <Warning when={r.liftK > 55 && !r.noLift}
+        text="heat-pump.warn2"
+      />
 
       <Theory
         text={[

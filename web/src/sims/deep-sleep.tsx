@@ -2,11 +2,7 @@ import { useMemo, useState } from 'react'
 import { DEFAULT_DERATING, analyseDeepSleep } from '../engine/powerBudget'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Oscilloscope, Param, ReadoutGrid, SimPage, Theory, TRACE_COLORS, Warning } from '../ui'
 
 const N = 4096
 
@@ -88,17 +84,13 @@ export default function DeepSleep() {
         ]}
       />
 
-      {r.sleepDominated && (
-        <Warning
-          text="deep-sleep.warn1"
-          vars={{ sleepShare: (r.sleepShare * 100).toFixed(0) }}
-        />
-      )}
-      {activeCurrent > 0.15 && (
-        <Warning
-          text="deep-sleep.warn2"
-        />
-      )}
+      <Warning when={r.sleepDominated}
+        text="deep-sleep.warn1"
+        vars={{ sleepShare: (r.sleepShare * 100).toFixed(0) }}
+      />
+      <Warning when={activeCurrent > 0.15}
+        text="deep-sleep.warn2"
+      />
 
       <Theory
         text={[

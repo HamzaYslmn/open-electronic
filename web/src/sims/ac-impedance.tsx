@@ -2,11 +2,7 @@ import { useMemo, useState } from 'react'
 import { analyseImpedance } from '../engine/ac'
 import type { Topology } from '../engine/ac'
 import { formatSI } from '../engine/units'
-import { Group, Segmented } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Oscilloscope, Param, ReadoutGrid, Segmented, SimPage, Theory, TRACE_COLORS } from '../ui'
 
 const N = 1024
 
@@ -64,7 +60,7 @@ export default function AcImpedance() {
           </Group>
           <Group label="common.sweep">
             <Param label="ac-impedance.centreFrequency" unit="Hz" value={frequency} onChange={setFrequency} min={1} max={1e9} />
-            <Param label="ac-impedance.decadesShown" value={decades} onChange={(v) => setDecades(Math.round(v))} min={1} max={8} log={false} step={1} />
+            <Param label="ac-impedance.decadesShown" value={decades} onChange={setDecades} int min={1} max={8} log={false} step={1} />
           </Group>
         </>
       }

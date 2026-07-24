@@ -8,12 +8,8 @@ import {
 } from '../engine/boost'
 import { VCC, VCC_5V } from '../engine/constants'
 import { formatSI } from '../engine/units'
-import { T, useT } from '../i18n'
-import { Group } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { T } from '../i18n'
+import { Group, Oscilloscope, Param, ReadoutGrid, Schematic, SimPage, Theory, TRACE_COLORS, Warning } from '../ui'
 
 /** Samples per sweep, matched to the rest of the scope pages. */
 const N = 8192
@@ -24,53 +20,50 @@ const DERATE = 1.5
 const pct = (x: number) => (Number.isFinite(x) ? `${(x * 100).toFixed(1)}%` : 'n/a')
 const times = (x: number) => (Number.isFinite(x) ? `${x.toFixed(2)}x` : 'n/a')
 
-function Schematic() {
-  const t = useT()
+function Diagram() {
   return (
-    <svg className="schematic" viewBox="0 0 260 116" aria-label={t('boost.boostConverterPowerStage')}>
-      <g fill="none" stroke="currentColor" strokeWidth="1.5">
-        {/* input source */}
-        <circle cx="24" cy="34" r="10" />
-        <path d="M18 34a6 6 0 0 1 12 0M24 44v52h176M34 34h26" />
-        {/* inductor */}
-        <path d="M60 34a6 6 0 0 1 12 0a6 6 0 0 1 12 0a6 6 0 0 1 12 0a6 6 0 0 1 12 0" />
-        <path d="M108 34h42" />
-        {/* switch to ground */}
-        <path d="M130 34v14M130 72v24M130 70l11-16" />
-        {/* diode */}
-        <path d="M150 26v16l16-8Z" />
-        <path d="M166 26v16M166 34h34" />
-        {/* output capacitor */}
-        <path d="M200 34v20M188 54h24M188 62h24M200 62v34" />
-        <path d="M200 34h32" />
-      </g>
-      <g fill="currentColor">
-        <circle cx="130" cy="34" r="2.5" />
-        <circle cx="130" cy="50" r="2" />
-        <circle cx="130" cy="70" r="2" />
-        <circle cx="200" cy="34" r="2.5" />
-      </g>
-      <g fill="currentColor" fontSize="11">
-        <text x="78" y="20">
-          L
-        </text>
-        <text x="144" y="66">
-          SW
-        </text>
-        <text x="152" y="20">
-          D
-        </text>
-        <text x="216" y="60">
-          Cout
-        </text>
-        <text x="4" y="60">
-          Vin
-        </text>
-        <text x="206" y="24">
-          Vout
-        </text>
-      </g>
-    </svg>
+    <Schematic viewBox="0 0 260 116" label="boost.boostConverterPowerStage">
+
+      {/* input source */}
+      <circle cx="24" cy="34" r="10" />
+      <path d="M18 34a6 6 0 0 1 12 0M24 44v52h176M34 34h26" />
+      {/* inductor */}
+      <path d="M60 34a6 6 0 0 1 12 0a6 6 0 0 1 12 0a6 6 0 0 1 12 0a6 6 0 0 1 12 0" />
+      <path d="M108 34h42" />
+      {/* switch to ground */}
+      <path d="M130 34v14M130 72v24M130 70l11-16" />
+      {/* diode */}
+      <path d="M150 26v16l16-8Z" />
+      <path d="M166 26v16M166 34h34" />
+      {/* output capacitor */}
+      <path d="M200 34v20M188 54h24M188 62h24M200 62v34" />
+      <path d="M200 34h32" />
+
+      <circle className="dot" cx="130" cy="34" r="2.5" />
+      <circle className="dot" cx="130" cy="50" r="2" />
+      <circle className="dot" cx="130" cy="70" r="2" />
+      <circle className="dot" cx="200" cy="34" r="2.5" />
+
+      <text x="78" y="20">
+        L
+      </text>
+      <text x="144" y="66">
+        SW
+      </text>
+      <text x="152" y="20">
+        D
+      </text>
+      <text x="216" y="60">
+        Cout
+      </text>
+      <text x="4" y="60">
+        Vin
+      </text>
+      <text x="206" y="24">
+        Vout
+      </text>
+
+    </Schematic>
   )
 }
 
@@ -110,7 +103,7 @@ export default function Boost() {
       lede="boost.lede"
       controls={
         <>
-          <Schematic />
+          <Diagram />
 
           <Group label="common.rails">
             <Param
@@ -222,7 +215,7 @@ export default function Boost() {
             <Param
               label="boost.switchingPeriodsShown"
               value={cycles}
-              onChange={(v) => setCycles(Math.round(v))}
+              onChange={setCycles} int
               min={1}
               max={10}
               log={false}
@@ -312,59 +305,47 @@ export default function Boost() {
         ]}
       />
 
-      {!r.stepUp && (
-        <Warning
-          text="boost.warn1"
-          vars={{ vout: formatSI(vout, 'V'), vin: formatSI(vin, 'V') }}
-        />
-      )}
+      <Warning when={!r.stepUp}
+        text="boost.warn1"
+        vars={{ vout: formatSI(vout, 'V'), vin: formatSI(vin, 'V') }}
+      />
 
-      {r.stepUp && !r.achievable && (
-        <Warning
-          text="boost.warn2"
-          vars={{
-            ron: formatSI(dcr + ron, 'Ω'),
-            voutMax: formatSI(r.voutMax, 'V'),
-            iout: formatSI(iout, 'A'),
-            vout: formatSI(vout, 'V'),
-          }}
-        />
-      )}
+      <Warning when={r.stepUp && !r.achievable}
+        text="boost.warn2"
+        vars={{
+          ron: formatSI(dcr + ron, 'Ω'),
+          voutMax: formatSI(r.voutMax, 'V'),
+          iout: formatSI(iout, 'A'),
+          vout: formatSI(vout, 'V'),
+        }}
+      />
 
-      {r.extremeDuty && (
-        <Warning
-          text="boost.warn3"
-          vars={{
-            duty: pct(r.duty),
-            MAX_PRACTICAL_DUTY: pct(MAX_PRACTICAL_DUTY),
-            toff: formatSI(r.toff, 's'),
-          }}
-        />
-      )}
+      <Warning when={r.extremeDuty}
+        text="boost.warn3"
+        vars={{
+          duty: pct(r.duty),
+          MAX_PRACTICAL_DUTY: pct(MAX_PRACTICAL_DUTY),
+          toff: formatSI(r.toff, 's'),
+        }}
+      />
 
-      {r.saturating && (
-        <Warning
-          text="boost.warn4"
-          vars={{ ipeak: formatSI(r.ipeak, 'A'), isat: formatSI(isat, 'A') }}
-        />
-      )}
+      <Warning when={r.saturating}
+        text="boost.warn4"
+        vars={{ ipeak: formatSI(r.ipeak, 'A'), isat: formatSI(isat, 'A') }}
+      />
 
-      {r.mode === 'DCM' && (
-        <Warning
-          text="boost.warn5"
-          vars={{
-            ioutBoundary: formatSI(r.ioutBoundary, 'A'),
-            lBoundary: formatSI(r.lBoundary, 'H'),
-          }}
-        />
-      )}
+      <Warning when={r.mode === 'DCM'}
+        text="boost.warn5"
+        vars={{
+          ioutBoundary: formatSI(r.ioutBoundary, 'A'),
+          lBoundary: formatSI(r.lBoundary, 'H'),
+        }}
+      />
 
-      {r.highRipple && r.mode === 'CCM' && (
-        <Warning
-          text="boost.warn6"
-          vars={{ rippleRatio: pct(r.rippleRatio) }}
-        />
-      )}
+      <Warning when={r.highRipple && r.mode === 'CCM'}
+        text="boost.warn6"
+        vars={{ rippleRatio: pct(r.rippleRatio) }}
+      />
 
       <Theory
         text={[

@@ -71,6 +71,15 @@ export const SIMULATORS: Sim[] = [
     Component: lazy(() => import('./sims/rl-filter')),
   },
   {
+    id: 'sallen-key',
+    title: 'sallen-key.title',
+    blurb: 'sallen-key.blurb',
+    category: 'cat.filtersSignals',
+    status: 'ready',
+    formula: 'w0 = 1/sqrt(R1·R2·C1·C2)',
+    Component: lazy(() => import('./sims/sallen-key')),
+  },
+  {
     id: 'rlc-resonance',
     title: 'rlc-resonance.title',
     blurb: 'rlc-resonance.blurb',
@@ -246,6 +255,15 @@ export const SIMULATORS: Sim[] = [
     status: 'ready',
     formula: 'Vout = -Vin·D/(1-D)',
     Component: lazy(() => import('./sims/buck-boost')),
+  },
+  {
+    id: 'motor-drive',
+    title: 'motor-drive.title',
+    blurb: 'motor-drive.blurb',
+    category: 'cat.powerConversion',
+    status: 'ready',
+    formula: 'L·di/dt = V - i·R - ke·w',
+    Component: lazy(() => import('./sims/motor-drive')),
   },
   {
     id: 'lm2596',

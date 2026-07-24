@@ -3,55 +3,46 @@ import { analyse, simulate, timeConstant } from '../engine/rc'
 import type { RCMode } from '../engine/rc'
 import { sweep } from '../engine/signal'
 import { formatSI } from '../engine/units'
-import { T, useT } from '../i18n'
-import { Group, Segmented } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
-import SourceControls, { useSource } from '../ui/SourceControls'
+import { T } from '../i18n'
+import { bandLabel, Dot, Group, Oscilloscope, Param, ReadoutGrid, Schematic, Segmented, SimPage, SourceControls, Theory, useSource } from '../ui'
 
 /** Samples per sweep. Well past the pixel width, so zooming reveals real detail. */
 const N = 8192
 
-function Schematic({ mode }: { mode: RCMode }) {
+function Diagram({ mode }: { mode: RCMode }) {
   const [first, second] = mode === 'lowpass' ? ['R', 'C'] : ['C', 'R']
-  const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 110" aria-label={t('rc-filter.rcNetwork')}>
-      <g fill="none" stroke="currentColor" strokeWidth="1.5">
-        <circle cx="24" cy="34" r="10" />
-        <path d="M18 34a6 6 0 0 1 12 0M24 24V14M24 44v36h212M34 34h36" />
-        {first === 'R' ? (
-          <rect x="70" y="26" width="44" height="16" />
-        ) : (
-          <path d="M84 20v28M96 20v28" />
-        )}
-        <path d={first === 'R' ? 'M114 34h46' : 'M70 34h14M96 34h64'} />
-        <path d="M160 34h60" />
-        {second === 'C' ? (
-          <path d="M150 46v10M136 56h28M136 66h28M150 66v14" />
-        ) : (
-          <rect x="142" y="48" width="16" height="30" />
-        )}
-        <path d={second === 'C' ? 'M150 34v12' : 'M150 34v14M150 78v2'} />
-        <circle cx="224" cy="34" r="3" />
-      </g>
-      <g fill="currentColor" fontSize="11">
-        <text x="86" y="18">
-          {first}
-        </text>
-        <text x="166" y="62">
-          {second}
-        </text>
-        <text x="4" y="60">
-          Vin
-        </text>
-        <text x="212" y="24">
-          Vout
-        </text>
-      </g>
-    </svg>
+    <Schematic viewBox="0 0 260 110" label="rc-filter.rcNetwork">
+      <circle cx="24" cy="34" r="10" />
+      <path d="M18 34a6 6 0 0 1 12 0M24 44v36h212M34 34h36" />
+      {first === 'R' ? (
+        <rect x="70" y="26" width="44" height="16" />
+      ) : (
+        <path d="M84 20v28M96 20v28" />
+      )}
+      <path d={first === 'R' ? 'M114 34h46' : 'M70 34h14M96 34h64'} />
+      <path d="M160 34h60" />
+      {second === 'C' ? (
+        <path d="M150 46v10M136 56h28M136 66h28M150 66v14" />
+      ) : (
+        <rect x="142" y="48" width="16" height="30" />
+      )}
+      <path d={second === 'C' ? 'M150 34v12' : 'M150 34v14M150 78v2'} />
+      <Dot x={150} y={34} />
+      <circle cx="224" cy="34" r="3" />
+      <text x="86" y="18">
+        {first}
+      </text>
+      <text x="166" y="62">
+        {second}
+      </text>
+      <text x="4" y="60">
+        Vin
+      </text>
+      <text x="212" y="24">
+        Vout
+      </text>
+    </Schematic>
   )
 }
 
@@ -71,8 +62,8 @@ export default function RCFilter() {
     return {
       dt,
       traces: [
-        { label: 'common.vin', color: TRACE_COLORS[0], samples: input },
-        { label: 'common.vout', color: TRACE_COLORS[1], samples: output },
+        { label: 'common.vin', samples: input },
+        { label: 'common.vout', samples: output },
       ],
       readout: analyse(r, c, source.frequency, mode),
     }
@@ -80,16 +71,7 @@ export default function RCFilter() {
 
   const ratio = readout.fc > 0 ? source.frequency / readout.fc : 0
   const pass = mode === 'lowpass' ? ratio < 1 : ratio > 1
-  // Parenthesised here rather than in the note, so the whole phrase is one
-  // dictionary key instead of a fragment glued to punctuation.
-  const band =
-    source.kind === 'dc'
-      ? '(step response)'
-      : ratio < 0.1 || ratio > 10
-        ? pass
-          ? '(deep in the passband)'
-          : '(deep in the stopband)'
-        : '(near the corner)'
+  const band = bandLabel(source.kind === 'dc', ratio, pass)
 
   return (
     <SimPage
@@ -106,7 +88,7 @@ export default function RCFilter() {
               { value: 'highpass', label: 'common.highPass' },
             ]}
           />
-          <Schematic mode={mode} />
+          <Diagram mode={mode} />
 
           <Group label="common.components">
             <Param label="common.resistor" unit="Ω" value={r} onChange={setR} min={1} max={10e6} />

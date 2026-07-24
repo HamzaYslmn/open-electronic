@@ -2,10 +2,7 @@ import { useMemo, useState } from 'react'
 import { analyseTransformer } from '../engine/ac'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group } from '../ui/Controls'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Param, ReadoutGrid, SimPage, Theory, Warning } from '../ui'
 
 export default function Transformer() {
   // Mains input, so this page legitimately does not default to the 3.3 V rail.
@@ -30,8 +27,8 @@ export default function Transformer() {
         <>
           <Group label="transformer.windings">
             <Param label="transformer.primaryVoltage" unit="V" value={vPrimary} onChange={setVPrimary} min={1} max={1000} />
-            <Param label="transformer.primaryTurns" value={np} onChange={(v) => setNp(Math.round(v))} min={1} max={100_000} />
-            <Param label="transformer.secondaryTurns" value={ns} onChange={(v) => setNs(Math.round(v))} min={1} max={100_000} />
+            <Param label="transformer.primaryTurns" value={np} onChange={setNp} int min={1} max={100_000} />
+            <Param label="transformer.secondaryTurns" value={ns} onChange={setNs} int min={1} max={100_000} />
           </Group>
           <Group label="transformer.lossesAndRating">
             <Param label="transformer.primaryResistance" unit="Ω" value={rPrimary} onChange={setRPrimary} min={0} max={2000} log={false} step={1} />
@@ -64,18 +61,14 @@ export default function Transformer() {
         ]}
       />
 
-      {t.overRated && (
-        <Warning
-          text="transformer.warn1"
-          vars={{ VA: formatSI(t.va, 'VA'), vaRating }}
-        />
-      )}
-      {t.poorRegulation && (
-        <Warning
-          text="transformer.warn2"
-          vars={{ regulation: (t.regulation * 100).toFixed(0) }}
-        />
-      )}
+      <Warning when={t.overRated}
+        text="transformer.warn1"
+        vars={{ VA: formatSI(t.va, 'VA'), vaRating }}
+      />
+      <Warning when={t.poorRegulation}
+        text="transformer.warn2"
+        vars={{ regulation: (t.regulation * 100).toFixed(0) }}
+      />
 
       <Theory
         text={[

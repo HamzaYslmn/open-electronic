@@ -119,11 +119,12 @@ export default function SourceControls({
         <Param
           label="common.cyclesShown"
           value={value.cycles}
-          onChange={(cycles) => onChange({ cycles: Math.round(cycles) })}
+          onChange={(cycles) => onChange({ cycles })}
           min={1}
           max={20}
           log={false}
           step={1}
+          int
         />
       )}
     </Group>

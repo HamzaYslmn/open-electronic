@@ -10,11 +10,7 @@ import {
 import type { ThermalChain } from '../engine/thermal'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group, Segmented, Select } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Oscilloscope, Param, ReadoutGrid, Segmented, Select, SimPage, Theory, TRACE_COLORS, Warning } from '../ui'
 
 /** Samples per warm-up sweep, same buffer depth as every other page. */
 const N = 8192
@@ -290,41 +286,35 @@ export default function ThermalDesign() {
         ]}
       />
 
-      {r.overTemp && r.sinkImpossible && (
-        <Warning
-          text="thermal-design.warn1"
-          vars={{
-            tj: degC(r.tj),
-            tjMaxC: tjMaxC.toFixed(0),
-            power: formatSI(power, 'W'),
-            maxPower: formatSI(r.maxPower, 'W'),
-          }}
-        />
-      )}
-      {r.overTemp && !r.sinkImpossible && (
-        <Warning
-          text="thermal-design.warn2"
-          vars={{
-            tj: degC(r.tj),
-            tjMaxC: tjMaxC.toFixed(0),
-            requiredRsa: formatSI(r.requiredRsa, 'K/W'),
-            e: formatSI(Math.max(0, r.requiredRsa - MARGIN_TARGET_K / Math.max(power, 1e-9)), 'K/W'),
-            MARGIN_TARGET_K,
-            maxPower: formatSI(r.maxPower, 'W'),
-          }}
-        />
-      )}
+      <Warning when={r.overTemp && r.sinkImpossible}
+        text="thermal-design.warn1"
+        vars={{
+          tj: degC(r.tj),
+          tjMaxC: tjMaxC.toFixed(0),
+          power: formatSI(power, 'W'),
+          maxPower: formatSI(r.maxPower, 'W'),
+        }}
+      />
+      <Warning when={r.overTemp && !r.sinkImpossible}
+        text="thermal-design.warn2"
+        vars={{
+          tj: degC(r.tj),
+          tjMaxC: tjMaxC.toFixed(0),
+          requiredRsa: formatSI(r.requiredRsa, 'K/W'),
+          e: formatSI(Math.max(0, r.requiredRsa - MARGIN_TARGET_K / Math.max(power, 1e-9)), 'K/W'),
+          MARGIN_TARGET_K,
+          maxPower: formatSI(r.maxPower, 'W'),
+        }}
+      />
       {!r.overTemp && r.margin < MARGIN_TARGET_K && (
         <Warning
           text="thermal-design.warn3"
           vars={{ margin: r.margin.toFixed(1), MARGIN_TARGET_K }}
         />
       )}
-      {mode === 'ldo' && vout > vin && (
-        <Warning
-          text="thermal-design.warn4"
-        />
-      )}
+      <Warning when={mode === 'ldo' && vout > vin}
+        text="thermal-design.warn4"
+      />
 
       <Theory
         text={[

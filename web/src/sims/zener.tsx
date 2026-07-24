@@ -2,48 +2,42 @@ import { useMemo, useState } from 'react'
 import { VCC, VCC_5V } from '../engine/constants'
 import { POWER_DERATING, analyse } from '../engine/zener'
 import { formatSI } from '../engine/units'
-import { T, useT } from '../i18n'
-import { Group } from '../ui/Controls'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { T } from '../i18n'
+import { Group, Param, ReadoutGrid, Schematic, SimPage, Theory, Warning } from '../ui'
 
-function Schematic() {
-  const t = useT()
+function Diagram() {
   return (
-    <svg className="schematic" viewBox="0 0 260 120" aria-label={t('zener.zenerShuntRegulator')}>
-      <g fill="none" stroke="currentColor" strokeWidth="1.5">
-        {/* input node, series resistor, output rail */}
-        <circle cx="20" cy="30" r="3" />
-        <path d="M23 30h37M20 33v57h216" />
-        <rect x="60" y="22" width="44" height="16" />
-        <path d="M104 30h116" />
-        {/* zener: diode with the bent cathode bar */}
-        <path d="M150 30v14M136 62h28M138 56l12-12 12 12zM136 62l-6 6M164 62l6-6M150 62v28" />
-        {/* load */}
-        <rect x="204" y="46" width="16" height="30" />
-        <path d="M212 30v16M212 76v14" />
-        <circle cx="248" cy="30" r="3" />
-        <path d="M220 30h25" />
-      </g>
-      <g fill="currentColor" fontSize="11">
-        <text x="74" y="16">
-          Rs
-        </text>
-        <text x="112" y="58">
-          Dz
-        </text>
-        <text x="226" y="64">
-          load
-        </text>
-        <text x="10" y="22">
-          Vin
-        </text>
-        <text x="234" y="22">
-          Vout
-        </text>
-      </g>
-    </svg>
+    <Schematic viewBox="0 0 260 120" label="zener.zenerShuntRegulator">
+      {/* input node, series resistor, output rail */}
+      <circle cx="20" cy="30" r="3" />
+      <path d="M23 30h37M20 33v57h216" />
+      <rect x="60" y="22" width="44" height="16" />
+      <path d="M104 30h116" />
+      {/* Zener: cathode bar at the apex and facing the rail, anode to ground.
+          The bar has to touch the point of the triangle, otherwise the symbol
+          reads as a diode pointing the wrong way. */}
+      <path d="M150 30v14M136 44h28M136 44l-6 6M164 44l6-6M138 56l12-12 12 12zM150 56v34" />
+      {/* load */}
+      <rect x="204" y="46" width="16" height="30" />
+      <path d="M212 30v16M212 76v14" />
+      <circle cx="248" cy="30" r="3" />
+      <path d="M220 30h25" />
+      <text x="74" y="16">
+        Rs
+      </text>
+      <text x="112" y="58">
+        Dz
+      </text>
+      <text x="226" y="64">
+        load
+      </text>
+      <text x="10" y="22">
+        Vin
+      </text>
+      <text x="234" y="22">
+        Vout
+      </text>
+    </Schematic>
   )
 }
 
@@ -75,7 +69,7 @@ export default function Zener() {
       lede="zener.lede"
       controls={
         <>
-          <Schematic />
+          <Diagram />
 
           <Group label="zener.inputRange">
             <Param
@@ -250,62 +244,52 @@ export default function Zener() {
         ]}
       />
 
-      {noHeadroom && (
-        <Warning
-          text="zener.warn1"
-          vars={{ vinMin: formatSI(vinMin, 'V'), vz: formatSI(vz, 'V') }}
-        />
-      )}
+      <Warning when={noHeadroom}
+        text="zener.warn1"
+        vars={{ vinMin: formatSI(vinMin, 'V'), vz: formatSI(vz, 'V') }}
+      />
 
-      {!noHeadroom && !r.windowValid && (
-        <Warning
-          text="zener.warn2"
-          vars={{
-            rsMin: formatSI(r.rsMin, 'Ω'),
-            vinMax: formatSI(vinMax, 'V'),
-            rsMax: formatSI(r.rsMax, 'Ω'),
-            vinMin: formatSI(vinMin, 'V'),
-            ilMax: formatSI(ilMax, 'A'),
-          }}
-        />
-      )}
+      <Warning when={!noHeadroom && !r.windowValid}
+        text="zener.warn2"
+        vars={{
+          rsMin: formatSI(r.rsMin, 'Ω'),
+          vinMax: formatSI(vinMax, 'V'),
+          rsMax: formatSI(r.rsMax, 'Ω'),
+          vinMin: formatSI(vinMin, 'V'),
+          ilMax: formatSI(ilMax, 'A'),
+        }}
+      />
 
-      {r.dropout && (
-        <Warning
-          text="zener.warn3"
-          vars={{
-            irs: formatSI(r.cold.irs, 'A'),
-            vinMin: formatSI(vinMin, 'V'),
-            iz: formatSI(r.cold.iz, 'A'),
-            izMin: formatSI(izMin, 'A'),
-            vout: formatSI(r.cold.vout, 'V'),
-            rsMax: formatSI(r.rsMax, 'Ω'),
-          }}
-        />
-      )}
+      <Warning when={r.dropout}
+        text="zener.warn3"
+        vars={{
+          irs: formatSI(r.cold.irs, 'A'),
+          vinMin: formatSI(vinMin, 'V'),
+          iz: formatSI(r.cold.iz, 'A'),
+          izMin: formatSI(izMin, 'A'),
+          vout: formatSI(r.cold.vout, 'V'),
+          rsMax: formatSI(r.rsMax, 'Ω'),
+        }}
+      />
 
-      {r.overPower && (
-        <Warning
-          text="zener.warn4"
-          vars={{
-            pz: formatSI(r.hot.pz, 'W'),
-            pzMax: formatSI(pzMax, 'W'),
-            vinMax: formatSI(vinMax, 'V'),
-            irs: formatSI(r.hot.irs, 'A'),
-            rsMin: formatSI(r.rsMin, 'Ω'),
-          }}
-        />
-      )}
+      <Warning when={r.overPower}
+        text="zener.warn4"
+        vars={{
+          pz: formatSI(r.hot.pz, 'W'),
+          pzMax: formatSI(pzMax, 'W'),
+          vinMax: formatSI(vinMax, 'V'),
+          irs: formatSI(r.hot.irs, 'A'),
+          rsMin: formatSI(r.rsMin, 'Ω'),
+        }}
+      />
 
-      {!r.overPower && r.overDerated && (
-        <Warning
-          text="zener.warn5"
-          vars={{
-            pzFraction: (100 * r.pzFraction).toFixed(0),
-            POWER_DERATING: (100 * POWER_DERATING).toFixed(0),
-          }}
-        />
-      )}
+      <Warning when={!r.overPower && r.overDerated}
+        text="zener.warn5"
+        vars={{
+          pzFraction: (100 * r.pzFraction).toFixed(0),
+          POWER_DERATING: (100 * POWER_DERATING).toFixed(0),
+        }}
+      />
 
       <Theory
         text={[

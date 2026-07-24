@@ -2,12 +2,9 @@ import { useMemo, useState } from 'react'
 import { VCC } from '../engine/constants'
 import { analyse, ADC_MAX_SOURCE_OHMS, STIFF_LOAD_RATIO } from '../engine/divider'
 import { formatSI } from '../engine/units'
-import { T, sym, useT } from '../i18n'
+import { T, sym } from '../i18n'
 import type { Key } from '../i18n'
-import { Group, Select, Toggle } from '../ui/Controls'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Param, ReadoutGrid, Schematic, Select, SimPage, Theory, Toggle, Warning } from '../ui'
 
 /** Package power ratings, the number the fab actually sells you. */
 const PACKAGES: ReadonlyArray<{ value: string; label: Key }> = [
@@ -18,51 +15,48 @@ const PACKAGES: ReadonlyArray<{ value: string; label: Key }> = [
   { value: '0.5', label: 'voltage-divider.axial12W' },
 ]
 
-function Schematic({ loaded }: { loaded: boolean }) {
-  const t = useT()
+function Diagram({ loaded }: { loaded: boolean }) {
   return (
-    <svg className="schematic" viewBox="0 0 260 145" aria-label={t('voltage-divider.resistiveVoltageDivider')}>
-      <g fill="none" stroke="currentColor" strokeWidth="1.5">
-        <circle cx="100" cy="12" r="4" />
-        <path d="M100 16v18" />
-        <rect x="86" y="34" width="28" height="28" />
-        <path d="M100 62v22" />
-        <rect x="86" y="84" width="28" height="28" />
-        <path d="M100 112v10M100 76h120" />
-        <circle cx="224" cy="76" r="3" />
-        {loaded && (
-          <>
-            <path d="M172 76v12" />
-            <rect x="158" y="88" width="28" height="28" />
-            <path d="M172 116v6M172 122h-72" />
-          </>
-        )}
-        <path d="M88 122h24M92 127h16M96 132h8" />
-      </g>
-      <g fill="currentColor">
-        <circle cx="100" cy="76" r="2.5" />
-        {loaded && <circle cx="172" cy="76" r="2.5" />}
-      </g>
-      <g fill="currentColor" fontSize="11">
-        <text x="64" y="16">
-          Vin
+    <Schematic viewBox="0 0 260 145" label="voltage-divider.resistiveVoltageDivider">
+
+      <circle cx="100" cy="12" r="4" />
+      <path d="M100 16v18" />
+      <rect x="86" y="34" width="28" height="28" />
+      <path d="M100 62v22" />
+      <rect x="86" y="84" width="28" height="28" />
+      <path d="M100 112v10M100 76h120" />
+      <circle cx="224" cy="76" r="3" />
+      {loaded && (
+        <>
+          <path d="M172 76v12" />
+          <rect x="158" y="88" width="28" height="28" />
+          <path d="M172 116v6M172 122h-72" />
+        </>
+      )}
+      <path d="M88 122h24M92 127h16M96 132h8" />
+
+      <circle className="dot" cx="100" cy="76" r="2.5" />
+      {loaded && <circle className="dot" cx="172" cy="76" r="2.5" />}
+
+      <text x="64" y="16">
+        Vin
+      </text>
+      <text x="120" y="52">
+        R1
+      </text>
+      <text x="120" y="102">
+        R2
+      </text>
+      {loaded && (
+        <text x="192" y="106">
+          RL
         </text>
-        <text x="120" y="52">
-          R1
-        </text>
-        <text x="120" y="102">
-          R2
-        </text>
-        {loaded && (
-          <text x="192" y="106">
-            RL
-          </text>
-        )}
-        <text x="196" y="68">
-          Vout
-        </text>
-      </g>
-    </svg>
+      )}
+      <text x="196" y="68">
+        Vout
+      </text>
+
+    </Schematic>
   )
 }
 
@@ -88,7 +82,7 @@ export default function VoltageDivider() {
       lede="voltage-divider.lede"
       controls={
         <>
-          <Schematic loaded={loaded} />
+          <Diagram loaded={loaded} />
 
           <Group label="common.supply">
             <Param
@@ -159,7 +153,7 @@ export default function VoltageDivider() {
           {
             label: 'common.outputImpedance',
             value: formatSI(r.zout, 'Ω'),
-            note: '(R1||R2)',
+            note: sym('(R1||R2)'),
             warn: r.adcUnfriendly,
           },
           {
@@ -200,29 +194,23 @@ export default function VoltageDivider() {
         ]}
       />
 
-      {r.overPower && (
-        <Warning
-          text="voltage-divider.warn1"
-          vars={{ rating: formatSI(Number(rating), 'W') }}
-        />
-      )}
+      <Warning when={r.overPower}
+        text="voltage-divider.warn1"
+        vars={{ rating: formatSI(Number(rating), 'W') }}
+      />
 
-      {r.adcUnfriendly && (
-        <Warning
-          text="voltage-divider.warn2"
-          vars={{
-            zout: formatSI(r.zout, 'Ω'),
-            ADC_MAX_SOURCE_OHMS: formatSI(ADC_MAX_SOURCE_OHMS, 'Ω'),
-          }}
-        />
-      )}
+      <Warning when={r.adcUnfriendly}
+        text="voltage-divider.warn2"
+        vars={{
+          zout: formatSI(r.zout, 'Ω'),
+          ADC_MAX_SOURCE_OHMS: formatSI(ADC_MAX_SOURCE_OHMS, 'Ω'),
+        }}
+      />
 
-      {!stiff && loaded && (
-        <Warning
-          text="voltage-divider.warn3"
-          vars={{ stiffness: r.stiffness.toFixed(1) }}
-        />
-      )}
+      <Warning when={!stiff && loaded}
+        text="voltage-divider.warn3"
+        vars={{ stiffness: r.stiffness.toFixed(1) }}
+      />
 
       <Theory
         text={[

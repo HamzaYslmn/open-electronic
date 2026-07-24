@@ -3,10 +3,7 @@ import { VCC_5V } from '../engine/constants'
 import { analyseWire } from '../engine/conductor'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group, Toggle } from '../ui/Controls'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Param, ReadoutGrid, SimPage, Theory, Toggle, Warning } from '../ui'
 
 export default function WireGauge() {
   const [awg, setAwg] = useState(22)
@@ -30,7 +27,7 @@ export default function WireGauge() {
       controls={
         <>
           <Group label="wire-gauge.wire">
-            <Param label="common.gauge" unit="AWG" value={awg} onChange={(v) => setAwg(Math.round(v))} min={0} max={40} log={false} step={1} />
+            <Param label="common.gauge" unit="AWG" value={awg} onChange={setAwg} int min={0} max={40} log={false} step={1} />
             <Param label="wire-gauge.runLength" unit="m" value={length} onChange={setLength} min={0.01} max={200} />
             <Toggle label="wire-gauge.countReturnConductor" value={roundTrip} onChange={setRoundTrip} />
           </Group>
@@ -69,25 +66,21 @@ export default function WireGauge() {
         ]}
       />
 
-      {r.overAmpacity && (
-        <Warning
-          text="wire-gauge.warn1"
-          vars={{
-            current: formatSI(current, 'A'),
-            awg,
-            ampacityBundled: formatSI(r.ampacityBundled, 'A'),
-          }}
-        />
-      )}
-      {r.excessiveDrop && (
-        <Warning
-          text="wire-gauge.warn2"
-          vars={{
-            vDrop: formatSI(r.vDrop, 'V'),
-            dropFraction: (r.dropFraction * 100).toFixed(1),
-          }}
-        />
-      )}
+      <Warning when={r.overAmpacity}
+        text="wire-gauge.warn1"
+        vars={{
+          current: formatSI(current, 'A'),
+          awg,
+          ampacityBundled: formatSI(r.ampacityBundled, 'A'),
+        }}
+      />
+      <Warning when={r.excessiveDrop}
+        text="wire-gauge.warn2"
+        vars={{
+          vDrop: formatSI(r.vDrop, 'V'),
+          dropFraction: (r.dropFraction * 100).toFixed(1),
+        }}
+      />
 
       <Theory
         text={[

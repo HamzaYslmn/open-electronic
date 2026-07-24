@@ -3,11 +3,7 @@ import { analyse, traceScale, waveforms } from '../engine/reactivePower'
 import type { LoadKind } from '../engine/reactivePower'
 import { formatSI } from '../engine/units'
 import { T } from '../i18n'
-import { Group, Segmented } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Oscilloscope, Param, ReadoutGrid, Segmented, SimPage, Theory, TRACE_COLORS, Warning } from '../ui'
 
 const N = 4096
 
@@ -66,7 +62,7 @@ export default function ReactivePower() {
             />
             <Param label="reactive-power.presentPf" value={pf} onChange={setPf} min={0.05} max={1} log={false} step={0.01} />
             <Param label="reactive-power.targetPf" value={pfTarget} onChange={setPfTarget} min={0.05} max={1} log={false} step={0.01} />
-            <Param label="common.cyclesShown" value={cycles} onChange={(v) => setCycles(Math.round(v))} min={1} max={8} log={false} step={1} />
+            <Param label="common.cyclesShown" value={cycles} onChange={setCycles} int min={1} max={8} log={false} step={1} />
           </Group>
         </>
       }
@@ -97,23 +93,17 @@ export default function ReactivePower() {
         ]}
       />
 
-      {r.targetTooLow && (
-        <Warning
-          text="reactive-power.warn1"
-          vars={{ pf: pf.toFixed(2) }}
-        />
-      )}
-      {r.needsInductor && !r.targetTooLow && (
-        <Warning
-          text="reactive-power.warn2"
-        />
-      )}
-      {r.isMains && (
-        <Warning
-          text="reactive-power.warn3"
-          vars={{ capVoltageRating: formatSI(r.capVoltageRating, 'V') }}
-        />
-      )}
+      <Warning when={r.targetTooLow}
+        text="reactive-power.warn1"
+        vars={{ pf: pf.toFixed(2) }}
+      />
+      <Warning when={r.needsInductor && !r.targetTooLow}
+        text="reactive-power.warn2"
+      />
+      <Warning when={r.isMains}
+        text="reactive-power.warn3"
+        vars={{ capVoltageRating: formatSI(r.capVoltageRating, 'V') }}
+      />
 
       <Theory
         text={[

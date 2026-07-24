@@ -2,10 +2,7 @@ import { useMemo, useState } from 'react'
 import { VCC_5V } from '../engine/constants'
 import { analyseStrip } from '../engine/powerBudget'
 import { formatSI } from '../engine/units'
-import { Group, Segmented } from '../ui/Controls'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
+import { Group, Param, ReadoutGrid, Segmented, SimPage, Theory, Warning } from '../ui'
 
 export default function Ws2812Power() {
   const [ledCount, setLedCount] = useState(150)
@@ -28,8 +25,8 @@ export default function Ws2812Power() {
       controls={
         <>
           <Group label="ws2812-power.strip">
-            <Param label="ws2812-power.ledCount" value={ledCount} onChange={(v) => setLedCount(Math.round(v))} min={1} max={2000} />
-            <Param label="ws2812-power.ledsPerMetre" value={ledsPerMetre} onChange={(v) => setLedsPerMetre(Math.round(v))} min={30} max={144} log={false} step={1} />
+            <Param label="ws2812-power.ledCount" value={ledCount} onChange={setLedCount} int min={1} max={2000} />
+            <Param label="ws2812-power.ledsPerMetre" value={ledsPerMetre} onChange={setLedsPerMetre} int min={30} max={144} log={false} step={1} />
           </Group>
           <Group label="ws2812-power.content">
             <Param label="ws2812-power.brightness" value={brightness} onChange={setBrightness} min={0.01} max={1} log={false} step={0.01} />
@@ -45,7 +42,7 @@ export default function Ws2812Power() {
             />
           </Group>
           <Group label="ws2812-power.supplyWiring">
-            <Param label="ws2812-power.feedWireGauge" unit="AWG" value={awg} onChange={(v) => setAwg(Math.round(v))} min={10} max={30} log={false} step={1} />
+            <Param label="ws2812-power.feedWireGauge" unit="AWG" value={awg} onChange={setAwg} int min={10} max={30} log={false} step={1} />
           </Group>
         </>
       }
@@ -70,12 +67,10 @@ export default function Ws2812Power() {
         ]}
       />
 
-      {r.browningOut && (
-        <Warning
-          text="ws2812-power.warn1"
-          vars={{ endVoltage: formatSI(r.endVoltage, 'V'), injectionPoints: r.injectionPoints }}
-        />
-      )}
+      <Warning when={r.browningOut}
+        text="ws2812-power.warn1"
+        vars={{ endVoltage: formatSI(r.endVoltage, 'V'), injectionPoints: r.injectionPoints }}
+      />
       <Warning
         text="ws2812-power.warn2"
       />

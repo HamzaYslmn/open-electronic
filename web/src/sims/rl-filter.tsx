@@ -4,13 +4,8 @@ import { analyse, peakMagnitude, simulate, timeConstant } from '../engine/rl'
 import type { RLMode } from '../engine/rl'
 import { sweep } from '../engine/signal'
 import { formatSI } from '../engine/units'
-import { T, useT } from '../i18n'
-import { Group, Segmented } from '../ui/Controls'
-import Oscilloscope, { TRACE_COLORS } from '../ui/Oscilloscope'
-import Param from '../ui/Param'
-import { ReadoutGrid, Theory, Warning } from '../ui/Readout'
-import SimPage from '../ui/SimPage'
-import SourceControls, { useSource } from '../ui/SourceControls'
+import { T } from '../i18n'
+import { bandLabel, Dot, Group, Oscilloscope, Param, ReadoutGrid, Schematic, Segmented, SimPage, SourceControls, Theory, useSource, Warning } from '../ui'
 
 /** Samples per sweep, matched to the rest of the scope pages. */
 const N = 8192
@@ -18,46 +13,42 @@ const N = 8192
 /** 10% to 90% rise time of a first-order step, ln(9)·tau. */
 const RISE_TIME_TAUS = 2.197
 
-function Schematic({ mode }: { mode: RLMode }) {
+function Diagram({ mode }: { mode: RLMode }) {
   const series = mode === 'lowpass' ? 'L' : 'R'
   const shunt = mode === 'lowpass' ? 'R' : 'L'
-  const t = useT()
   return (
-    <svg className="schematic" viewBox="0 0 260 110" aria-label={t('rl-filter.rlNetwork')}>
-      <g fill="none" stroke="currentColor" strokeWidth="1.5">
-        <circle cx="24" cy="34" r="10" />
-        <path d="M18 34a6 6 0 0 1 12 0M24 24V14M24 44v36h212M34 34h36" />
-        {series === 'R' ? (
-          <rect x="70" y="26" width="48" height="16" />
-        ) : (
-          <path d="M70 34a6 6 0 0 1 12 0a6 6 0 0 1 12 0a6 6 0 0 1 12 0a6 6 0 0 1 12 0" />
-        )}
-        <path d="M118 34h102" />
-        {shunt === 'R' ? (
-          <>
-            <rect x="142" y="48" width="16" height="30" />
-            <path d="M150 34v14M150 78v2" />
-          </>
-        ) : (
-          <path d="M150 46a5 5 0 0 0 0 10a5 5 0 0 0 0 10a5 5 0 0 0 0 10M150 34v12M150 76v4" />
-        )}
-        <circle cx="224" cy="34" r="3" />
-      </g>
-      <g fill="currentColor" fontSize="11">
-        <text x="88" y="18">
-          {series}
-        </text>
-        <text x="166" y="62">
-          {shunt}
-        </text>
-        <text x="4" y="60">
-          Vin
-        </text>
-        <text x="212" y="24">
-          Vout
-        </text>
-      </g>
-    </svg>
+    <Schematic viewBox="0 0 260 110" label="rl-filter.rlNetwork">
+      <circle cx="24" cy="34" r="10" />
+      <path d="M18 34a6 6 0 0 1 12 0M24 44v36h212M34 34h36" />
+      {series === 'R' ? (
+        <rect x="70" y="26" width="48" height="16" />
+      ) : (
+        <path d="M70 34a6 6 0 0 1 12 0a6 6 0 0 1 12 0a6 6 0 0 1 12 0a6 6 0 0 1 12 0" />
+      )}
+      <path d="M118 34h102" />
+      {shunt === 'R' ? (
+        <>
+          <rect x="142" y="48" width="16" height="30" />
+          <path d="M150 34v14M150 78v2" />
+        </>
+      ) : (
+        <path d="M150 46a5 5 0 0 0 0 10a5 5 0 0 0 0 10a5 5 0 0 0 0 10M150 34v12M150 76v4" />
+      )}
+      <Dot x={150} y={34} />
+      <circle cx="224" cy="34" r="3" />
+      <text x="88" y="18">
+        {series}
+      </text>
+      <text x="166" y="62">
+        {shunt}
+      </text>
+      <text x="4" y="60">
+        Vin
+      </text>
+      <text x="212" y="24">
+        Vout
+      </text>
+    </Schematic>
   )
 }
 
@@ -81,11 +72,10 @@ export default function RLFilter() {
     return {
       dt,
       traces: [
-        { label: 'common.vin', color: TRACE_COLORS[0], samples: input },
-        { label: 'common.vout', color: TRACE_COLORS[1], samples: out },
+        { label: 'common.vin', samples: input },
+        { label: 'common.vout', samples: out },
         {
           label: mode === 'lowpass' ? 'V(L)' : 'V(R)',
-          color: TRACE_COLORS[2],
           samples: other,
         },
       ],
@@ -96,14 +86,7 @@ export default function RLFilter() {
 
   const ratio = readout.fc > 0 && Number.isFinite(readout.fc) ? source.frequency / readout.fc : 0
   const pass = mode === 'lowpass' ? ratio < 1 : ratio > 1
-  const band =
-    source.kind === 'dc'
-      ? '(step response)'
-      : ratio < 0.1 || ratio > 10
-        ? pass
-          ? '(deep in the passband)'
-          : '(deep in the stopband)'
-        : '(near the corner)'
+  const band = bandLabel(source.kind === 'dc', ratio, pass)
 
   const saturating = ipk > isat
   const overGpio = ipk * 1000 > GPIO_MAX_MA
@@ -123,7 +106,7 @@ export default function RLFilter() {
               { value: 'highpass', label: 'common.highPass' },
             ]}
           />
-          <Schematic mode={mode} />
+          <Diagram mode={mode} />
 
           <Group label="common.components">
             <Param label="common.resistor" unit="Ω" value={r} onChange={setR} min={1} max={1e6} />
@@ -154,18 +137,14 @@ export default function RLFilter() {
     >
       <Oscilloscope traces={traces} dt={dt} unit="V" />
 
-      {saturating && (
-        <Warning
-          text="rl-filter.warn1"
-          vars={{ ipk: formatSI(ipk, 'A'), isat: formatSI(isat, 'A') }}
-        />
-      )}
-      {overGpio && (
-        <Warning
-          text="rl-filter.warn2"
-          vars={{ ipk: formatSI(ipk, 'A'), GPIO_MAX_MA }}
-        />
-      )}
+      <Warning when={saturating}
+        text="rl-filter.warn1"
+        vars={{ ipk: formatSI(ipk, 'A'), isat: formatSI(isat, 'A') }}
+      />
+      <Warning when={overGpio}
+        text="rl-filter.warn2"
+        vars={{ ipk: formatSI(ipk, 'A'), GPIO_MAX_MA }}
+      />
 
       <ReadoutGrid
         items={[
