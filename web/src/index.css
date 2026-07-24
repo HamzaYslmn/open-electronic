@@ -1,0 +1,887 @@
+/* Obsidian-flavoured dark theme: their base greys and purple accent, with a
+   per-category hue so the catalogue does not read as one grey wall. */
+:root {
+  --base-00: #1e1e1e;
+  --base-05: #191919;
+  --base-10: #242424;
+  --base-20: #262626;
+  --base-25: #2a2a2a;
+  --base-30: #363636;
+  --base-35: #3f3f3f;
+  --base-40: #555555;
+
+  --text: #dadada;
+  --text-muted: #b3b3b3;
+  --dim: #888888;
+
+  --accent: #a882ff;
+  --accent-hover: #b99cff;
+  --accent-soft: rgba(168, 130, 255, 0.14);
+
+  /* trace + category hues, kept in sync with TRACE_COLORS in Oscilloscope.tsx */
+  --sky: #56b6f7;
+  --violet: #c084fc;
+  --green: #4ade80;
+  --amber: #fbbf24;
+  --rose: #fb7185;
+
+  --cat: var(--accent);
+
+  --topbar-h: 52px;
+  --sidebar-w: 250px;
+
+  color-scheme: dark;
+  font-family:
+    ui-sans-serif, -apple-system, 'Segoe UI', Inter, Roboto, Helvetica, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--base-00);
+  color: var(--text);
+  overscroll-behavior-y: none;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.85em;
+}
+
+::selection {
+  background: var(--accent-soft);
+}
+
+button {
+  font: inherit;
+}
+
+/* ---------- shell ---------- */
+.app {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) minmax(0, 1fr);
+  grid-template-rows: var(--topbar-h) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.topbar {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0 1rem;
+  border-bottom: 1px solid var(--base-30);
+  background: var(--base-05);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  margin-left: -0.35rem;
+  background: transparent;
+  border: 1px solid var(--base-30);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.menu-toggle svg {
+  width: 18px;
+  height: 18px;
+  stroke: var(--text);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  fill: none;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.brand:hover {
+  color: var(--accent);
+}
+
+.brand svg {
+  width: 18px;
+  height: 18px;
+  fill: var(--accent);
+}
+
+.tagline {
+  color: var(--dim);
+  font-size: 0.82rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+main {
+  min-width: 0;
+  padding: 1.5rem;
+  padding-bottom: 4rem;
+}
+
+.notice {
+  color: var(--text-muted);
+  padding: 3rem 0;
+  text-align: center;
+}
+
+.scrim {
+  display: none;
+}
+
+/* ---------- sidebar ---------- */
+.sidebar {
+  position: sticky;
+  top: var(--topbar-h);
+  align-self: start;
+  height: calc(100vh - var(--topbar-h));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-right: 1px solid var(--base-30);
+  background: var(--base-05);
+  padding: 0.85rem 0.6rem 3rem;
+}
+
+.sidebar-filter {
+  width: 100%;
+  padding: 0.4rem 0.6rem;
+  margin-bottom: 0.9rem;
+  background: var(--base-00);
+  border: 1px solid var(--base-30);
+  border-radius: 6px;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.84rem;
+}
+
+.sidebar-filter:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.sidebar h3 {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--cat);
+  margin: 1.1rem 0 0.35rem;
+  padding: 0 0.5rem;
+}
+
+.sidebar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.sidebar li {
+  font-size: 0.83rem;
+}
+
+.sidebar a,
+.sidebar li.soon {
+  display: block;
+  padding: 0.34rem 0.5rem;
+  border-radius: 5px;
+  border-left: 2px solid transparent;
+  color: var(--text-muted);
+}
+
+.sidebar a:hover {
+  background: var(--base-20);
+  color: var(--text);
+  border-left-color: var(--cat);
+}
+
+.sidebar a.active {
+  background: var(--accent-soft);
+  color: var(--text);
+  border-left-color: var(--cat);
+  font-weight: 500;
+}
+
+.sidebar li.soon {
+  color: var(--base-40);
+  cursor: default;
+}
+
+.sidebar-empty {
+  padding: 0 0.5rem;
+  color: var(--dim);
+  font-size: 0.83rem;
+}
+
+/* ---------- home ---------- */
+.intro {
+  color: var(--text-muted);
+  margin: 0 0 2rem;
+  max-width: 62ch;
+}
+
+.home h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--cat);
+  margin: 2.4rem 0 1rem;
+}
+
+.home h2::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--cat), transparent);
+  opacity: 0.35;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(255px, 1fr));
+  gap: 0.75rem;
+}
+
+.card {
+  display: block;
+  position: relative;
+  padding: 0.9rem 1rem 0.9rem 1.15rem;
+  border: 1px solid var(--base-30);
+  border-radius: 8px;
+  background: var(--base-20);
+  color: inherit;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background: var(--cat);
+}
+
+.card h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.card p {
+  margin: 0 0 0.6rem;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+}
+
+.card code {
+  color: var(--cat);
+  font-size: 0.75rem;
+  word-break: break-word;
+  opacity: 0.9;
+}
+
+.card.ready:hover {
+  background: var(--base-25);
+  border-color: var(--cat);
+}
+
+.card.planned {
+  background: var(--base-10);
+}
+
+.card.planned::before {
+  opacity: 0.3;
+}
+
+.card.planned h3 {
+  color: var(--text-muted);
+}
+
+.card.planned p,
+.card.planned code {
+  opacity: 0.6;
+}
+
+.badge {
+  font-size: 0.6rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border: 1px solid var(--base-35);
+  border-radius: 999px;
+  padding: 0.08rem 0.45rem;
+  color: var(--dim);
+  vertical-align: middle;
+}
+
+/* ---------- simulator page ---------- */
+.crumbs {
+  font-size: 0.82rem;
+  color: var(--dim);
+  margin-bottom: 0.6rem;
+}
+
+.sim h1 {
+  margin: 0 0 0.35rem;
+  font-size: 1.5rem;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.lede {
+  color: var(--text-muted);
+  margin: 0 0 1.5rem;
+  max-width: 66ch;
+}
+
+/* Scope first so it is above the fold on a phone; controls sit beside it once
+   there is room for two columns. */
+.sim-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(250px, 290px);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.stage {
+  min-width: 0;
+}
+
+.controls {
+  border: 1px solid var(--base-30);
+  border-radius: 8px;
+  background: var(--base-20);
+  padding: 1rem;
+}
+
+.controls h2 {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--dim);
+  margin: 1.5rem 0 0.75rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--base-30);
+}
+
+.controls h2:first-of-type {
+  margin-top: 0.25rem;
+}
+
+.seg {
+  display: flex;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 7px;
+  background: var(--base-10);
+  border: 1px solid var(--base-30);
+}
+
+.seg button {
+  flex: 1;
+  padding: 0.45rem;
+  min-height: 38px;
+  background: transparent;
+  border: 0;
+  border-radius: 5px;
+  color: var(--text-muted);
+  font-size: 0.84rem;
+  cursor: pointer;
+}
+
+.seg button:hover {
+  background: var(--base-25);
+  color: var(--text);
+}
+
+.seg button.on {
+  background: var(--accent);
+  color: #16121f;
+  font-weight: 600;
+}
+
+.schematic {
+  width: 100%;
+  height: auto;
+  max-height: 130px;
+  margin: 1.1rem 0 0;
+  color: var(--text-muted);
+}
+
+/* ---------- parameter control ---------- */
+.param {
+  margin-bottom: 0.95rem;
+}
+
+.param label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.param-text {
+  width: 9ch;
+  padding: 0.25rem 0.4rem;
+  text-align: right;
+  background: var(--base-05);
+  border: 1px solid var(--base-30);
+  border-radius: 5px;
+  color: var(--accent);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+}
+
+.param-text:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-soft);
+}
+
+.param-text.invalid {
+  border-color: var(--rose);
+  color: var(--rose);
+}
+
+input[type='range'] {
+  width: 100%;
+  accent-color: var(--accent);
+  height: 24px;
+}
+
+.param-hint {
+  color: var(--dim);
+  font-size: 0.72rem;
+}
+
+.field {
+  margin-bottom: 0.95rem;
+}
+
+.field label {
+  display: block;
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  margin-bottom: 0.35rem;
+}
+
+.field select {
+  width: 100%;
+  padding: 0.45rem;
+  min-height: 38px;
+  background: var(--base-05);
+  border: 1px solid var(--base-30);
+  border-radius: 5px;
+  color: var(--text);
+  font: inherit;
+  font-size: 0.85rem;
+}
+
+.field select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+/* ---------- oscilloscope unit ---------- */
+.scope-unit {
+  border: 1px solid var(--base-30);
+  border-radius: 10px;
+  background: linear-gradient(var(--base-20), var(--base-10));
+  padding: 10px;
+}
+
+.scope-screen {
+  border: 1px solid #000;
+  border-radius: 6px;
+  overflow: hidden;
+  line-height: 0;
+  background: #191919;
+  box-shadow: inset 0 0 24px rgba(0, 0, 0, 0.75);
+}
+
+.scope-screen canvas {
+  display: block;
+  cursor: grab;
+  /* let the canvas own pan/pinch instead of the page scrolling */
+  touch-action: none;
+}
+
+.scope-screen canvas:active {
+  cursor: grabbing;
+}
+
+.scope-panel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--base-30);
+}
+
+.knob {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.4rem 0.55rem;
+  border: 1px solid var(--base-30);
+  border-radius: 7px;
+  background: var(--base-05);
+}
+
+.knob.wide {
+  flex: 1 1 150px;
+  min-width: 140px;
+}
+
+.knob-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.11em;
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+.knob-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.knob-row button {
+  min-width: 38px;
+  min-height: 32px;
+  padding: 0 0.5rem;
+  background: var(--base-25);
+  border: 1px solid var(--base-35);
+  border-radius: 5px;
+  color: var(--text);
+  font-size: 0.75rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  cursor: pointer;
+}
+
+.knob-row button:hover {
+  background: var(--base-30);
+  border-color: var(--accent);
+}
+
+.knob-row button.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #16121f;
+  font-weight: 600;
+}
+
+.knob-value {
+  min-width: 44px;
+  text-align: center;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.78rem;
+  color: var(--accent);
+}
+
+.knob-row button.chan {
+  border-color: var(--chan);
+  color: var(--chan);
+  box-shadow: inset 0 0 0 1px transparent;
+}
+
+.knob-row button.chan.off {
+  border-color: var(--base-35);
+  color: var(--base-40);
+  text-decoration: line-through;
+}
+
+.scope-hint {
+  margin: 0.6rem 0 0;
+  font-size: 0.72rem;
+  color: var(--dim);
+}
+
+/* ---------- language switch ---------- */
+.lang {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+  padding: 2px;
+  border: 1px solid var(--base-30);
+  border-radius: 6px;
+  background: var(--base-00);
+}
+
+.lang button {
+  min-width: 34px;
+  padding: 0.2rem 0.4rem;
+  background: transparent;
+  border: 0;
+  border-radius: 4px;
+  color: var(--dim);
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.lang button:hover {
+  color: var(--text);
+}
+
+.lang button.on {
+  background: var(--accent);
+  color: #16121f;
+}
+
+/* ---------- where is it used ---------- */
+.usecase {
+  margin: 0 0 1.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--base-30);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  background: var(--base-20);
+}
+
+.usecase summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.usecase p {
+  margin: 0.6rem 0 0;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  max-width: 78ch;
+}
+
+/* ---------- resistor colour bands ---------- */
+.bands {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  height: 90px;
+  padding: 0 2rem;
+  border: 1px solid var(--base-30);
+  border-radius: 10px;
+  /* the resistor body, so the bands read as bands rather than swatches */
+  background: linear-gradient(var(--base-25), #3a3226 45%, var(--base-25));
+}
+
+.band {
+  width: 14px;
+  height: 100%;
+  border-radius: 2px;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.45);
+}
+
+.band.tol {
+  margin-left: 24px;
+}
+
+/* ---------- readouts ---------- */
+.readout {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 0.6rem;
+  margin: 1rem 0 0;
+}
+
+.readout > div {
+  border: 1px solid var(--base-30);
+  border-radius: 7px;
+  background: var(--base-20);
+  padding: 0.55rem 0.7rem;
+}
+
+.readout dt {
+  font-size: 0.68rem;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.readout dd {
+  margin: 0.2rem 0 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.96rem;
+  color: var(--accent);
+}
+
+.readout > div.warn {
+  border-color: var(--amber);
+  background: rgba(251, 191, 36, 0.08);
+}
+
+.readout > div.warn dd {
+  color: var(--amber);
+}
+
+.warn-note {
+  margin: 0.85rem 0 0;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--amber);
+  border-left-width: 3px;
+  border-radius: 6px;
+  background: rgba(251, 191, 36, 0.08);
+  color: var(--text);
+  font-size: 0.83rem;
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.95rem;
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.toggle input {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--accent);
+}
+
+.readout dd small {
+  color: var(--dim);
+  font-size: 0.72rem;
+  font-family: inherit;
+}
+
+.theory {
+  margin-top: 1.25rem;
+  border: 1px solid var(--base-30);
+  border-radius: 8px;
+  background: var(--base-20);
+  padding: 0.8rem 1rem;
+}
+
+.theory summary {
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.theory summary:hover {
+  color: var(--accent);
+}
+
+.theory p {
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  max-width: 72ch;
+}
+
+.theory code {
+  color: var(--violet);
+}
+
+/* ---------- narrow: controls stack under the scope ---------- */
+@media (max-width: 1100px) {
+  .sim-body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .schematic {
+    max-height: 160px;
+  }
+}
+
+/* ---------- mobile: sidebar becomes a drawer ---------- */
+@media (max-width: 800px) {
+  .app {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .menu-toggle {
+    display: inline-flex;
+  }
+
+  .tagline {
+    display: none;
+  }
+
+  main {
+    padding: 1rem 0.85rem 3rem;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: var(--topbar-h);
+    left: 0;
+    width: min(84vw, 300px);
+    height: calc(100vh - var(--topbar-h));
+    z-index: 25;
+    transform: translateX(-100%);
+    transition: transform 0.18s ease;
+    box-shadow: 0 0 24px rgba(0, 0, 0, 0.5);
+  }
+
+  .sidebar.open {
+    transform: none;
+  }
+
+  .menu-open .scrim {
+    display: block;
+    position: fixed;
+    inset: var(--topbar-h) 0 0;
+    z-index: 20;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .sim h1 {
+    font-size: 1.3rem;
+  }
+
+  /* bigger hit targets on touch */
+  .knob-row button {
+    min-height: 36px;
+  }
+
+  .readout {
+    grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  }
+}
